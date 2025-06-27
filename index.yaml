@@ -3,6 +3,16 @@ entries:
   llm-d-modelservice:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2025-06-27T19:13:26.280901614Z"
+    description: A Helm chart for ModelService in llm-d
+    digest: 4ac6a168a2e32be57b76d20e466e441599bb0d9680bf3aebc8f76d998c34fe17
+    name: llm-d-modelservice
+    type: application
+    urls:
+    - https://github.com/llm-d-incubation/llm-d-modelservice/releases/download/llm-d-modelservice-0.0.5/llm-d-modelservice-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2025-06-27T18:53:07.159747546Z"
     description: A Helm chart for ModelService in llm-d
     digest: eaf561270f57e2a5ee539de77875a0a6ebd6d61bf3a9f8488ac09bc7319f5fb6
@@ -31,4 +41,4 @@ entries:
     urls:
     - llm-d-modelservice-0.0.2.tgz
     version: 0.0.2
-generated: "2025-06-27T18:53:07.159759899Z"
+generated: "2025-06-27T19:13:26.280916222Z"
