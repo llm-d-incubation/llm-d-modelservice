@@ -41,6 +41,7 @@ jobs:
         uses: helm/kind-action@v1.12.0
 
       - name: Install CRDs
+        if: steps.list-changed.outputs.changed == 'true'
         run: |
           # Install Kubernetes Gateway API CRDs
           kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
