@@ -1,6 +1,18 @@
 # llm-d-modelservice
 
-Helm chart for ModelService.
+**ModelService** is a Helm chart that simplifies LLM deployment on llm-d by declaratively managing Kubernetes resources for serving base models. It enables reproducible, scalable, and tunable model deployments through modular presets, and clean integration with `llm-d` ecosystem components (including vLLM, Gateway API Inference Extension, LeaderWorkerSet). It provides an opinionated but flexible path for deploying, benchmarking, and tuning LLM inference workloads.
+
+The ModelService Helm Chart proposal is accepted on June 10, 2025. Read more about the roadmap, motivation, and other alternatives considered [here](https://github.com/llm-d/llm-d/blob/dev/docs/proposals/modelservice.md).
+
+TL;DR:
+
+Active scearios supported
+- P/D disagreegation using deployments
+- P/D disgagregation using LeaderWorkerSets
+- One pod per DP rank (in progress)
+
+Near future roadmap
+- Migrate `llm-d-deployer` and quickstart to use this helm chart
 
 ## Getting started
 Add this repository to Helm.
@@ -43,5 +55,13 @@ Below are the values you can set.
 | `endpointPicker.service.appProtocol`   | The app portocol the Inference Scheduler uses                                                                     | int          | 9002                                        |
 | `endpointPicker.replicas`              | Number of replicas for the Inference Scheduler pod                                                                | int          | 1                                           |
 | `endpointPicker.debugLevel`            | Debug level used to start the Inference Scheduler pod                                                             | int          | 4                                           |
-| `endpointPicker.disableReadinessProbe` | Disable readiness probe creation for the Inference Scheduler pod. <br>Set this to `true` if you want to debug.    | bool         | `false`                                     |
-| `endpointPicker.disableLivenessProbe`  | Disable liveness probe creation for the Inference Scheduler pod. <br>Set this to `true` if you want to debug.     | bool         | `false`                                     |
+| `endpointPicker.disableReadinessProbe` | Disable readiness probe creation for the Inference Scheduler pod. <br>Set this to `true` if you want to debug on Kind.    | bool         | `false`                                     |
+| `endpointPicker.disableLivenessProbe`  | Disable liveness probe creation for the Inference Scheduler pod. <br>Set this to `true` if you want to debug on Kind.     | bool         | `false`                                     |
+
+
+## Contribute
+
+We welcome contributions in the form of a GitHub issue or pull request. Please open a ticket if you see a gap in your use case as we continue to evolve this project.
+
+## Contact
+Get involved or ask questions in the `#sig-model-service` channel in the `llm-d` Slack workspace! Details on how to join the workspace can be found [here](https://github.com/llm-d/llm-d?tab=readme-ov-file#contribute).
