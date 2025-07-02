@@ -3,7 +3,6 @@
 # If true, use a LeaderWorkerSet instead of a Deployment to host the model
 multinode: true
 inferencePool: true
-inferenceModel: true
 httpRoute: true
 
 routing:

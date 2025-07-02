@@ -1,4 +1,4 @@
-{{- /* Routing templates: InferencePool, InferenceModel, and HttpRoute */}}
+{{- /* Routing templates: InferencePool and HttpRoute */}}
 {{- if .Values.inferencePool }}
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
@@ -17,22 +17,6 @@ spec:
     {{- end }}
     {{- include "llm-d-modelservice.pdlabels" . | nindent 4 }}
   targetPortNumber: {{ .Values.routing.servicePort }}
-{{- end }}
----
-{{- if .Values.inferenceModel }}
-apiVersion: inference.networking.x-k8s.io/v1alpha2
-kind: InferenceModel
-metadata:
-  name: {{ include "llm-d-modelservice.fullname" . }}-inference-model
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "llm-d-modelservice.pdlabels" . | nindent 4 }}
-spec:
-  modelName: {{ .Values.routing.modelName }}
-  poolRef:
-    group: inference.networking.x-k8s.io
-    kind: InferencePool
-    name: {{ include "llm-d-modelservice.fullname" . }}-inference-pool
 {{- end }}
 ---
 {{- if .Values.httpRoute }}

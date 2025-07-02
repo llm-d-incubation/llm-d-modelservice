@@ -7,20 +7,37 @@ The ModelService Helm Chart proposal is accepted on June 10, 2025. Read more abo
 TL;DR:
 
 Active scearios supported
-- P/D disagreegation using deployments
-- P/D disgagregation using LeaderWorkerSets
+- P/D disaggregation using deployments
+- P/D disaggregation using LeaderWorkerSets
 - One pod per DP rank (in progress)
 
 Near future roadmap
 - Migrate `llm-d-deployer` and quickstart to use this helm chart
 
 ## Getting started
+
 Add this repository to Helm.
 
 ```
 helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-modelservice/
 helm repo update
 ```
+
+This helm chart requires external CRDs to be installed for usage.
+
+1. Install Kubernetes Gateway API CRDs
+
+    ```
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
+    ```
+
+2. Install Kubernetes Gateway API Inference Extension CRDs
+
+    ```
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api-inference-extension/releases/download/v0.4.0/manifests.yaml
+
+    ```
+
 
 See [examples](https://llm-d-incubation.github.io/llm-d-modelservice/charts/llm-d-modelservice/examples) for how to use this Helm chart.
 
@@ -30,7 +47,6 @@ Below are the values you can set.
 |----------------------------------------|-------------------------------------------------------------------------------------------------------------------|--------------|---------------------------------------------|
 | `multinode`                            | Determines whether to create P/D using Deployments (false) or LWS (true)                                          | bool         | `false`                                     |
 | `inferencePool`                        | If true, creates a InferencePool object                                                                           | bool         | `false`                                     |
-| `inferenceModel`                       | If true, creates a InferenceModel object                                                                          | bool         | `false`                                     |
 | `httpRoute`                            | If true, creates a HTTPRoute object                                                                               | bool         | `false`                                     |
 | `routing.modelName`                    | The name for the `"model"` parameter in the OpenAI request                                                        | string       | N/A                                         |
 | `routing.servicePort`                  | The port the routing proxy sidecar listens on. <br>If there is no sidecar, this is the port the request goes to.Ω | int          | N/A                                         |

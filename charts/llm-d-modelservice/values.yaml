@@ -4,7 +4,6 @@
 
 multinode: false          # If true, creates LWS instead of deployments
 inferencePool: true
-inferenceModel: true
 httpRoute: true
 
 routing:

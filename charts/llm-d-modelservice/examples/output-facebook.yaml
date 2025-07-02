@@ -355,22 +355,6 @@ spec:
 ---
 # Source: llm-d-modelservice/templates/routing.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2
-kind: InferenceModel
-metadata:
-  name: facebook-llm-d-modelservice-inference-model
-  namespace: e2e-solution
-  labels:
-    llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: facebook-llm-d-modelservice
-spec:
-  modelName: facebook/opt-125m
-  poolRef:
-    group: inference.networking.x-k8s.io
-    kind: InferencePool
-    name: facebook-llm-d-modelservice-inference-pool
----
-# Source: llm-d-modelservice/templates/routing.yaml
-apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
   name: facebook-llm-d-modelservice-inference-pool
