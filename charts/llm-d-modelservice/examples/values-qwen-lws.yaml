@@ -1,13 +1,15 @@
-# This values.yaml file creates the resources for deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct
+# This values.yaml file creates the resources for Qwen/Qwen3-30B-A3B-FP8
 
 # If true, use a LeaderWorkerSet instead of a Deployment to host the model
 multinode: true
+scriptedStart: true
 inferencePool: true
+inferenceModel: true
 httpRoute: true
 
 routing:
   # This is the model name for the OpenAI request
-  modelName: deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct
+  modelName: Qwen/Qwen3-30B-A3B-FP8
   servicePort: 8080   # Sidecar listens on this port for requests. If there's no sidecar, the request goes here
   proxy:
     image: ghcr.io/llm-d/llm-d-routing-sidecar:0.0.6
@@ -19,22 +21,22 @@ routing:
 modelArtifacts:
   # When specfying the URI with `hf` prefix, the <repo-id>/<model-id> string
   # is extracted and exposed as a template variable that can be used as {{ .HFModelName }}
-
+  
   uri: "pvc://tms-hf-cache/model-cache"
   authSecretName: "hf-secret"
-  size: 5Mi
+  size: 5Mi 
 
 # describe decode pods
 decode:
-  autoscaling:
+  autoscaling: 
     enabled: false
   replicas: 1
 
-  parallelism:
+  parallelism:  
+    data: 4
     tensor: 1
-    data: 1
-    dataLocal: 1
-
+    dataLocal: 2
+  
   acceleratorTypes:
     labelKey: gpu.nvidia.com/model
     labelValues:
@@ -62,12 +64,21 @@ decode:
     - name: vllm-worker
       image: "quay.io/tms/vllm-dev-pplx:0.1.0"
       imagePullPolicy: Always
-      workingDir: /app
+      workingDir: /code
       stdin: true
       tty: true
       command: ["/bin/sh","-c"]
       args:
         - |
+          #################
+          # Interactive section
+          #################
+          # export VENV_PATH="/code/venv"
+          # source /init-scripts/common.sh
+          # /init-scripts/dotfiles.sh
+          # sleep infinity
+          #################
+          #
           #################
           # Install vLLM
           #################
@@ -81,7 +92,7 @@ decode:
             # Leader-only launch
             #################
             exec /app/venv/bin/vllm serve \
-              deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct \
+              Qwen/Qwen3-30B-A3B-FP8 \
               --port 8200 \
               --disable-log-requests \
               --enable-expert-parallel \
@@ -91,14 +102,13 @@ decode:
               --data-parallel-address $(LWS_LEADER_ADDRESS) \
               --data-parallel-rpc-port 5555 \
               --data-parallel-start-rank $START_RANK \
-              --trust-remote-code \
-              --enforce-eager
+              --trust-remote-code
           else
             #################
             # Worker-only launch
             #################
             exec /app/venv/bin/vllm serve \
-              deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct \
+              Qwen/Qwen3-30B-A3B-FP8 \
               --port 8200 \
               --disable-log-requests \
               --enable-expert-parallel \
@@ -109,18 +119,30 @@ decode:
               --data-parallel-rpc-port 5555 \
               --data-parallel-start-rank $START_RANK \
               --trust-remote-code \
-              --enforce-eager \
               --headless
           fi
+##################
+# Paste these args into the above vllm serve commands
+# to enable EPLB and API server scaleout.
+##################
+#  --enable-eplb \
+#  --num-redundant-experts 32 \
+#  --eplb-window-size 1000 \
+#  --eplb-step-interval 3000 \
+##################
+#  --api-server-count=8 \
+##################
       env:
-        - name: CUDA_LAUNCH_BLOCKING
+        - name: VLLM_TORCH_PROFILER_DIR
+          value: "/code/traces"
+        - name: VLLM_RANDOMIZE_DP_DUMMY_INPUTS
           value: "1"
         - name: VLLM_REPO_URL
-          value: "https://github.com/vllm-project/vllm.git"
+          value: "https://github.com/tlrmchlsmth/vllm.git"
         - name: VLLM_BRANCH
-          value: "main"
-        #- name: VLLM_USE_DEEP_GEMM
-        #  value: "1"
+          value: "for_michael_k"
+        - name: VLLM_USE_DEEP_GEMM
+          value: "1"
         - name: VLLM_ALL2ALL_BACKEND
         #  value: "naive"
           value: "pplx"
@@ -172,12 +194,12 @@ decode:
       resources:
         limits:
           nvidia.com/gpu: 1
-          memory: 64Gi
+          memory: 512Gi
           ephemeral-storage: 64Gi
           rdma/ib: 1
         requests:
-          cpu: 8
-          memory: 64Gi
+          cpu: 32
+          memory: 512Gi
           ephemeral-storage: 64Gi
           nvidia.com/gpu: 1
           rdma/ib: 1
@@ -194,15 +216,15 @@ decode:
 
 # describe prefill pods
 prefill:
-  autoscaling:
+  autoscaling: 
     enabled: false
   replicas: 1
 
-  parallelism:
+  parallelism:  
+    data: 4
     tensor: 1
-    data: 1
-    dataLocal: 1
-
+    dataLocal: 2
+  
   acceleratorTypes:
     labelKey: gpu.nvidia.com/model
     labelValues:
@@ -231,12 +253,21 @@ prefill:
     - name: vllm-worker
       image: "quay.io/tms/vllm-dev-pplx:0.1.0"
       imagePullPolicy: Always
-      workingDir: /app
+      workingDir: /code
       stdin: true
       tty: true
       command: ["/bin/sh","-c"]
       args:
         - |
+          #################
+          # Interactive section
+          #################
+          # export VENV_PATH="/code/venv"
+          # source /init-scripts/common.sh
+          # /init-scripts/dotfiles.sh
+          # sleep infinity
+          #################
+          #
           #################
           # Install vLLM
           #################
@@ -250,7 +281,7 @@ prefill:
             # Leader-only launch
             #################
             exec /app/venv/bin/vllm serve \
-              deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct \
+              Qwen/Qwen3-30B-A3B-FP8 \
               --port 8080 \
               --disable-log-requests \
               --enable-expert-parallel \
@@ -260,14 +291,13 @@ prefill:
               --data-parallel-address $(LWS_LEADER_ADDRESS) \
               --data-parallel-rpc-port 5555 \
               --data-parallel-start-rank $START_RANK \
-              --trust-remote-code \
-              --enforce-eager
+              --trust-remote-code
           else
             #################
             # Worker-only launch
             #################
             exec /app/venv/bin/vllm serve \
-              deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct \
+              Qwen/Qwen3-30B-A3B-FP8 \
               --port 8080 \
               --disable-log-requests \
               --enable-expert-parallel \
@@ -280,15 +310,28 @@ prefill:
               --trust-remote-code \
               --headless
           fi
+##################
+# Paste these args into the above vllm serve commands
+# to enable EPLB and API server scaleout.
+##################
+#  --enable-eplb \
+#  --num-redundant-experts 32 \
+#  --eplb-window-size 1000 \
+#  --eplb-step-interval 3000 \
+##################
+#  --api-server-count=8 \
+##################
       env:
-        - name: CUDA_LAUNCH_BLOCKING
+        - name: VLLM_TORCH_PROFILER_DIR
+          value: "/code/traces"
+        - name: VLLM_RANDOMIZE_DP_DUMMY_INPUTS
           value: "1"
         - name: VLLM_REPO_URL
-          value: "https://github.com/vllm-project/vllm.git"
+          value: "https://github.com/tlrmchlsmth/vllm.git"
         - name: VLLM_BRANCH
-          value: "main"
-        #- name: VLLM_USE_DEEP_GEMM
-        #  value: "1"
+          value: "for_michael_k"
+        - name: VLLM_USE_DEEP_GEMM
+          value: "1"
         - name: VLLM_ALL2ALL_BACKEND
         #  value: "naive"
           value: "pplx"
@@ -340,12 +383,12 @@ prefill:
       resources:
         limits:
           nvidia.com/gpu: 1
-          memory: 64Gi
+          memory: 512Gi
           ephemeral-storage: 64Gi
           rdma/ib: 1
         requests:
-          cpu: 8
-          memory: 64Gi
+          cpu: 32
+          memory: 512Gi
           ephemeral-storage: 64Gi
           nvidia.com/gpu: 1
           rdma/ib: 1
@@ -359,7 +402,7 @@ prefill:
         - name: vllm
           mountPath: /code
       mountModelVolume: true
-
+    
 endpointPicker:
   image: ghcr.io/llm-d/llm-d-inference-scheduler:0.0.3
   debugLevel: 5

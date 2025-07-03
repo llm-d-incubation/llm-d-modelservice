@@ -119,6 +119,11 @@ initContainers:
 {{- if and . .data }}{{ .data }}{{ else }}1{{ end }}
 {{- end }}
 
+{{/* Desired P/D data local parallelism -- user set or defaults to 1 */}}
+{{- define "llm-d-modelservice.dataLocalParallelism" -}}
+{{- if and . .dataLocal }}{{ .dataLocal }}{{ else }}1{{ end }}
+{{- end }}
+
 {{/*
 Port on which vllm container should listen.
 Context is helm root context plus key "role" ("decode" or "prefill")
@@ -130,19 +135,20 @@ Context is helm root context plus key "role" ("decode" or "prefill")
 {{/* P/D deployment container resources */}}
 {{- define "llm-d-modelservice.resources" -}}
 {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .parallelism) -}}
+{{- $dataLocalParallelism := int (include "llm-d-modelservice.dataLocalParallelism" .parallelism) -}}
 {{- $limits := dict }}
 {{- if and .resources .resources.limits }}
 {{- $limits = deepCopy .resources.limits }}
 {{- end }}
-{{- if gt (int $tensorParallelism) 1 }}
-{{- $limits = mergeOverwrite $limits (dict "nvidia.com/gpu" $tensorParallelism) }}
+{{- if or (gt (int $tensorParallelism) 1) (gt (int $dataLocalParallelism) 1) }}
+{{- $limits = mergeOverwrite $limits (dict "nvidia.com/gpu" (mul $tensorParallelism $dataLocalParallelism)) }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
 {{- $requests = deepCopy .resources.requests }}
 {{- end }}
-{{- if gt (int $tensorParallelism) 1 }}
-{{- $requests = mergeOverwrite $requests (dict "nvidia.com/gpu" $tensorParallelism) }}
+{{- if or (gt (int $tensorParallelism) 1) (gt (int $dataLocalParallelism) 1) }}
+{{- $requests = mergeOverwrite $requests (dict "nvidia.com/gpu" (mul $tensorParallelism $dataLocalParallelism)) }}
 {{- end }}
 resources:
   limits:
@@ -257,9 +263,11 @@ context is a dict with helm root context plus:
     {{- toYaml . | nindent 2 }}
   {{- end }}
   args:
+  {{- if not (default false .Values.scriptedStart) }}
   - {{ .Values.routing.modelName | quote }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+  {{- end }}
   {{- with .container.args }}
     {{- toYaml . | nindent 2 }}
   {{- end }}
@@ -271,11 +279,11 @@ context is a dict with helm root context plus:
     {{- toYaml . | nindent 2 }}
   {{- end }}
   - name: DP_SIZE
-    value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
-  - name: TP_SIZE
     value: {{ include "llm-d-modelservice.dataParallelism" .parallelism | quote }}
+  - name: TP_SIZE
+    value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
   - name: DP_SIZE_LOCAL
-    value: "1"
+    value: {{ include "llm-d-modelservice.dataLocalParallelism" .parallelism | quote }}
   {{- /* insert envs based on what modelArtifact prefix */}}
   {{- if .container.mountModelVolume }}
   - name: HF_HOME

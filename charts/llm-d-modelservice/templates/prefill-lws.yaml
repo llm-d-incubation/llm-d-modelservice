@@ -11,19 +11,9 @@ spec:
   replicas: {{ default 1 .Values.prefill.replicas }}
   {{- end }}
   leaderWorkerTemplate:
-    size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.prefill.parallelism) }}
-    leaderTemplate:
-      metadata:
-        labels:
-          {{- include "llm-d-modelservice.prefilllabels" . | nindent 10 }}
-      spec:
-        {{- (include "llm-d-modelservice.modelPod" (merge . (dict "pdSpec" .Values.prefill))) | nindent 6 }}
-        {{- with .Values.prefill.containers }}
-        containers:
-          {{- range . }}
-        {{- (include "llm-d-modelservice.container" (merge (dict "role" "prefill" "container" . "parallelism" $.Values.prefill.parallelism) $)) | nindent 8 }}
-          {{- end }}
-        {{- end }}
+    size: {{ div (int (include "llm-d-modelservice.dataParallelism" .Values.prefill.parallelism)) (int (include "llm-d-modelservice.dataLocalParallelism" .Values.prefill.parallelism)) }}
+
+    # no sidecar so no need to specify leader separately
 
     workerTemplate:
       metadata:
