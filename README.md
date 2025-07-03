@@ -40,7 +40,7 @@ At a minimal, the following should be installed:
     ```
 
 
-See [examples](https://llm-d-incubation.github.io/llm-d-modelservice/charts/llm-d-modelservice/examples) for how to use this Helm chart.
+See [examples](/examples) for how to use this Helm chart.
 
 ## Values
 Below are the values you can set.
