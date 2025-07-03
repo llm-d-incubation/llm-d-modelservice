@@ -23,15 +23,16 @@ helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-models
 helm repo update
 ```
 
-This helm chart requires external CRDs to be installed for usage.
+ModelService operates under the assumption that `llm-d-deployer` has been installed in a Kuberentes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d-deployer` Quickstart](https://github.com/llm-d/llm-d-deployer/blob/main/quickstart/README.md) for more information. This helm chart requires external CRDs to be installed for usage.
 
-1. Install Kubernetes Gateway API CRDs
+At a minimal, the following should be installed:
+1. Kubernetes Gateway API CRDs
 
     ```
     kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
     ```
 
-2. Install Kubernetes Gateway API Inference Extension CRDs
+2. Kubernetes Gateway API Inference Extension CRDs
 
     ```
     kubectl apply -f https://github.com/kubernetes-sigs/gateway-api-inference-extension/releases/download/v0.4.0/manifests.yaml
