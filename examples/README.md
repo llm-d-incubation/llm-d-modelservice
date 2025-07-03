@@ -6,10 +6,6 @@ This folder contains example values file and their rendered templates. It assume
 ```
 helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-modelservice/
 helm repo update
-
-
-```
-helm install [RELEASE-NAME] llm-d-modelservice/llm-d-modelservice -f [VALUES-FILEPATH]
 ```
 
 Note: `alias k=kubectl`
