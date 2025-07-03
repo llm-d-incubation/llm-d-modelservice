@@ -10,6 +10,8 @@ helm repo update
 
 Note: `alias k=kubectl`
 
+> If you only want to deploy model instances without routing support, append `--set inferencePool=false --set httpRoute=false` to the example commands.
+
 1. `vllm-sim` in Kind
 
     Make sure there is a gateway (Kgateway or Istio) deployed in the cluster. Follow [these instructions](https://gateway-api-inference-extension.sigs.k8s.io/guides/#__tabbed_3_2) on how to set up a gateway. Once done, update `routing.parentRefs[*].name` in this [values file](values-vllm-sim.yaml#L18) to use the name for the Gateway (`llm-d-inference-gateway-istio`) in the cluster.
