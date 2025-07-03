@@ -4,7 +4,6 @@
 multinode: true
 scriptedStart: true
 inferencePool: true
-inferenceModel: true
 httpRoute: true
 
 routing:
@@ -397,8 +396,6 @@ prefill:
           name: dshm
         - name: init-scripts-volume
           mountPath: /init-scripts
-        #MK - name: hf-cache
-        #MK   mountPath: /huggingface-cache
         - name: vllm
           mountPath: /code
       mountModelVolume: true
