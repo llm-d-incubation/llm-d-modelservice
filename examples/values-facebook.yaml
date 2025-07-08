@@ -1,8 +1,17 @@
 # This values.yaml file creates the resources for facebook/opt-125m
 
-multinode: false          # If true, creates LWS instead of deployments
+# When true, LeaderWorkerSet is used instead of Deployment
+multinode: false
+# When true, an InferencePool is created.
+# When false, an InferencePool is not created. Nor is the referencing HTTPRoute.
+# Note that when there is no endpointPicker, the InferencePool is not created (overriding a true here).
 inferencePool: true
+# When true, an HTTPRoute is created.
+# When false, an HTTPRoute is not created.
+# Note that when inferencePool is false, or there is is no endpointPicker, the HTTPRoute is not created (overriding a true here).
 httpRoute: true
+
+# To control creation of the endpoint picker (inference scheduler), see endpointPicker below
 
 routing:
   # This is the model name for the OpenAI request
@@ -97,12 +106,15 @@ prefill:
         memory: 16Gi
         nvidia.com/gpu: "1"
 
+# When endpointPicker is present, create the endpoint picker (inference scheduler) objects:
+# ServiceAccount, Role, Rolebinding, Deployment, Service
+# When endpointPicker is not present, these objects are not created.
 endpointPicker:
   service:
     type: ClusterIP
     port: 9002
     targetPort: 9002
     appProtocol: http2
-  # The name of cluster role containing permissions to be granted to endpointPicker (via a role binding to the service account)
-  permissions: pod-read
+  # To use a different role from the default, provide the name of the role
+  # permissions: pod-read
   replicas: 1

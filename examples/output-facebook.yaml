@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: facebook-llm-d-modelservice-epp-sa
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.1
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,19 +15,70 @@ kind: ServiceAccount
 metadata:
   name: facebook-llm-d-modelservice-sa
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.1
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
-# Source: llm-d-modelservice/templates/rolebinding.yaml
+# Source: llm-d-modelservice/templates/epp-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: facebook-llm-d-modelservice-epp-role
+rules:
+- apiGroups:
+  - inference.networking.x-k8s.io
+  resources:
+  - inferencemodels
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - inference.networking.x-k8s.io
+  resources:
+  - inferencepools
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+# Source: llm-d-modelservice/templates/epp-rolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: facebook-llm-d-modelservice-epp-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: pod-read
+  kind: Role
+  name: facebook-llm-d-modelservice-epp-role
 subjects:
 - kind: ServiceAccount
   name: facebook-llm-d-modelservice-epp-sa
@@ -38,7 +89,7 @@ kind: Service
 metadata:
   name: facebook-llm-d-modelservice-epp-service
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.1
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -57,7 +108,7 @@ kind: Deployment
 metadata:
   name: facebook-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.1
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -90,32 +141,30 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
-
+    
       serviceAccountName: facebook-llm-d-modelservice-sa
       volumes:
         - name: model-storage
-          emptyDir:
+          emptyDir: 
             sizeLimit: 20Gi
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d:0.0.8
-          command:
-          - vllm
-          - serve
+          
+          command: ["vllm", "serve"]
           args:
-          - "facebook/opt-125m"
-          - --port
-          - "8200"
-          - --enforce-eager
-          - --kv-transfer-config
-          - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
+            - "facebook/opt-125m"
+            - --port
+            - "8200"
+            
+            - --enforce-eager
+            - --kv-transfer-config
+            - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
           env:
           - name: CUDA_VISIBLE_DEVICES
             value: "0"
           - name: UCX_TLS
             value: cuda_ipc,cuda_copy,tcp
-          - name: HF_HOME
-            value: /model-cache
           - name: VLLM_NIXL_SIDE_CHANNEL_HOST
             valueFrom:
               fieldRef:
@@ -132,7 +181,7 @@ spec:
             value: "1"
           - name: HF_HOME
             value: /model-cache
-
+          
           resources:
             limits:
               cpu: "16"
@@ -258,7 +307,7 @@ kind: Deployment
 metadata:
   name: facebook-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.1
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -275,25 +324,25 @@ spec:
         llm-d.ai/model: facebook-llm-d-modelservice
         llm-d.ai/role: prefill
     spec:
-
+    
       serviceAccountName: facebook-llm-d-modelservice-sa
       volumes:
         - name: model-storage
-          emptyDir:
+          emptyDir: 
             sizeLimit: 20Gi
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d:0.0.8
-          command:
-          - vllm
-          - serve
+          
+          command: ["vllm", "serve"]
           args:
-          - "facebook/opt-125m"
-          - --port
-          - "8000"
-          - --enforce-eager
-          - --kv-transfer-config
-          - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
+            - "facebook/opt-125m"
+            - --port
+            - "8000"
+            
+            - --enforce-eager
+            - --kv-transfer-config
+            - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
           env:
           - name: CUDA_VISIBLE_DEVICES
             value: "0"
@@ -313,7 +362,7 @@ spec:
             value: "1"
           - name: DP_SIZE_LOCAL
             value: "1"
-
+          
           resources:
             limits:
               cpu: "16"
@@ -331,7 +380,7 @@ metadata:
   name: facebook-llm-d-modelservice-http-route
   namespace: e2e-solution
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.1
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:

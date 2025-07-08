@@ -3,9 +3,9 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: qwen-llm-d-modelservice-epp-sa
+  name: qwen-lws-llm-d-modelservice-epp-sa
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.5
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -13,32 +13,83 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: qwen-llm-d-modelservice-sa
+  name: qwen-lws-llm-d-modelservice-sa
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.5
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
-# Source: llm-d-modelservice/templates/rolebinding.yaml
+# Source: llm-d-modelservice/templates/epp-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: qwen-lws-llm-d-modelservice-epp-role
+rules:
+- apiGroups:
+  - inference.networking.x-k8s.io
+  resources:
+  - inferencemodels
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - inference.networking.x-k8s.io
+  resources:
+  - inferencepools
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+# Source: llm-d-modelservice/templates/epp-rolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: qwen-llm-d-modelservice-epp-rolebinding
+  name: qwen-lws-llm-d-modelservice-epp-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: pod-read
+  kind: Role
+  name: qwen-lws-llm-d-modelservice-epp-role
 subjects:
 - kind: ServiceAccount
-  name: qwen-llm-d-modelservice-epp-sa
+  name: qwen-lws-llm-d-modelservice-epp-sa
 ---
 # Source: llm-d-modelservice/templates/epp-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: qwen-llm-d-modelservice-epp-service
+  name: qwen-lws-llm-d-modelservice-epp-service
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.5
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -49,25 +100,25 @@ spec:
       protocol: TCP
       appProtocol: http2
   selector:
-    llm-d.ai/epp: qwen-llm-d-modelservice-epp
+    llm-d.ai/epp: qwen-lws-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/epp-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: qwen-llm-d-modelservice-epp
+  name: qwen-lws-llm-d-modelservice-epp
   labels:
-    llm-d.ai/epp: qwen-llm-d-modelservice-epp
+    llm-d.ai/epp: qwen-lws-llm-d-modelservice-epp
   namespace: llmd-kalantar
 spec:
   replicas: 1
   selector:
     matchLabels:
-      llm-d.ai/epp: qwen-llm-d-modelservice-epp
+      llm-d.ai/epp: qwen-lws-llm-d-modelservice-epp
   template:
     metadata:
       labels:
-        llm-d.ai/epp: qwen-llm-d-modelservice-epp
+        llm-d.ai/epp: qwen-lws-llm-d-modelservice-epp
     spec:
       containers:
       - name: epp
@@ -75,7 +126,7 @@ spec:
         image: ghcr.io/llm-d/llm-d-inference-scheduler:0.0.3
         args:
         - --poolName
-        - qwen-llm-d-modelservice-inference-pool
+        - qwen-lws-llm-d-modelservice-inference-pool
         - --poolNamespace
         - llmd-kalantar
         - -v
@@ -136,17 +187,35 @@ spec:
         - containerPort: 9090
           name: metrics
           protocol: TCP
-      serviceAccount: qwen-llm-d-modelservice-epp-sa
-      serviceAccountName: qwen-llm-d-modelservice-epp-sa
+        readinessProbe:
+          grpc:
+            port: 9003
+            service: envoy.service.ext_proc.v3.ExternalProcessor
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          grpc:
+            port: 9003
+            service: envoy.service.ext_proc.v3.ExternalProcessor
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+      serviceAccount: qwen-lws-llm-d-modelservice-epp-sa
+      serviceAccountName: qwen-lws-llm-d-modelservice-epp-sa
 ---
 # Source: llm-d-modelservice/templates/routing.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: qwen-llm-d-modelservice-http-route
+  name: qwen-lws-llm-d-modelservice-http-route
   namespace: llmd-kalantar
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.5
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -156,7 +225,7 @@ spec:
   - backendRefs:
     - group: inference.networking.x-k8s.io
       kind: InferencePool
-      name: qwen-llm-d-modelservice-inference-pool
+      name: qwen-lws-llm-d-modelservice-inference-pool
       port: 8080
       weight: 1
     matches:
@@ -172,31 +241,31 @@ spec:
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
-  name: qwen-llm-d-modelservice-inference-pool
+  name: qwen-lws-llm-d-modelservice-inference-pool
   namespace: llmd-kalantar
 spec:
   extensionRef:
     failureMode: FailClose
     group: ""
     kind: Service
-    name: qwen-llm-d-modelservice-epp-service
+    name: qwen-lws-llm-d-modelservice-epp-service
   selector:
     leaderworkerset.sigs.k8s.io/worker-index: "0"
     llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: qwen-llm-d-modelservice
+    llm-d.ai/model: qwen-lws-llm-d-modelservice
   targetPortNumber: 8080
 ---
 # Source: llm-d-modelservice/templates/decode-lws.yaml
 apiVersion: leaderworkerset.x-k8s.io/v1
 kind: LeaderWorkerSet
 metadata:
-  name: qwen-llm-d-modelservice-decode
+  name: qwen-lws-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.5
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: qwen-llm-d-modelservice
+    llm-d.ai/model: qwen-lws-llm-d-modelservice
     llm-d.ai/role: decode
 spec:
   replicas: 1
@@ -206,7 +275,7 @@ spec:
       metadata:
         labels:
           llm-d.ai/inferenceServing: "true"
-          llm-d.ai/model: qwen-llm-d-modelservice
+          llm-d.ai/model: qwen-lws-llm-d-modelservice
           llm-d.ai/role: decode
       spec:
         
@@ -227,7 +296,7 @@ spec:
               allowPrivilegeEscalation: false
               runAsNonRoot: true
       
-        serviceAccountName: qwen-llm-d-modelservice-sa
+        serviceAccountName: qwen-lws-llm-d-modelservice-sa
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -262,62 +331,63 @@ spec:
               - IPC_LOCK
               - SYS_RAWIO
           imagePullPolicy: Always
+          
           command:
-          - /bin/sh
-          - -c
+            - /bin/sh
+            - -c
           args:
-          - |
-            #################
-            # Interactive section
-            #################
-            # export VENV_PATH="/code/venv"
-            # source /init-scripts/common.sh
-            # /init-scripts/dotfiles.sh
-            # sleep infinity
-            #################
-            #
-            #################
-            # Install vLLM
-            #################
-            VLLM_USE_PRECOMPILED=1 /init-scripts/vllm.sh
-            #################
-            # RUN vLLM
-            #################
-            START_RANK=$(( ${LWS_WORKER_INDEX:-0} * DP_SIZE_LOCAL ))
-            if [ "${LWS_WORKER_INDEX:-0}" -eq 0 ]; then
+            - |
               #################
-              # Leader-only launch
+              # Interactive section
               #################
-              exec /app/venv/bin/vllm serve \
-                Qwen/Qwen3-30B-A3B-FP8 \
-                --port 8200 \
-                --disable-log-requests \
-                --enable-expert-parallel \
-                --tensor-parallel-size $TP_SIZE \
-                --data-parallel-size $DP_SIZE \
-                --data-parallel-size-local $DP_SIZE_LOCAL \
-                --data-parallel-address $(LWS_LEADER_ADDRESS) \
-                --data-parallel-rpc-port 5555 \
-                --data-parallel-start-rank $START_RANK \
-                --trust-remote-code
-            else
+              # export VENV_PATH="/code/venv"
+              # source /init-scripts/common.sh
+              # /init-scripts/dotfiles.sh
+              # sleep infinity
               #################
-              # Worker-only launch
+              #
               #################
-              exec /app/venv/bin/vllm serve \
-                Qwen/Qwen3-30B-A3B-FP8 \
-                --port 8200 \
-                --disable-log-requests \
-                --enable-expert-parallel \
-                --tensor-parallel-size $TP_SIZE \
-                --data-parallel-size $DP_SIZE \
-                --data-parallel-size-local $DP_SIZE_LOCAL \
-                --data-parallel-address $(LWS_LEADER_ADDRESS) \
-                --data-parallel-rpc-port 5555 \
-                --data-parallel-start-rank $START_RANK \
-                --trust-remote-code \
-                --headless
-            fi
+              # Install vLLM
+              #################
+              VLLM_USE_PRECOMPILED=1 /init-scripts/vllm.sh
+              #################
+              # RUN vLLM
+              #################
+              START_RANK=$(( ${LWS_WORKER_INDEX:-0} * DP_SIZE_LOCAL ))
+              if [ "${LWS_WORKER_INDEX:-0}" -eq 0 ]; then
+                #################
+                # Leader-only launch
+                #################
+                exec /app/venv/bin/vllm serve \
+                  Qwen/Qwen3-30B-A3B-FP8 \
+                  --port 8200 \
+                  --disable-log-requests \
+                  --enable-expert-parallel \
+                  --tensor-parallel-size $TP_SIZE \
+                  --data-parallel-size $DP_SIZE \
+                  --data-parallel-size-local $DP_SIZE_LOCAL \
+                  --data-parallel-address $(LWS_LEADER_ADDRESS) \
+                  --data-parallel-rpc-port 5555 \
+                  --data-parallel-start-rank $START_RANK \
+                  --trust-remote-code
+              else
+                #################
+                # Worker-only launch
+                #################
+                exec /app/venv/bin/vllm serve \
+                  Qwen/Qwen3-30B-A3B-FP8 \
+                  --port 8200 \
+                  --disable-log-requests \
+                  --enable-expert-parallel \
+                  --tensor-parallel-size $TP_SIZE \
+                  --data-parallel-size $DP_SIZE \
+                  --data-parallel-size-local $DP_SIZE_LOCAL \
+                  --data-parallel-address $(LWS_LEADER_ADDRESS) \
+                  --data-parallel-rpc-port 5555 \
+                  --data-parallel-start-rank $START_RANK \
+                  --trust-remote-code \
+                  --headless
+              fi
           env:
           - name: VLLM_TORCH_PROFILER_DIR
             value: /code/traces
@@ -404,11 +474,11 @@ spec:
       metadata:
         labels:
           llm-d.ai/inferenceServing: "true"
-          llm-d.ai/model: qwen-llm-d-modelservice
+          llm-d.ai/model: qwen-lws-llm-d-modelservice
           llm-d.ai/role: decode
       spec:
       
-        serviceAccountName: qwen-llm-d-modelservice-sa
+        serviceAccountName: qwen-lws-llm-d-modelservice-sa
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -443,62 +513,63 @@ spec:
               - IPC_LOCK
               - SYS_RAWIO
           imagePullPolicy: Always
+          
           command:
-          - /bin/sh
-          - -c
+            - /bin/sh
+            - -c
           args:
-          - |
-            #################
-            # Interactive section
-            #################
-            # export VENV_PATH="/code/venv"
-            # source /init-scripts/common.sh
-            # /init-scripts/dotfiles.sh
-            # sleep infinity
-            #################
-            #
-            #################
-            # Install vLLM
-            #################
-            VLLM_USE_PRECOMPILED=1 /init-scripts/vllm.sh
-            #################
-            # RUN vLLM
-            #################
-            START_RANK=$(( ${LWS_WORKER_INDEX:-0} * DP_SIZE_LOCAL ))
-            if [ "${LWS_WORKER_INDEX:-0}" -eq 0 ]; then
+            - |
               #################
-              # Leader-only launch
+              # Interactive section
               #################
-              exec /app/venv/bin/vllm serve \
-                Qwen/Qwen3-30B-A3B-FP8 \
-                --port 8200 \
-                --disable-log-requests \
-                --enable-expert-parallel \
-                --tensor-parallel-size $TP_SIZE \
-                --data-parallel-size $DP_SIZE \
-                --data-parallel-size-local $DP_SIZE_LOCAL \
-                --data-parallel-address $(LWS_LEADER_ADDRESS) \
-                --data-parallel-rpc-port 5555 \
-                --data-parallel-start-rank $START_RANK \
-                --trust-remote-code
-            else
+              # export VENV_PATH="/code/venv"
+              # source /init-scripts/common.sh
+              # /init-scripts/dotfiles.sh
+              # sleep infinity
               #################
-              # Worker-only launch
+              #
               #################
-              exec /app/venv/bin/vllm serve \
-                Qwen/Qwen3-30B-A3B-FP8 \
-                --port 8200 \
-                --disable-log-requests \
-                --enable-expert-parallel \
-                --tensor-parallel-size $TP_SIZE \
-                --data-parallel-size $DP_SIZE \
-                --data-parallel-size-local $DP_SIZE_LOCAL \
-                --data-parallel-address $(LWS_LEADER_ADDRESS) \
-                --data-parallel-rpc-port 5555 \
-                --data-parallel-start-rank $START_RANK \
-                --trust-remote-code \
-                --headless
-            fi
+              # Install vLLM
+              #################
+              VLLM_USE_PRECOMPILED=1 /init-scripts/vllm.sh
+              #################
+              # RUN vLLM
+              #################
+              START_RANK=$(( ${LWS_WORKER_INDEX:-0} * DP_SIZE_LOCAL ))
+              if [ "${LWS_WORKER_INDEX:-0}" -eq 0 ]; then
+                #################
+                # Leader-only launch
+                #################
+                exec /app/venv/bin/vllm serve \
+                  Qwen/Qwen3-30B-A3B-FP8 \
+                  --port 8200 \
+                  --disable-log-requests \
+                  --enable-expert-parallel \
+                  --tensor-parallel-size $TP_SIZE \
+                  --data-parallel-size $DP_SIZE \
+                  --data-parallel-size-local $DP_SIZE_LOCAL \
+                  --data-parallel-address $(LWS_LEADER_ADDRESS) \
+                  --data-parallel-rpc-port 5555 \
+                  --data-parallel-start-rank $START_RANK \
+                  --trust-remote-code
+              else
+                #################
+                # Worker-only launch
+                #################
+                exec /app/venv/bin/vllm serve \
+                  Qwen/Qwen3-30B-A3B-FP8 \
+                  --port 8200 \
+                  --disable-log-requests \
+                  --enable-expert-parallel \
+                  --tensor-parallel-size $TP_SIZE \
+                  --data-parallel-size $DP_SIZE \
+                  --data-parallel-size-local $DP_SIZE_LOCAL \
+                  --data-parallel-address $(LWS_LEADER_ADDRESS) \
+                  --data-parallel-rpc-port 5555 \
+                  --data-parallel-start-rank $START_RANK \
+                  --trust-remote-code \
+                  --headless
+              fi
           env:
           - name: VLLM_TORCH_PROFILER_DIR
             value: /code/traces
@@ -585,13 +656,13 @@ spec:
 apiVersion: leaderworkerset.x-k8s.io/v1
 kind: LeaderWorkerSet
 metadata:
-  name: qwen-llm-d-modelservice-prefill
+  name: qwen-lws-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.5
+    helm.sh/chart: llm-d-modelservice-0.0.6
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: qwen-llm-d-modelservice
+    llm-d.ai/model: qwen-lws-llm-d-modelservice
     llm-d.ai/role: prefill
 spec:
   replicas: 1
@@ -604,11 +675,11 @@ spec:
       metadata:
         labels:
           llm-d.ai/inferenceServing: "true"
-          llm-d.ai/model: qwen-llm-d-modelservice
+          llm-d.ai/model: qwen-lws-llm-d-modelservice
           llm-d.ai/role: prefill
       spec:
       
-        serviceAccountName: qwen-llm-d-modelservice-sa
+        serviceAccountName: qwen-lws-llm-d-modelservice-sa
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -643,62 +714,63 @@ spec:
               - IPC_LOCK
               - SYS_RAWIO
           imagePullPolicy: Always
+          
           command:
-          - /bin/sh
-          - -c
+            - /bin/sh
+            - -c
           args:
-          - |
-            #################
-            # Interactive section
-            #################
-            # export VENV_PATH="/code/venv"
-            # source /init-scripts/common.sh
-            # /init-scripts/dotfiles.sh
-            # sleep infinity
-            #################
-            #
-            #################
-            # Install vLLM
-            #################
-            VLLM_USE_PRECOMPILED=1 /init-scripts/vllm.sh
-            #################
-            # RUN vLLM
-            #################
-            START_RANK=$(( ${LWS_WORKER_INDEX:-0} * DP_SIZE_LOCAL ))
-            if [ "${LWS_WORKER_INDEX:-0}" -eq 0 ]; then
+            - |
               #################
-              # Leader-only launch
+              # Interactive section
               #################
-              exec /app/venv/bin/vllm serve \
-                Qwen/Qwen3-30B-A3B-FP8 \
-                --port 8080 \
-                --disable-log-requests \
-                --enable-expert-parallel \
-                --tensor-parallel-size $TP_SIZE \
-                --data-parallel-size $DP_SIZE \
-                --data-parallel-size-local $DP_SIZE_LOCAL \
-                --data-parallel-address $(LWS_LEADER_ADDRESS) \
-                --data-parallel-rpc-port 5555 \
-                --data-parallel-start-rank $START_RANK \
-                --trust-remote-code
-            else
+              # export VENV_PATH="/code/venv"
+              # source /init-scripts/common.sh
+              # /init-scripts/dotfiles.sh
+              # sleep infinity
               #################
-              # Worker-only launch
+              #
               #################
-              exec /app/venv/bin/vllm serve \
-                Qwen/Qwen3-30B-A3B-FP8 \
-                --port 8080 \
-                --disable-log-requests \
-                --enable-expert-parallel \
-                --tensor-parallel-size $TP_SIZE \
-                --data-parallel-size $DP_SIZE \
-                --data-parallel-size-local $DP_SIZE_LOCAL \
-                --data-parallel-address $(LWS_LEADER_ADDRESS) \
-                --data-parallel-rpc-port 5555 \
-                --data-parallel-start-rank $START_RANK \
-                --trust-remote-code \
-                --headless
-            fi
+              # Install vLLM
+              #################
+              VLLM_USE_PRECOMPILED=1 /init-scripts/vllm.sh
+              #################
+              # RUN vLLM
+              #################
+              START_RANK=$(( ${LWS_WORKER_INDEX:-0} * DP_SIZE_LOCAL ))
+              if [ "${LWS_WORKER_INDEX:-0}" -eq 0 ]; then
+                #################
+                # Leader-only launch
+                #################
+                exec /app/venv/bin/vllm serve \
+                  Qwen/Qwen3-30B-A3B-FP8 \
+                  --port 8080 \
+                  --disable-log-requests \
+                  --enable-expert-parallel \
+                  --tensor-parallel-size $TP_SIZE \
+                  --data-parallel-size $DP_SIZE \
+                  --data-parallel-size-local $DP_SIZE_LOCAL \
+                  --data-parallel-address $(LWS_LEADER_ADDRESS) \
+                  --data-parallel-rpc-port 5555 \
+                  --data-parallel-start-rank $START_RANK \
+                  --trust-remote-code
+              else
+                #################
+                # Worker-only launch
+                #################
+                exec /app/venv/bin/vllm serve \
+                  Qwen/Qwen3-30B-A3B-FP8 \
+                  --port 8080 \
+                  --disable-log-requests \
+                  --enable-expert-parallel \
+                  --tensor-parallel-size $TP_SIZE \
+                  --data-parallel-size $DP_SIZE \
+                  --data-parallel-size-local $DP_SIZE_LOCAL \
+                  --data-parallel-address $(LWS_LEADER_ADDRESS) \
+                  --data-parallel-rpc-port 5555 \
+                  --data-parallel-start-rank $START_RANK \
+                  --trust-remote-code \
+                  --headless
+              fi
           env:
           - name: VLLM_TORCH_PROFILER_DIR
             value: /code/traces

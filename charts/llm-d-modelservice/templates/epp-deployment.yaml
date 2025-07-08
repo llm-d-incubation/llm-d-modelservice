@@ -1,3 +1,4 @@
+{{- if .Values.endpointPicker -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -106,3 +107,4 @@ spec:
         {{- end }}
       serviceAccount: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
       serviceAccountName: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
+{{- end }}

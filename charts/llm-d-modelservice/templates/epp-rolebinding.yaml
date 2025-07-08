@@ -1,0 +1,17 @@
+{{- if .Values.endpointPicker -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "llm-d-modelservice.fullname" . }}-epp-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  {{- if .Values.endpointPicker.permissions }}
+  name: {{ .Values.endpointPicker.permissions }}
+  {{- else }}
+  name: {{ include "llm-d-modelservice.fullname" . }}-epp-role
+  {{- end }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
+{{- end }}

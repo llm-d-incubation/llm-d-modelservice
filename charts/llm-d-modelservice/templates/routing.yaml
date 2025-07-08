@@ -1,5 +1,5 @@
 {{- /* Routing templates: InferencePool and HttpRoute */}}
-{{- if .Values.inferencePool }}
+{{- if and .Values.inferencePool .Values.endpointPicker }}
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
@@ -19,7 +19,7 @@ spec:
   targetPortNumber: {{ .Values.routing.servicePort }}
 {{- end }}
 ---
-{{- if .Values.httpRoute }}
+{{- if and .Values.httpRoute .Values.inferencePool .Values.endpointPicker }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
