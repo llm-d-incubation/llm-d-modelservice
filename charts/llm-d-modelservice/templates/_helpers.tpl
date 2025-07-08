@@ -305,11 +305,35 @@ context is a dict with helm root context plus:
   {{- end }}
 {{- end }} {{- /* define "llm-d-modelservice.container" */}}
 
+{{- define "llm-d-modelservice.argsByProtocol" -}}
+{{- $parsedArtifacts := regexSplit "://" .Values.modelArtifacts.uri -1 -}}
+{{- $protocol := first $parsedArtifacts -}}
+{{- $other := last $parsedArtifacts -}}
+{{- if eq $protocol "hf" -}}
+{{- /* $other is the the model */}}
+  {{- if .modelArg }}
+  - --model
+  {{- end }}
+  - {{ $other | quote }}
+{{- else if eq $protocol "pvc" }}
+{{- /* $other is the PVC claim and the path to the model */}}
+{{- $claimpath := regexSplit "/" $other 2 -}}
+{{- $path := last $claimpath -}}
+  {{- if .modelArg }}
+  - --model
+  {{- end }}
+  - /{{ $path }}
+{{- else if eq $protocol "oci" }}
+{{- /* TBD */}}
+{{- fail "arguments for oci:// not implemented" }}
+{{- end }}
+{{- end }} {{- /* define "llm-d-modelservice.vllmServeArgs" */}}
+
 {{- define "llm-d-modelservice.vllmServeModelCommand" -}}
 {{- /* override command and set model and --port arguments */}}
 command: ["vllm", "serve"]
 args:
-  - {{ .Values.routing.modelName | quote }}
+{{- (include "llm-d-modelservice.argsByProtocol" .) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
 {{- with .container.args }}
@@ -320,8 +344,7 @@ args:
 {{- define "llm-d-modelservice.imageDefaultModelCommand" -}}
 {{- /* no command needed, set --model and --port arguments */}}
 args:
-  - --model
-  - {{ .Values.routing.modelName | quote }}
+{{- (include "llm-d-modelservice.argsByProtocol" (merge . (dict "modelArg" true))) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
 {{- with .container.args }}
