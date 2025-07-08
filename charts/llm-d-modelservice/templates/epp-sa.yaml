@@ -1,4 +1,4 @@
-{{- if .Values.endpointPicker -}}
+{{- if .Values.endpointPicker.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:

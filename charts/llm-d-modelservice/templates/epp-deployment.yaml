@@ -1,4 +1,4 @@
-{{- if .Values.endpointPicker -}}
+{{- if .Values.endpointPicker.create }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
