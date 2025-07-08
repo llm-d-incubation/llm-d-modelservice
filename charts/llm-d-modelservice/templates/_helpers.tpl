@@ -258,19 +258,8 @@ context is a dict with helm root context plus:
   {{- with .container.imagePullPolicy }}
   imagePullPolicy: {{ . }}
   {{- end }}
-  {{- with .container.command }}
-  command:
-    {{- toYaml . | nindent 2 }}
-  {{- end }}
-  args:
-  {{- if not (default false .Values.scriptedStart) }}
-  - {{ .Values.routing.modelName | quote }}
-  - --port
-  - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
-  {{- end }}
-  {{- with .container.args }}
-    {{- toYaml . | nindent 2 }}
-  {{- end }}
+  {{- /* handle command and args */}}
+  {{- include "llm-d-modelservice.command" . | nindent 2 }}
   {{- /* insert user's env for this container */}}
   {{- if or .container.env .container.mountModelVolume }}
   env:
@@ -278,23 +267,10 @@ context is a dict with helm root context plus:
   {{- with .container.env }}
     {{- toYaml . | nindent 2 }}
   {{- end }}
-  - name: DP_SIZE
-    value: {{ include "llm-d-modelservice.dataParallelism" .parallelism | quote }}
-  - name: TP_SIZE
-    value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
-  - name: DP_SIZE_LOCAL
-    value: {{ include "llm-d-modelservice.dataLocalParallelism" .parallelism | quote }}
+  {{- (include "llm-d-modelservice.parallelismEnv" .) | nindent 2 }}
   {{- /* insert envs based on what modelArtifact prefix */}}
   {{- if .container.mountModelVolume }}
-  - name: HF_HOME
-    value: /model-cache
-  {{- with .Values.modelArtifacts.authSecretName }}
-  - name: HF_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: {{ . }}
-        key: HF_TOKEN
-  {{- end }}
+  {{- (include "llm-d-modelservice.hfEnv" .) | nindent 2 }}
   {{- end }}
   {{- with .container.livenessProbe }}
   livenessProbe:
@@ -328,3 +304,84 @@ context is a dict with helm root context plus:
   tty: {{ . }}
   {{- end }}
 {{- end }} {{- /* define "llm-d-modelservice.container" */}}
+
+{{- define "llm-d-modelservice.vllmServeModelCommand" -}}
+{{- /* override command and set model and --port arguments */}}
+command: ["vllm", "serve"]
+args:
+  - {{ .Values.routing.modelName | quote }}
+  - --port
+  - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+{{- with .container.args }}
+  {{ toYaml . | nindent 2 }}
+{{- end }}
+{{- end }} {{- /* define "llm-d-modelservice.vllmServeModelCommand" */}}
+
+{{- define "llm-d-modelservice.imageDefaultModelCommand" -}}
+{{- /* no command needed, set --model and --port arguments */}}
+args:
+  - --model
+  - {{ .Values.routing.modelName | quote }}
+  - --port
+  - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+{{- with .container.args }}
+  {{ toYaml . | nindent 2 }}
+{{- end }}
+{{- end }} {{- /* define "llm-d-modelservice.imageDefaultModelCommand" */}}
+
+{{- define "llm-d-modelservice.customModelCommand" -}}
+{{- /* use provided command and args (fail if no command) */}}
+{{- if not .container.command }}
+{{- fail "When .container.modelCommand not set or `custom`, a `command` is required." }}
+{{- else }}
+{{- with .container.command }}
+command:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with .container.args }}
+args:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end }}
+{{- end }} {{- /* define "llm-d-modelservice.modelCommandCustom" */}}
+
+{{/*
+Container elements of deployment/lws spec template
+context is a dict with helm root context plus:
+   key - "container"; value - container spec
+   key - "roll"; value - either "decode" or "prefill"
+   key - "parallelism"; value - $.Values.decode.parallelism
+*/}}
+{{- define "llm-d-modelservice.command" -}}
+{{- $modelCommand := default "custom" .container.modelCommand -}}
+{{- if eq $modelCommand "vllmServe" }}
+{{- include "llm-d-modelservice.vllmServeModelCommand" . }}
+{{- else if eq $modelCommand "imageDefault" }}
+{{- include "llm-d-modelservice.imageDefaultModelCommand" . }}
+{{- else if eq $modelCommand "custom" }}
+{{- include "llm-d-modelservice.customModelCommand" . }}
+{{- else }}
+{{- fail ".container.modelCommand is not as expected. Valid values are `vllmServe`, `imageDefault` and `custom`." }}
+{{- end }}
+{{- end }} {{- /* define "llm-d-modelservice.command" */}}
+
+{{- define "llm-d-modelservice.hfEnv" -}}
+- name: HF_HOME
+  value: /model-cache
+{{- with .Values.modelArtifacts.authSecretName }}
+- name: HF_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: {{ . }}
+      key: HF_TOKEN
+{{- end }}
+{{- end }} {{- /* define "llm-d-modelservice.hfEnv" */}}
+
+{{- define "llm-d-modelservice.parallelismEnv" -}}
+- name: DP_SIZE
+  value: {{ include "llm-d-modelservice.dataParallelism" .parallelism | quote }}
+- name: TP_SIZE
+  value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
+- name: DP_SIZE_LOCAL
+  value: {{ include "llm-d-modelservice.dataLocalParallelism" .parallelism | quote }}
+{{- end }} {{- /* define "llm-d-modelservice.pvcEnv" */}}

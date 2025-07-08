@@ -26,9 +26,7 @@ decode:
   containers:
   - name: "vllm"
     image: "ghcr.io/llm-d/llm-d:0.0.8"
-    command:
-      - vllm
-      - serve
+    modelCommand: vllmServe
     args:
       - "--enforce-eager"
       - "--kv-transfer-config"
@@ -38,8 +36,6 @@ decode:
         value: "0"
       - name: UCX_TLS
         value: "cuda_ipc,cuda_copy,tcp"
-      - name: HF_HOME
-        value: /model-cache
       - name: VLLM_NIXL_SIDE_CHANNEL_HOST
         valueFrom:
           fieldRef:
@@ -68,9 +64,7 @@ prefill:
   containers:
   - name: "vllm"
     image: "ghcr.io/llm-d/llm-d:0.0.8"
-    command:
-      - vllm
-      - serve
+    modelCommand: vllmServe
     args:
       - "--enforce-eager"
       - "--kv-transfer-config"

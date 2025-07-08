@@ -66,6 +66,7 @@ decode:
       workingDir: /code
       stdin: true
       tty: true
+      modelCommand: custom
       command: ["/bin/sh","-c"]
       args:
         - |
@@ -257,6 +258,7 @@ prefill:
       workingDir: /code
       stdin: true
       tty: true
+      modelCommand: custom
       command: ["/bin/sh","-c"]
       args:
         - |
