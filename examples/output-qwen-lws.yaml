@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: qwen-lws-llm-d-modelservice-epp-sa
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,7 +15,7 @@ kind: ServiceAccount
 metadata:
   name: qwen-lws-llm-d-modelservice-sa
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -29,6 +29,7 @@ rules:
   - inference.networking.x-k8s.io
   resources:
   - inferencemodels
+  - inferencepools
   verbs:
   - get
   - watch
@@ -37,14 +38,6 @@ rules:
   - ""
   resources:
   - pods
-  verbs:
-  - get
-  - watch
-  - list
-- apiGroups:
-  - inference.networking.x-k8s.io
-  resources:
-  - inferencepools
   verbs:
   - get
   - watch
@@ -89,7 +82,7 @@ kind: Service
 metadata:
   name: qwen-lws-llm-d-modelservice-epp-service
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -109,7 +102,7 @@ metadata:
   name: qwen-lws-llm-d-modelservice-epp
   labels:
     llm-d.ai/epp: qwen-lws-llm-d-modelservice-epp
-  namespace: llmd-kalantar
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -128,7 +121,7 @@ spec:
         - --poolName
         - qwen-lws-llm-d-modelservice-inference-pool
         - --poolNamespace
-        - llmd-kalantar
+        - default
         - -v
         - "5"
         - --zap-encoder
@@ -137,7 +130,6 @@ spec:
         - "9002"
         - --grpcHealthPort
         - "9003"
-        # using defaults from https://github.com/llm-d/llm-d-deployer/blob/main/charts/llm-d/values.yaml#L563-L603
         env:
         - name: ENABLE_KVCACHE_AWARE_SCORER
           value: "false"
@@ -208,19 +200,21 @@ spec:
       serviceAccount: qwen-lws-llm-d-modelservice-epp-sa
       serviceAccountName: qwen-lws-llm-d-modelservice-epp-sa
 ---
-# Source: llm-d-modelservice/templates/routing.yaml
+# Source: llm-d-modelservice/templates/httproute.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: qwen-lws-llm-d-modelservice-http-route
-  namespace: llmd-kalantar
+  namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
   parentRefs:
-  - name: inference-gateway
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: inference-gateway
   rules:
   - backendRefs:
     - group: inference.networking.x-k8s.io
@@ -237,12 +231,12 @@ spec:
         type: Exact
         value: Qwen/Qwen3-30B-A3B-FP8
 ---
-# Source: llm-d-modelservice/templates/routing.yaml
+# Source: llm-d-modelservice/templates/inferencepool.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
   name: qwen-lws-llm-d-modelservice-inference-pool
-  namespace: llmd-kalantar
+  namespace: default
 spec:
   extensionRef:
     failureMode: FailClose
@@ -261,7 +255,7 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
@@ -658,7 +652,7 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"

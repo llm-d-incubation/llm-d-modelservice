@@ -1,5 +1,5 @@
 
-{{- if .Values.routing.httpService.create }}
+{{- if .Values.routing.httpRoute.create }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -13,18 +13,24 @@ spec:
   {{- . | toYaml | nindent 2}}
   {{- end }}
   rules:
+  {{- if .Values.routing.httpRoute.backendRefs }}
+  {{- with .Values.routing.httpRoute.backendRefs }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- else }}
   - backendRefs:
     - group: inference.networking.x-k8s.io
       kind: InferencePool
-      {{- if .Values.routing.httpService.inferencePool }}
-      name: {{ .Values.routing.httpService.inferencePool }}
+      {{- if .Values.routing.httpRoute.inferencePool }}
+      name: {{ .Values.routing.httpRoute.inferencePool }}
       {{- else }}
       name: {{ include "llm-d-modelservice.fullname" . }}-inference-pool
       {{- end }}
       port: {{ .Values.routing.servicePort  }}
       weight: 1
-    {{- if .Values.routing.httpService.matches }}
-    {{- with .Values.routing.httpService.matches }}
+    {{- if .Values.routing.httpRoute.matches }}
+    {{- with .Values.routing.httpRoute.matches }}
+    matches:
     {{- toYaml . | nindent 4 }}
     {{- end }}
     {{- else }}
@@ -37,4 +43,5 @@ spec:
         type: Exact
         value: {{ .Values.routing.modelName }}
     {{- end }}
+  {{- end }}
 {{- end }}

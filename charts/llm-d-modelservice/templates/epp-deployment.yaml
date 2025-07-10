@@ -7,7 +7,7 @@ metadata:
     llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: {{ default 1 | .Values.routing.epp.replicas }}
+  replicas: {{ default 1 .Values.routing.epp.replicas }}
   selector:
     matchLabels:
       llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
@@ -33,46 +33,10 @@ spec:
         - "9002"
         - --grpcHealthPort
         - "9003"
-        # using defaults from https://github.com/llm-d/llm-d-deployer/blob/main/charts/llm-d/values.yaml#L563-L603
+        {{- with .Values.routing.epp.env }}
         env:
-        - name: ENABLE_KVCACHE_AWARE_SCORER
-          value: "false"
-        - name: ENABLE_LOAD_AWARE_SCORER
-          value: "true"
-        - name: ENABLE_PREFIX_AWARE_SCORER
-          value: "true"
-        - name: ENABLE_SESSION_AWARE_SCORER
-          value: "false"
-        - name: KVCACHE_AWARE_SCORER_WEIGHT
-          value: "1"
-        - name: KVCACHE_INDEXER_REDIS_ADDR
-        - name: LOAD_AWARE_SCORER_WEIGHT
-          value: "1"
-        - name: PD_ENABLED
-          value: "false"
-        - name: PD_PROMPT_LEN_THRESHOLD
-          value: "10"
-        - name: PREFILL_ENABLE_KVCACHE_AWARE_SCORER
-          value: "false"
-        - name: PREFILL_ENABLE_LOAD_AWARE_SCORER
-          value: "false"
-        - name: PREFILL_ENABLE_PREFIX_AWARE_SCORER
-          value: "false"
-        - name: PREFILL_ENABLE_SESSION_AWARE_SCORER
-          value: "false"
-        - name: PREFILL_KVCACHE_AWARE_SCORER_WEIGHT
-          value: "1"
-        - name: PREFILL_KVCACHE_INDEXER_REDIS_ADDR
-        - name: PREFILL_LOAD_AWARE_SCORER_WEIGHT
-          value: "1"
-        - name: PREFILL_PREFIX_AWARE_SCORER_WEIGHT
-          value: "1"
-        - name: PREFILL_SESSION_AWARE_SCORER_WEIGHT
-          value: "1"
-        - name: PREFIX_AWARE_SCORER_WEIGHT
-          value: "2"
-        - name: SESSION_AWARE_SCORER_WEIGHT
-          value: "1"
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         ports:
         - containerPort: 9002
           name: grpc

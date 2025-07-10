@@ -6,12 +6,12 @@ metadata:
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
 spec:
-  type: {{ default ClusterIP .Values.routing.epp.service.type }}
+  type: {{ default "ClusterIP" .Values.routing.epp.service.type }}
   ports:
     - port: {{ .Values.routing.epp.service.port }}
       targetPort: {{ .Values.routing.epp.service.targetPort }}
       protocol: TCP
-      appProtocol: {{ default http2 .Values.routing.epp.service.appProtocol }}
+      appProtocol: {{ default "http2" .Values.routing.epp.service.appProtocol }}
   selector:
     llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
 {{- end }}

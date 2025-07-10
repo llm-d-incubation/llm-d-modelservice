@@ -1,4 +1,4 @@
-{{- if .Values.routing.inferencepool.create }}
+{{- if .Values.routing.inferencePool.create }}
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
@@ -9,8 +9,8 @@ spec:
     failureMode: FailClose
     group: ""
     kind: Service
-    {{- if .Values.routing.inferencepool.eppService }}
-    name: {{ .Values.routing.inferencepool.eppService }}
+    {{- if .Values.routing.inferencePool.extensionRef }}
+    name: {{ .Values.routing.inferencePool.extensionRef }}
     {{- else }}
     name: {{ include "llm-d-modelservice.fullname" . }}-epp-service
     {{- end }}

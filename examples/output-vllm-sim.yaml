@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: vllm-sim-llm-d-modelservice-epp-sa
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,7 +15,7 @@ kind: ServiceAccount
 metadata:
   name: vllm-sim-llm-d-modelservice-sa
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -29,6 +29,7 @@ rules:
   - inference.networking.x-k8s.io
   resources:
   - inferencemodels
+  - inferencepools
   verbs:
   - get
   - watch
@@ -37,14 +38,6 @@ rules:
   - ""
   resources:
   - pods
-  verbs:
-  - get
-  - watch
-  - list
-- apiGroups:
-  - inference.networking.x-k8s.io
-  resources:
-  - inferencepools
   verbs:
   - get
   - watch
@@ -89,7 +82,7 @@ kind: Service
 metadata:
   name: vllm-sim-llm-d-modelservice-epp-service
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -108,7 +101,7 @@ kind: Deployment
 metadata:
   name: vllm-sim-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -210,7 +203,6 @@ spec:
         - "9002"
         - --grpcHealthPort
         - "9003"
-        # using defaults from https://github.com/llm-d/llm-d-deployer/blob/main/charts/llm-d/values.yaml#L563-L603
         env:
         - name: ENABLE_KVCACHE_AWARE_SCORER
           value: "false"
@@ -269,7 +261,7 @@ kind: Deployment
 metadata:
   name: vllm-sim-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -320,14 +312,14 @@ spec:
           - name: model-storage
             mountPath: /model-cache
 ---
-# Source: llm-d-modelservice/templates/routing.yaml
+# Source: llm-d-modelservice/templates/httproute.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: vllm-sim-llm-d-modelservice-http-route
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.6
+    helm.sh/chart: llm-d-modelservice-0.0.7
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -351,7 +343,7 @@ spec:
         type: Exact
         value: random
 ---
-# Source: llm-d-modelservice/templates/routing.yaml
+# Source: llm-d-modelservice/templates/inferencepool.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
