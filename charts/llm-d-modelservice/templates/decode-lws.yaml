@@ -1,4 +1,4 @@
-{{- if and .Values.decode .Values.multinode }}
+{{- if and .Values.decode.create .Values.multinode }}
 apiVersion: leaderworkerset.x-k8s.io/v1
 kind: LeaderWorkerSet
 metadata:

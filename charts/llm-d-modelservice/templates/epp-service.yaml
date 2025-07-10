@@ -1,4 +1,4 @@
-{{- if .Values.endpointPicker -}}
+{{- if .Values.routing.epp.create -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -6,12 +6,12 @@ metadata:
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.endpointPicker.service.type }}
+  type: {{ default ClusterIP .Values.routing.epp.service.type }}
   ports:
-    - port: {{ .Values.endpointPicker.service.port }}
-      targetPort: {{ .Values.endpointPicker.service.targetPort }}
+    - port: {{ .Values.routing.epp.service.port }}
+      targetPort: {{ .Values.routing.epp.service.targetPort }}
       protocol: TCP
-      appProtocol: {{ .Values.endpointPicker.service.appProtocol }}
+      appProtocol: {{ default http2 .Values.routing.epp.service.appProtocol }}
   selector:
     llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
 {{- end }}

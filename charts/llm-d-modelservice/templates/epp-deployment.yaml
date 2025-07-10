@@ -1,4 +1,4 @@
-{{- if .Values.endpointPicker -}}
+{{- if .Values.routing.epp.create -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,7 +7,7 @@ metadata:
     llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ default 1 | .Values.routing.epp.replicas }}
   selector:
     matchLabels:
       llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
@@ -19,14 +19,14 @@ spec:
       containers:
       - name: epp
         imagePullPolicy: Always
-        image: {{ default "ghcr.io/llm-d/llm-d-inference-scheduler:0.0.3" .Values.endpointPicker.image }}
+        image: {{ default "ghcr.io/llm-d/llm-d-inference-scheduler:0.0.3" .Values.routing.epp.image }}
         args:
         - --poolName
         - {{ include "llm-d-modelservice.fullname" . }}-inference-pool
         - --poolNamespace
         - {{ .Release.Namespace }}
         - -v
-        - "{{ default 4 .Values.endpointPicker.debugLevel }}"
+        - "{{ default 4 .Values.routing.epp.debugLevel }}"
         - --zap-encoder
         - json
         - --grpcPort
@@ -83,7 +83,7 @@ spec:
         - containerPort: 9090
           name: metrics
           protocol: TCP
-        {{- if (not .Values.endpointPicker.disableReadinessProbe) }}
+        {{- if (not .Values.routing.epp.disableReadinessProbe) }}
         readinessProbe:
           grpc:
             port: 9003
@@ -94,7 +94,7 @@ spec:
           successThreshold: 1
           failureThreshold: 3
         {{- end }}
-        {{- if (not .Values.endpointPicker.disableLivenessProbe) }}
+        {{- if (not .Values.routing.epp.disableLivenessProbe) }}
         livenessProbe:
           grpc:
             port: 9003

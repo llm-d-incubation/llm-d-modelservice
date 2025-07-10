@@ -1,4 +1,4 @@
-{{- if .Values.endpointPicker -}}
+{{- if .Values.routing.epp.create -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:

@@ -1,4 +1,4 @@
-{{- if and .Values.prefill (not .Values.multinode) }}
+{{- if and .Values.prefill.create (not .Values.multinode) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
