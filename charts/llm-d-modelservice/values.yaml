@@ -69,7 +69,7 @@ routing:
     disableReadinessProbe: false
     disableLivenessProbe: false
     # To override the name of the inferencepool
-    # inferencePool: 
+    # inferencePool:
     # -- Default environment variables for endpoint picker, use `defaultEnvVarsOverride` to override default behavior by defining the same variable again.
     # Ref: https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/architecture.md#scorers--configuration
     env:
