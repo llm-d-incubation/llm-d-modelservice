@@ -43,7 +43,7 @@ routing:
     create: true
     # to use a different epp service than the one created when routing.epp.create: true
     # extensionRef:
-  
+
   # Configuration of HTTPRoute (mapping of requests through gateway to InferencePool)
   # cf. https://gateway-api.sigs.k8s.io/api-types/httproute/
   httpRoute:
@@ -111,7 +111,7 @@ routing:
 # Decode pod configuration
 decode:
   create: true
-  
+
   replicas: 1
   containers:
   - name: "vllm"
