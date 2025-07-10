@@ -98,7 +98,7 @@ initContainers:
       - --vllm-port={{ default 8200 .proxy.targetPort }}
       - --connector=nixlv2
       - -v={{ default 5 .proxy.debugLevel }}
-    image: {{ default "ghcr.io/llm-d/llm-d-routing-sidecar:0.0.6" .proxy.image }}
+    image: {{ required "routing.proxy.image must be specified" .proxy.image }}
     imagePullPolicy: Always
     ports:
       - containerPort: {{ default 8080 .servicePort }}

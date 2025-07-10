@@ -19,7 +19,7 @@ spec:
       containers:
       - name: epp
         imagePullPolicy: Always
-        image: {{ default "ghcr.io/llm-d/llm-d-inference-scheduler:0.0.3" .Values.routing.epp.image }}
+        image: {{ required "routing.epp.image must be specified" .Values.routing.epp.image }}
         args:
         - --poolName
         - {{ include "llm-d-modelservice.fullname" . }}-inference-pool
