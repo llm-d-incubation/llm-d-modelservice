@@ -1,4 +1,4 @@
-{{- if .Values.endpointPicker -}}
+{{- if .Values.endpointPicker.create }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,4 +14,4 @@ spec:
       appProtocol: {{ .Values.endpointPicker.service.appProtocol }}
   selector:
     llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
-{{- end }}
+{{- end}}

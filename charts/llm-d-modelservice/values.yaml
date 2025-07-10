@@ -2,6 +2,7 @@
 
 # This values.yaml file creates the resources for random
 
+<<<<<<< HEAD
 # When true, LeaderWorkerSet is used instead of Deployment
 multinode: false
 # When true, an InferencePool is created.
@@ -12,6 +13,16 @@ inferencePool: true
 # When false, an HTTPRoute is not created.
 # Note that when inferencePool is false, or there is is no endpointPicker, the HTTPRoute is not created (overriding a true here).
 httpRoute: true
+=======
+multinode: 
+  create: false
+
+httpRoute: 
+  # When true, an HTTPRoute is created.
+  # When false, an HTTPRoute is not created.
+  # Note that when inferencePool is false, or there is is no endpointPicker, the HTTPRoute is not created (overriding a true here).
+  create: true
+>>>>>>> e5681de (enable upstream GAIE charts)
 
 # To control creation of the endpoint picker (inference scheduler), see endpointPicker below
 
@@ -27,12 +38,14 @@ routing:
     kind: Gateway
     name: llm-d-inference-gateway
 
+
 modelArtifacts:
   uri: "hf://random/modelid"
   size: 5Mi
 
 # describe decode pods
 decode:
+  create: true
   replicas: 1
   containers:
   - name: "vllm"
@@ -43,6 +56,7 @@ decode:
         protocol: TCP
     mountModelVolume: true
 prefill:
+  create: true
   replicas: 1
   containers:
   - name: "vllm"
@@ -53,6 +67,7 @@ prefill:
         protocol: TCP
     mountModelVolume: true
 
+<<<<<<< HEAD
 # When endpointPicker is present, create the endpoint picker (inference scheduler) objects:
 # ServiceAccount, Role, Rolebinding, Deployment, Service
 # When endpointPicker is not present, these objects are not created.
@@ -71,3 +86,25 @@ prefill:
 #   replicas: 1
 #   # To use a different role from the default, provide the name of the role
 #   # permissions: pod-read
+=======
+endpointPicker:
+  create: true
+  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 9002
+    targetPort: 9002
+    appProtocol: http2
+  debugLevel: 6
+  disableReadinessProbe: true
+  disableLivenessProbe: true
+  replicas: 1
+  role:
+    name: default-epp-role
+    create: true
+
+inferencePool:
+  create: true
+>>>>>>> e5681de (enable upstream GAIE charts)
