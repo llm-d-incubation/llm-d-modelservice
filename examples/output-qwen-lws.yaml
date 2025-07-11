@@ -268,7 +268,7 @@ spec:
           llm-d.ai/model: qwen-lws-llm-d-modelservice
           llm-d.ai/role: decode
       spec:
-        
+
         initContainers:
           - name: routing-proxy
             args:
@@ -321,7 +321,7 @@ spec:
               - IPC_LOCK
               - SYS_RAWIO
           imagePullPolicy: Always
-          
+
           command:
             - /bin/sh
             - -c
@@ -434,7 +434,7 @@ spec:
               secretKeyRef:
                 name: hf-secret
                 key: HF_TOKEN
-          
+
           resources:
             limits:
               ephemeral-storage: 64Gi
@@ -503,7 +503,7 @@ spec:
               - IPC_LOCK
               - SYS_RAWIO
           imagePullPolicy: Always
-          
+
           command:
             - /bin/sh
             - -c
@@ -616,7 +616,7 @@ spec:
               secretKeyRef:
                 name: hf-secret
                 key: HF_TOKEN
-          
+
           resources:
             limits:
               ephemeral-storage: 64Gi
@@ -704,7 +704,7 @@ spec:
               - IPC_LOCK
               - SYS_RAWIO
           imagePullPolicy: Always
-          
+
           command:
             - /bin/sh
             - -c
@@ -817,7 +817,7 @@ spec:
               secretKeyRef:
                 name: hf-secret
                 key: HF_TOKEN
-          
+
           resources:
             limits:
               ephemeral-storage: 64Gi

@@ -23,7 +23,7 @@ helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-models
 helm repo update
 ```
 
-ModelService operates under the assumption that `llm-d-deployer` has been installed in a Kuberentes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d-deployer` Quickstart](https://github.com/llm-d/llm-d-deployer/blob/main/quickstart/README.md) for more information. This helm chart requires external CRDs to be installed for usage.
+ModelService operates under the assumption that `llm-d-deployer` has been installed in a Kubernetes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d-deployer` Quickstart](https://github.com/llm-d/llm-d-deployer/blob/main/quickstart/README.md) for more information. This helm chart requires external CRDs to be installed for usage.
 
 At a minimal, the following should be installed:
 1. Kubernetes Gateway API CRDs

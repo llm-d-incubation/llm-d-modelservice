@@ -29,7 +29,7 @@ routing:
     disableReadinessProbe: true
     disableLivenessProbe: true
 
-# Decode pod configuation
+# Decode pod configuration
 decode:
   replicas: 1
   containers:
@@ -42,7 +42,7 @@ decode:
         protocol: TCP
     mountModelVolume: true
 
-# Prefill pod configuation
+# Prefill pod configuration
 prefill:
   replicas: 1
   containers:

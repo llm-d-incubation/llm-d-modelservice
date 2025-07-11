@@ -1,0 +1,70 @@
+repos:
+  - repo: https://github.com/norwoodj/helm-docs
+    rev: v1.2.0
+    hooks:
+      - id: helm-docs
+        files: (README\.md(\.gotmpl)?|(Chart|requirements|values)\.ya?ml)$
+        args:
+          # Make the tool search for charts only under the ``charts` directory
+          - --chart-search-root=charts
+          # The `./` makes it relative to the chart-search-root set above
+          - --template-files=./_templates.gotmpl
+          # A base filename makes it relative to each chart directory found
+          - --template-files=README.md.gotmpl
+  - repo: https://github.com/dadav/helm-schema
+    rev: "0.18.1"
+    hooks:
+      - id: helm-schema
+        args:
+          - --append-newline
+          - --chart-search-root=charts
+          - --add-schema-reference
+          - --helm-docs-compatibility-mode
+          - --skip-auto-generation=required
+          - --no-dependencies
+          - -o=values.schema.tmpl.json
+  - repo: https://github.com/woodruffw/zizmor-pre-commit
+    rev: v1.6.0
+    hooks:
+      - id: zizmor
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-json
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        exclude: (^.vale/)|(values.schema.json$)
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+        exclude: (examples/)
+  - repo: https://github.com/errata-ai/vale
+    rev: v3.11.2
+    hooks:
+      - id: vale
+        files: \.(md(\.gotmpl)?|txt|rst)$
+        exclude: charts/llm-d-modelservice/README.md
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.32.0
+    hooks:
+      - id: typos
+        exclude: (^.vale/)|(values.schema.json$)
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.29
+    hooks:
+      - id: helmlint
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.17.2
+    hooks:
+      - id: markdownlint-cli2
+        exclude: (charts/llm-d-modelservice/README.md)|(^.vale/)|(examples/README.md)|(README.md)
+  - repo: local
+    hooks:
+      - id: jsonschema-dereference
+        name: jsonschema-dereference
+        entry: python .pre-commit/jsonschema-dereference.py
+        additional_dependencies: [jsonref]
+        language: python
+        files: values\.(schema(\.tmpl)?\.json|yaml)$
+        types_or: [yaml, json]

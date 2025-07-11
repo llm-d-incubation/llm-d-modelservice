@@ -41,7 +41,7 @@ routing:
     # Inherit all from base chart values.yaml
     # env:
 
-# Decode pod configuation
+# Decode pod configuration
 decode:
   create: true
   replicas: 1
@@ -80,7 +80,7 @@ decode:
         nvidia.com/gpu: "1"
     mountModelVolume: true
 
-# Prefill pod configuation
+# Prefill pod configuration
 prefill:
   create: true
   replicas: 1
