@@ -7,7 +7,7 @@ multinode: true
 modelArtifacts:
   uri: "pvc://tms-hf-cache/model-cache"
   authSecretName: "hf-secret"
-  size: 5Mi 
+  size: 5Mi
 
 routing:
   # This is the model name for the OpenAI request
@@ -17,19 +17,19 @@ routing:
   epp:
     debugLevel: 5
 
-# Decode pod configuation
+# Decode pod configuration
 decode:
   create: true
 
-  autoscaling: 
+  autoscaling:
     enabled: false
   replicas: 1
 
-  parallelism:  
+  parallelism:
     data: 4
     tensor: 1
     dataLocal: 2
-  
+
   acceleratorTypes:
     labelKey: gpu.nvidia.com/model
     labelValues:
@@ -212,15 +212,15 @@ decode:
 
 # Prefill pod configuration
 prefill:
-  autoscaling: 
+  autoscaling:
     enabled: false
   replicas: 1
 
-  parallelism:  
+  parallelism:
     data: 4
     tensor: 1
     dataLocal: 2
-  
+
   acceleratorTypes:
     labelKey: gpu.nvidia.com/model
     labelValues:
@@ -397,4 +397,3 @@ prefill:
         - name: vllm
           mountPath: /code
       mountModelVolume: true
-    

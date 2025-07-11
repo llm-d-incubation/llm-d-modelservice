@@ -219,7 +219,7 @@ Context is .Values.modelArtifacts
 {{- $path := last $parsedArtifacts -}}
 {{- if eq $protocol "hf" -}}
 - name: model-storage
-  emptyDir: 
+  emptyDir:
     sizeLimit: {{ default "0" .size }}
 {{- else if eq $protocol "pvc" }}
 {{- $parsedArtifacts := regexSplit "/" $path -1 -}}
@@ -278,7 +278,7 @@ context is a pdSpec
     {{- toYaml .pdSpec.volumes | nindent 4 }}
   {{- end -}}
   {{ include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 4}}
-{{- end }} 
+{{- end }}
 
 {{/*
 Container elements of deployment/lws spec template

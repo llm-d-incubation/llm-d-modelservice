@@ -1,0 +1,56 @@
+# llm-d-modelservice Helm Chart
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.versionBadge" . }}
+{{ template "chart.typeBadge" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+---
+
+## TL;DR
+
+```console
+helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-modelservice/
+helm repo update
+helm install my-modelservice-release llm-d-modelservice/llm-d-modelservice
+```
+
+## Prerequisites
+
+ModelService operates under the assumption that `llm-d-infra` has been installed in a Kubernetes cluster, which installs the required prerequisites and CRDs. Please check out the [`llm-d-infra` repo](https://github.com/llm-d-incubation/llm-d-infra/) for more information.
+
+At a minimal, the following should be installed:
+1. Kubernetes Gateway API CRDs
+
+    ```
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
+    ```
+
+2. Kubernetes Gateway API Inference Extension CRDs
+
+    ```
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api-inference-extension/releases/download/v0.4.0/manifests.yaml
+
+    ```
+
+
+See [examples](/examples) for how to use this Helm chart.
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+## Contribute
+
+We welcome contributions in the form of a GitHub issue or pull request. Please open a ticket if you see a gap in your use case as we continue to evolve this project.
+
+## Contact
+Get involved or ask questions in the `#sig-model-service` channel in the `llm-d` Slack workspace! Details on how to join the workspace can be found [here](https://github.com/llm-d/llm-d?tab=readme-ov-file#contribute).

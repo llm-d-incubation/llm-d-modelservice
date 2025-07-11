@@ -1,0 +1,820 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "decode": {
+      "additionalProperties": false,
+      "description": "Decode pod configuration",
+      "properties": {
+        "containers": {
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "image": {
+                    "default": "ghcr.io/llm-d/llm-d-inference-sim:0.0.4",
+                    "required": [],
+                    "title": "image",
+                    "type": "string"
+                  },
+                  "modelCommand": {
+                    "default": "imageDefault",
+                    "required": [],
+                    "title": "modelCommand",
+                    "type": "string"
+                  },
+                  "mountModelVolume": {
+                    "default": true,
+                    "required": [],
+                    "title": "mountModelVolume",
+                    "type": "boolean"
+                  },
+                  "name": {
+                    "default": "vllm",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "ports": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "containerPort": {
+                              "default": 5557,
+                              "required": [],
+                              "title": "containerPort",
+                              "type": "integer"
+                            },
+                            "protocol": {
+                              "default": "TCP",
+                              "required": [],
+                              "title": "protocol",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "type": "object"
+                        }
+                      ],
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "ports",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "containers",
+          "type": "array"
+        },
+        "create": {
+          "default": true,
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "decode",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "modelArtifacts": {
+      "additionalProperties": false,
+      "properties": {
+        "size": {
+          "default": "5Mi",
+          "description": "size of volume to create to hold the model",
+          "required": [],
+          "title": "size",
+          "type": "string"
+        },
+        "uri": {
+          "default": "hf://random/modelid",
+          "description": "   hf://model/name - model on Hugging Face   pvc://pvc_name/path/to/model - model on existing persistent storage   oci:// not yet supported",
+          "required": [],
+          "title": "uri"
+        }
+      },
+      "required": [],
+      "title": "modelArtifacts",
+      "type": "object"
+    },
+    "multinode": {
+      "default": false,
+      "description": "When true, a LeaderWorkerSet is used instead of a Deployment",
+      "required": [],
+      "title": "multinode",
+      "type": "boolean"
+    },
+    "prefill": {
+      "additionalProperties": false,
+      "description": "Prefill pod configuration",
+      "properties": {
+        "containers": {
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "image": {
+                    "default": "ghcr.io/llm-d/llm-d-inference-sim:0.0.4",
+                    "required": [],
+                    "title": "image",
+                    "type": "string"
+                  },
+                  "modelCommand": {
+                    "default": "imageDefault",
+                    "required": [],
+                    "title": "modelCommand",
+                    "type": "string"
+                  },
+                  "mountModelVolume": {
+                    "default": true,
+                    "required": [],
+                    "title": "mountModelVolume",
+                    "type": "boolean"
+                  },
+                  "name": {
+                    "default": "vllm",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "ports": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "containerPort": {
+                              "default": 5557,
+                              "required": [],
+                              "title": "containerPort",
+                              "type": "integer"
+                            },
+                            "protocol": {
+                              "default": "TCP",
+                              "required": [],
+                              "title": "protocol",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "type": "object"
+                        }
+                      ],
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "ports",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "containers",
+          "type": "array"
+        },
+        "create": {
+          "default": true,
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "prefill",
+      "type": "object"
+    },
+    "routing": {
+      "additionalProperties": false,
+      "description": " also describes elements for Gateway API Inference Extension configuration",
+      "properties": {
+        "epp": {
+          "additionalProperties": false,
+          "description": " cf. https://github.com/llm-d/llm-d-inference-scheduler",
+          "properties": {
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "debugLevel": {
+              "default": 4,
+              "required": [],
+              "title": "debugLevel",
+              "type": "integer"
+            },
+            "disableLivenessProbe": {
+              "default": false,
+              "required": [],
+              "title": "disableLivenessProbe",
+              "type": "boolean"
+            },
+            "disableReadinessProbe": {
+              "default": false,
+              "required": [],
+              "title": "disableReadinessProbe",
+              "type": "boolean"
+            },
+            "env": {
+              "description": "Default environment variables for endpoint picker, use `defaultEnvVarsOverride` to override default behavior by defining the same variable again. Ref: https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/architecture.md#scorers--configuration",
+              "items": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "ENABLE_KVCACHE_AWARE_SCORER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "false",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "ENABLE_LOAD_AWARE_SCORER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "true",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "ENABLE_PREFIX_AWARE_SCORER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "true",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "ENABLE_SESSION_AWARE_SCORER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "false",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "KVCACHE_AWARE_SCORER_WEIGHT",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "KVCACHE_INDEXER_REDIS_ADDR",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "LOAD_AWARE_SCORER_WEIGHT",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PD_ENABLED",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "false",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PD_PROMPT_LEN_THRESHOLD",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "10",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_ENABLE_KVCACHE_AWARE_SCORER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "false",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_ENABLE_LOAD_AWARE_SCORER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "false",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_ENABLE_PREFIX_AWARE_SCORER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "false",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_ENABLE_SESSION_AWARE_SCORER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "false",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_KVCACHE_AWARE_SCORER_WEIGHT",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_KVCACHE_INDEXER_REDIS_ADDR",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_LOAD_AWARE_SCORER_WEIGHT",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_PREFIX_AWARE_SCORER_WEIGHT",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFILL_SESSION_AWARE_SCORER_WEIGHT",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "PREFIX_AWARE_SCORER_WEIGHT",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "2",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "SESSION_AWARE_SCORER_WEIGHT",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  }
+                ],
+                "required": []
+              },
+              "required": [],
+              "title": "env"
+            },
+            "image": {
+              "default": "ghcr.io/llm-d/llm-d-inference-scheduler:0.0.3",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "replicas": {
+              "default": 1,
+              "required": [],
+              "title": "replicas",
+              "type": "integer"
+            },
+            "service": {
+              "additionalProperties": false,
+              "properties": {
+                "appProtocol": {
+                  "default": "http2",
+                  "required": [],
+                  "title": "appProtocol",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 9002,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                },
+                "targetPort": {
+                  "default": 9002,
+                  "required": [],
+                  "title": "targetPort",
+                  "type": "integer"
+                },
+                "type": {
+                  "default": "ClusterIP",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "service",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "epp"
+        },
+        "httpRoute": {
+          "additionalProperties": false,
+          "description": " cf. https://gateway-api.sigs.k8s.io/api-types/httproute/",
+          "properties": {
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "matches": {
+              "description": " backendRefs: to override matches defined for the single inferece pool created (when `routing.httpRoute.create: true`)` Note that this is ignored if `backendRefs` is set (in which case it must be defined as a child to each backendRef)",
+              "items": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "path": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": {
+                            "default": "PathPrefix",
+                            "required": [],
+                            "title": "type",
+                            "type": "string"
+                          },
+                          "value": {
+                            "default": "/",
+                            "required": [],
+                            "title": "value",
+                            "type": "string"
+                          }
+                        },
+                        "required": [],
+                        "title": "path",
+                        "type": "object"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  }
+                ],
+                "required": []
+              },
+              "required": [],
+              "title": "matches"
+            }
+          },
+          "required": [],
+          "title": "httpRoute"
+        },
+        "inferencePool": {
+          "additionalProperties": false,
+          "description": " cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool",
+          "properties": {
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "inferencePool"
+        },
+        "modelName": {
+          "default": "random/modelId",
+          "description": "This is the model name for OpenAI requests",
+          "required": [],
+          "title": "modelName",
+          "type": "string"
+        },
+        "parentRefs": {
+          "description": " cf. https://gateway-api.sigs.k8s.io/api-types/gateway/",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "group": {
+                    "default": "gateway.networking.k8s.io",
+                    "required": [],
+                    "title": "group",
+                    "type": "string"
+                  },
+                  "kind": {
+                    "default": "Gateway",
+                    "required": [],
+                    "title": "kind",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "inference-gateway",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "parentRefs"
+        },
+        "proxy": {
+          "additionalProperties": false,
+          "description": " cf. https://github.com/llm-d/llm-d-routing-sidecar/",
+          "properties": {
+            "image": {
+              "default": "ghcr.io/llm-d/llm-d-routing-sidecar:0.0.6",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "targetPort": {
+              "default": 8200,
+              "description": "target port on which VLLM should listen",
+              "required": [],
+              "title": "targetPort",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "proxy"
+        },
+        "servicePort": {
+          "default": "8000",
+          "description": " when a sidecar (proxy) is used it will listen on this port and forward to VLLM on proxy.targetPort",
+          "required": [],
+          "title": "servicePort"
+        }
+      },
+      "required": [],
+      "title": "routing"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
