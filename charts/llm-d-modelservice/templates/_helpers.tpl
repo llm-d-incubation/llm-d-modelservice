@@ -7,24 +7,26 @@ Expand the name of the chart.
 
 {{/*
 Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+We truncate at 55 chars because some Kubernetes name fields are limited to 63 (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
+We use 55 because we add up to 8 characters (`-prefill`)
 */}}
 {{- define "llm-d-modelservice.fullname" -}}
 {{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- .Values.fullnameOverride | trunc 55 | trimSuffix "-" }}
 {{- else }}
 {{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- .Release.Name | trunc 55 | trimSuffix "-" }}
 {{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Release.Name $name | trunc 55 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
 {{- end }}
 
 {{/*
 Create chart name and version as used by the chart label.
+Truncated to 63 characrters because Kubernetes label values are limited to this
 */}}
 {{- define "llm-d-modelservice.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
@@ -157,17 +159,54 @@ resources:
     {{- toYaml $requests | nindent 4 }}
 {{- end }}
 
-{{/* P/D service account name */}}
-{{- define "llm-d-modelservice.pdServiceAccountName" -}}
-{{ include "llm-d-modelservice.fullname" . }}-sa
+{{/* EPP name */}}
+{{- define "llm-d-modelservice.eppName" -}}
+{{ include "llm-d-modelservice.fullname" . }}-epp
 {{- end }}
 
-{{/* 
-EPP service account name 
-Context is helm root context
-*/}}
+{{/* prefill name */}}
+{{- define "llm-d-modelservice.prefillName" -}}
+{{ include "llm-d-modelservice.fullname" . }}-prefill
+{{- end }}
+
+{{/* decode name */}}
+{{- define "llm-d-modelservice.decodeName" -}}
+{{ include "llm-d-modelservice.fullname" . }}-decode
+{{- end }}
+
+{{/* P/D service account name */}}
+{{- define "llm-d-modelservice.pdServiceAccountName" -}}
+{{ include "llm-d-modelservice.fullname" . }}
+{{- end }}
+
+{{/* EPP service account name */}}
 {{- define "llm-d-modelservice.eppServiceAccountName" -}}
-{{ include "llm-d-modelservice.fullname" . }}-epp-sa
+{{ include "llm-d-modelservice.eppName" . }}
+{{- end }}
+
+{{/* EPP service name */}}
+{{- define "llm-d-modelservice.eppServiceName" -}}
+{{ include "llm-d-modelservice.eppName" . }}
+{{- end }}
+
+{{/* EPP role name */}}
+{{- define "llm-d-modelservice.eppRoleName" -}}
+{{ include "llm-d-modelservice.eppName" . }}
+{{- end }}
+
+{{/* EPP rolebinding name */}}
+{{- define "llm-d-modelservice.eppRoleBindingName" -}}
+{{ include "llm-d-modelservice.eppName" . }}
+{{- end }}
+
+{{/* default inference pool name */}}
+{{- define "llm-d-modelservice.inferencePoolName" -}}
+{{ include "llm-d-modelservice.fullname" . }}
+{{- end }}
+
+{{/* default http route name */}}
+{{- define "llm-d-modelservice.httpRouteName" -}}
+{{ include "llm-d-modelservice.fullname" . }}
 {{- end }}
 
 {{/*

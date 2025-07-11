@@ -2,7 +2,7 @@
 apiVersion: leaderworkerset.x-k8s.io/v1
 kind: LeaderWorkerSet
 metadata:
-  name: {{ include "llm-d-modelservice.fullname" . }}-decode
+  name: {{ include "llm-d-modelservice.decodeName" . }}
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
     {{- include "llm-d-modelservice.decodelabels" . | nindent 4 }}

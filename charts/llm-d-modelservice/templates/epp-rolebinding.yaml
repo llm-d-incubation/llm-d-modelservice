@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "llm-d-modelservice.fullname" . }}-epp-rolebinding
+  name: {{ include "llm-d-modelservice.eppRoleBindingName" . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

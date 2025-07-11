@@ -25,7 +25,7 @@ spec:
         {{- if .Values.routing.epp.inferencePool }}
         - {{ .Values.routing.epp.inferencePool }}
         {{- else }}
-        - {{ include "llm-d-modelservice.fullname" . }}-inference-pool
+        - {{ include "llm-d-modelservice.inferencePoolName" . }}
         {{- end }}
         - --poolNamespace
         - {{ .Release.Namespace }}

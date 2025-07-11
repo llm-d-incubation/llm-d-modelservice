@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "llm-d-modelservice.fullname" . }}-prefill
+  name: {{ include "llm-d-modelservice.prefillName" . }}
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
 spec:
