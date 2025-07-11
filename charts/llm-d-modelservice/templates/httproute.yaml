@@ -38,10 +38,6 @@ spec:
     - path:
         type: PathPrefix
         value: /
-      headers:
-      - name: x-model-name
-        type: Exact
-        value: {{ .Values.routing.modelName }}
     {{- end }}
   {{- end }}
 {{- end }}

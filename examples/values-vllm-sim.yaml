@@ -13,6 +13,16 @@ routing:
   modelName: random
   servicePort: 8000
 
+  httpRoute:
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+      headers:
+      - name: x-model-name
+        type: Exact
+        value: random
+
   epp:
     create: true
     debugLevel: 6

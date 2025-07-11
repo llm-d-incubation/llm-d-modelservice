@@ -3,9 +3,9 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: facebook-llm-d-modelservice-epp-sa
+  name: facebook-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.7
+    helm.sh/chart: llm-d-modelservice-0.0.8
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -13,9 +13,9 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: facebook-llm-d-modelservice-sa
+  name: facebook-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.7
+    helm.sh/chart: llm-d-modelservice-0.0.8
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -23,7 +23,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: facebook-llm-d-modelservice-epp-role
+  name: facebook-llm-d-modelservice-epp
 rules:
 - apiGroups:
   - inference.networking.x-k8s.io
@@ -67,22 +67,22 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: facebook-llm-d-modelservice-epp-rolebinding
+  name: facebook-llm-d-modelservice-epp
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: facebook-llm-d-modelservice-epp-role
+  name: facebook-llm-d-modelservice-epp
 subjects:
 - kind: ServiceAccount
-  name: facebook-llm-d-modelservice-epp-sa
+  name: facebook-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/epp-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: facebook-llm-d-modelservice-epp-service
+  name: facebook-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.7
+    helm.sh/chart: llm-d-modelservice-0.0.8
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -101,7 +101,7 @@ kind: Deployment
 metadata:
   name: facebook-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.7
+    helm.sh/chart: llm-d-modelservice-0.0.8
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -135,7 +135,7 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
     
-      serviceAccountName: facebook-llm-d-modelservice-sa
+      serviceAccountName: facebook-llm-d-modelservice
       volumes:
         - name: model-storage
           emptyDir: 
@@ -212,7 +212,7 @@ spec:
         image: ghcr.io/llm-d/llm-d-inference-scheduler:0.0.3
         args:
         - --poolName
-        - facebook-llm-d-modelservice-inference-pool
+        - facebook-llm-d-modelservice
         - --poolNamespace
         - e2e-solution
         - -v
@@ -290,8 +290,8 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
-      serviceAccount: facebook-llm-d-modelservice-epp-sa
-      serviceAccountName: facebook-llm-d-modelservice-epp-sa
+      serviceAccount: facebook-llm-d-modelservice-epp
+      serviceAccountName: facebook-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/prefill-deployment.yaml
 apiVersion: apps/v1
@@ -299,7 +299,7 @@ kind: Deployment
 metadata:
   name: facebook-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.7
+    helm.sh/chart: llm-d-modelservice-0.0.8
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -317,7 +317,7 @@ spec:
         llm-d.ai/role: prefill
     spec:
     
-      serviceAccountName: facebook-llm-d-modelservice-sa
+      serviceAccountName: facebook-llm-d-modelservice
       volumes:
         - name: model-storage
           emptyDir: 
@@ -369,10 +369,10 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: facebook-llm-d-modelservice-http-route
+  name: facebook-llm-d-modelservice
   namespace: e2e-solution
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.7
+    helm.sh/chart: llm-d-modelservice-0.0.8
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -384,30 +384,30 @@ spec:
   - backendRefs:
     - group: inference.networking.x-k8s.io
       kind: InferencePool
-      name: facebook-llm-d-modelservice-inference-pool
+      name: facebook-llm-d-modelservice
       port: 8000
       weight: 1
     matches:
-    - path:
-        type: PathPrefix
-        value: /
-      headers:
+    - headers:
       - name: x-model-name
         type: Exact
         value: facebook/opt-125m
+      path:
+        type: PathPrefix
+        value: /
 ---
 # Source: llm-d-modelservice/templates/inferencepool.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
-  name: facebook-llm-d-modelservice-inference-pool
+  name: facebook-llm-d-modelservice
   namespace: e2e-solution
 spec:
   extensionRef:
     failureMode: FailClose
     group: ""
     kind: Service
-    name: facebook-llm-d-modelservice-epp-service
+    name: facebook-llm-d-modelservice-epp
   selector:
     llm-d.ai/inferenceServing: "true"
     llm-d.ai/model: facebook-llm-d-modelservice

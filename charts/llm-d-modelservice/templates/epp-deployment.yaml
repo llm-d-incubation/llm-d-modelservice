@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "llm-d-modelservice.fullname" . }}-epp
+  name: {{ include "llm-d-modelservice.eppName" . }}
   labels:
-    llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
+    llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ default 1 .Values.routing.epp.replicas }}
   selector:
     matchLabels:
-      llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
+      llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
   template:
     metadata:
       labels:
-        llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
+        llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
     spec:
       containers:
       - name: epp

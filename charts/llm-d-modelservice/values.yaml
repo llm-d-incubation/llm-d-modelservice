@@ -52,7 +52,10 @@ routing:
     # backendRefs:
     # to override matches defined for the single inferece pool created (when `routing.httpRoute.create: true`)`
     # Note that this is ignored if `backendRefs` is set (in which case it must be defined as a child to each backendRef)
-    # matches:
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
 
   # Configuration of EPP (endpoint picker)
   # cf. https://github.com/llm-d/llm-d-inference-scheduler

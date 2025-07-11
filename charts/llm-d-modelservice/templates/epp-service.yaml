@@ -13,5 +13,5 @@ spec:
       protocol: TCP
       appProtocol: {{ .Values.routing.epp.service.appProtocol }}
   selector:
-    llm-d.ai/epp: {{ include "llm-d-modelservice.fullname" . }}-epp
+    llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
 {{- end }}

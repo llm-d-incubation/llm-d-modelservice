@@ -27,6 +27,14 @@ routing:
 
   httpRoute:
     create: true
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+      headers:
+      - name: x-model-name
+        type: Exact
+        value: facebook/opt-125m
 
   epp:
     create: true

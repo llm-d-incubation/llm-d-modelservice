@@ -9,7 +9,7 @@ roleRef:
   {{- if .Values.routing.epp.permissions }}
   name: {{ .Values.routing.epp.permissions }}
   {{- else }}
-  name: {{ include "llm-d-modelservice.fullname" . }}-epp-role
+  name: {{ include "llm-d-modelservice.eppRoleName" . }}
   {{- end }}
 subjects:
 - kind: ServiceAccount
