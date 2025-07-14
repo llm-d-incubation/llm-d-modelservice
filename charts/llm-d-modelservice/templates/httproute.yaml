@@ -25,9 +25,16 @@ spec:
         name: {{ include "llm-d-modelservice.inferencePoolName" . }}
         port: {{ .Values.routing.servicePort  }}
         weight: 1
+      {{- if .Values.routing.httpRoute.matches }}
+      matches:
+      {{- with .Values.routing.httpRoute.matches }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- else }}
       matches:
       - path:
           type: PathPrefix
           value: /
+      {{- end -}}
   {{- end }}
 {{- end }}

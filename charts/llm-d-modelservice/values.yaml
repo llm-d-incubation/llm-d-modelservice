@@ -52,14 +52,28 @@ routing:
   # cf. https://gateway-api.sigs.k8s.io/api-types/httproute/
   httpRoute:
     create: true
-    # to use different backends than the single inference pool created (when `routing.inferencePoll.create: true`)
-    # backendRefs:
-    # to override matches defined for the single inferece pool created (when `routing.httpRoute.create: true`)`
-    # Note that this is ignored if `backendRefs` is set (in which case it must be defined as a child to each backendRef)
+    # when specifiying rules it will overwrite the entire rules block (matches included)
+    # rules:
+    #   - backendRefs:
+    #       - group: inference.networking.x-k8s.io
+    #         kind: InferencePool
+    #         name: inference-pool-name
+    #         port: 8000
+    #         weight: 1
+    #     matches:
+    #       - path:
+    #           type: PathPrefix
+    #           value: /
+    # when specifiying matches and not rules, it will use the default backendRef block but overwrite just the matches section of a single rule
     matches:
-    - path:
-        type: PathPrefix
-        value: /
+      - path:
+          type: PathPrefix
+          value: /
+        # example over-riding matches
+        # headers:
+        # - name: x-model-name
+        #   type: Exact
+        #   value: facebook/opt-125m
 
   # Configuration of EPP (endpoint picker)
   # cf. https://github.com/llm-d/llm-d-inference-scheduler
