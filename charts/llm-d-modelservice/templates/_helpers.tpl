@@ -201,7 +201,11 @@ resources:
 
 {{/* default inference pool name */}}
 {{- define "llm-d-modelservice.inferencePoolName" -}}
+{{- if .Values.routing.httpRoute.inferencePool.name -}}
+{{- .Values.routing.httpRoute.inferencePool.name }}
+{{- else -}}
 {{ include "llm-d-modelservice.fullname" . }}
+{{- end }}
 {{- end }}
 
 {{/* default inference model name */}}

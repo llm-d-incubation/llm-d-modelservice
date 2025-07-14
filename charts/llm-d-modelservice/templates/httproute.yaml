@@ -12,32 +12,22 @@ spec:
   parentRefs:
   {{- . | toYaml | nindent 2}}
   {{- end }}
+  {{- if .Values.routing.httpRoute.rules }}
   rules:
-  {{- if .Values.routing.httpRoute.backendRefs }}
-  {{- with .Values.routing.httpRoute.backendRefs }}
+  {{- with .Values.routing.httpRoute.rules }}
   {{- toYaml . | nindent 2 }}
   {{- end }}
   {{- else }}
-  - backendRefs:
-    - group: inference.networking.x-k8s.io
-      kind: InferencePool
-      {{- if .Values.routing.httpRoute.inferencePool }}
-      name: {{ .Values.routing.httpRoute.inferencePool }}
-      {{- else }}
-      name: {{ include "llm-d-modelservice.inferencePoolName" . }}
-      {{- end }}
-      port: {{ .Values.routing.servicePort  }}
-      weight: 1
-    {{- if .Values.routing.httpRoute.matches }}
-    {{- with .Values.routing.httpRoute.matches }}
-    matches:
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-    {{- else }}
-    matches:
-    - path:
-        type: PathPrefix
-        value: /
-    {{- end }}
+  rules:
+    - backendRefs:
+      - group: inference.networking.x-k8s.io
+        kind: InferencePool
+        name: {{ include "llm-d-modelservice.inferencePoolName" . }}
+        port: {{ .Values.routing.servicePort  }}
+        weight: 1
+      matches:
+      - path:
+          type: PathPrefix
+          value: /
   {{- end }}
 {{- end }}

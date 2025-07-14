@@ -41,6 +41,7 @@ routing:
   # cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool
   inferencePool:
     create: true
+    # name: OVERRIDE_NAME
     # to use a different epp service than the one created when routing.epp.create: true
     # extensionRef:
 
