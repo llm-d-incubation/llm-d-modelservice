@@ -1,0 +1,12 @@
+{{- if .Values.routing.inferenceModel.create }}
+apiVersion: inference.networking.x-k8s.io/v1alpha2
+kind: InferenceModel
+metadata:
+  labels:
+    {{- include "llm-d-modelservice.pdlabels" . | nindent 4 }}
+  name: {{ include "llm-d-modelservice.inferenceModelName" . }}
+spec:
+  modelName: {{ .Values.routing.modelName }}
+  poolRef:
+    name: {{ include "llm-d-modelservice.inferencePoolName" . }}
+{{- end }}

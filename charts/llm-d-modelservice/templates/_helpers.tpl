@@ -204,6 +204,11 @@ resources:
 {{ include "llm-d-modelservice.fullname" . }}
 {{- end }}
 
+{{/* default inference model name */}}
+{{- define "llm-d-modelservice.inferenceModelName" -}}
+{{ include "llm-d-modelservice.fullname" . }}
+{{- end }}
+
 {{/* default http route name */}}
 {{- define "llm-d-modelservice.httpRouteName" -}}
 {{ include "llm-d-modelservice.fullname" . }}
