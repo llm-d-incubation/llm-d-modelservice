@@ -84,7 +84,7 @@ routing:
       port: 9002
       targetPort: 9002
       appProtocol: http2
-    image: us-central1-docker.pkg.dev/k8s-staging-images/gateway-api-inference-extension/epp:v0.4.0
+    image: us-central1-docker.pkg.dev/k8s-staging-images/gateway-api-inference-extension/epp:v0.5.0-rc.2
     replicas: 1
     debugLevel: 4
     disableReadinessProbe: false
