@@ -82,8 +82,17 @@ Below are the values you can set.
 | `decode.containers[*].modelCommand`    | Nature of the command. One of `vllmServe`, `imageDefault` or `custom`                                             | string       | `imageDefault`                              |
 | `decode.containers[*].command`         | List of commands for the decode container.                                                                        | List[string] | []                                          |
 | `decode.containers[*].ports`           | List of ports for the decode container.                                                                           | List[Port]   | []                                          |
+| `decode.parallelism.data`              | Amount of data parallelism                                                                                        | int          | 1                                           |
+| `decode.parallelism.tensor`            | Amount of tensor parallelism                                                                                      | int          | 1                                           |
+| `decode.acceleratorTypes.labelKey`     | Key of label on node that identifies the hosted GPU type                                                          | string       | N/A                                         |
+| `decode.acceleratorTypes.labelValue`   | Value of label on node that identifies type of hosted GPU                                                         | string       | N/A                                         |
 | `prefill`                              | Same fields supported in `decode`                                                                                 | See above    | See above                                   |
 
+
+  acceleratorTypes:
+    labelKey: gpu.nvidia.com/model
+    labelValues:
+      - H200
 
 ## Contribute
 

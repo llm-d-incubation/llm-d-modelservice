@@ -121,11 +121,6 @@ initContainers:
 {{- if and . .data }}{{ .data }}{{ else }}1{{ end }}
 {{- end }}
 
-{{/* Desired P/D data local parallelism -- user set or defaults to 1 */}}
-{{- define "llm-d-modelservice.dataLocalParallelism" -}}
-{{- if and . .dataLocal }}{{ .dataLocal }}{{ else }}1{{ end }}
-{{- end }}
-
 {{/*
 Port on which vllm container should listen.
 Context is helm root context plus key "role" ("decode" or "prefill")
@@ -137,20 +132,19 @@ Context is helm root context plus key "role" ("decode" or "prefill")
 {{/* P/D deployment container resources */}}
 {{- define "llm-d-modelservice.resources" -}}
 {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .parallelism) -}}
-{{- $dataLocalParallelism := int (include "llm-d-modelservice.dataLocalParallelism" .parallelism) -}}
 {{- $limits := dict }}
 {{- if and .resources .resources.limits }}
 {{- $limits = deepCopy .resources.limits }}
 {{- end }}
-{{- if or (gt (int $tensorParallelism) 1) (gt (int $dataLocalParallelism) 1) }}
-{{- $limits = mergeOverwrite $limits (dict "nvidia.com/gpu" (mul $tensorParallelism $dataLocalParallelism)) }}
+{{- if gt (int $tensorParallelism) 1 }}
+{{- $limits = mergeOverwrite $limits (dict "nvidia.com/gpu" $tensorParallelism) }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
 {{- $requests = deepCopy .resources.requests }}
 {{- end }}
-{{- if or (gt (int $tensorParallelism) 1) (gt (int $dataLocalParallelism) 1) }}
-{{- $requests = mergeOverwrite $requests (dict "nvidia.com/gpu" (mul $tensorParallelism $dataLocalParallelism)) }}
+{{- if gt (int $tensorParallelism) 1 }}
+{{- $requests = mergeOverwrite $requests (dict "nvidia.com/gpu" $tensorParallelism) }}
 {{- end }}
 resources:
   limits:
@@ -457,6 +451,4 @@ context is a dict with helm root context plus:
   value: {{ include "llm-d-modelservice.dataParallelism" .parallelism | quote }}
 - name: TP_SIZE
   value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
-- name: DP_SIZE_LOCAL
-  value: {{ include "llm-d-modelservice.dataLocalParallelism" .parallelism | quote }}
 {{- end }} {{- /* define "llm-d-modelservice.pvcEnv" */}}

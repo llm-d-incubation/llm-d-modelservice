@@ -11,7 +11,7 @@ spec:
   replicas: {{ default 1 .Values.prefill.replicas }}
   {{- end }}
   leaderWorkerTemplate:
-    size: {{ div (int (include "llm-d-modelservice.dataParallelism" .Values.prefill.parallelism)) (int (include "llm-d-modelservice.dataLocalParallelism" .Values.prefill.parallelism)) }}
+    size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.prefill.parallelism) }}
 
     # no sidecar so no need to specify leader separately
 

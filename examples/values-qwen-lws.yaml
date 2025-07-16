@@ -28,7 +28,6 @@ decode:
   parallelism:  
     data: 4
     tensor: 1
-    dataLocal: 2
   
   acceleratorTypes:
     labelKey: gpu.nvidia.com/model
@@ -219,7 +218,6 @@ prefill:
   parallelism:  
     data: 4
     tensor: 1
-    dataLocal: 2
   
   acceleratorTypes:
     labelKey: gpu.nvidia.com/model

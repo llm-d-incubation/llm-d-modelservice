@@ -11,7 +11,7 @@ spec:
   replicas: {{ default 1 .Values.decode.replicas }}
   {{- end }}
   leaderWorkerTemplate:
-    size: {{ div (int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism)) (int (include "llm-d-modelservice.dataLocalParallelism" .Values.decode.parallelism)) }}
+    size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism) }}
     leaderTemplate:
       metadata:
         labels:
