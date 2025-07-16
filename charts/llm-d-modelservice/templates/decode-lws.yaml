@@ -9,7 +9,7 @@ metadata:
   annotations:
     leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
 spec:
-  {{- if not (and .Values.decode.autoscaling .Values.decode.autoscaling.enabled) }}
+  {{- if not .Values.decode.autoscaling.enabled }}
   replicas: {{ default 1 .Values.decode.replicas }}
   {{- end }}
   leaderWorkerTemplate:

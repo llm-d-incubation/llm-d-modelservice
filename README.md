@@ -88,12 +88,6 @@ Below are the values you can set.
 | `decode.acceleratorTypes.labelValue`   | Value of label on node that identifies type of hosted GPU                                                         | string       | N/A                                         |
 | `prefill`                              | Same fields supported in `decode`                                                                                 | See above    | See above                                   |
 
-
-  acceleratorTypes:
-    labelKey: gpu.nvidia.com/model
-    labelValues:
-      - H200
-
 ## Contribute
 
 We welcome contributions in the form of a GitHub issue or pull request. Please open a ticket if you see a gap in your use case as we continue to evolve this project.

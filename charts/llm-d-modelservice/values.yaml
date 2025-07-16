@@ -136,6 +136,8 @@ routing:
 # Decode pod configuration
 decode:
   create: true
+  autoscaling:
+    enabled: false
 
   replicas: 1
   containers:
@@ -150,6 +152,8 @@ decode:
 # Prefill pod configuation
 prefill:
   create: true
+  autoscaling:
+    enabled: false
 
   replicas: 1
   containers:
