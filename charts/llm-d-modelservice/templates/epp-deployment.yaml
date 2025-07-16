@@ -35,7 +35,7 @@ spec:
         - "9003"
         {{- if .Values.routing.epp.pluginsConfigFile }}
         - "-configFile"
-        - "/config/{{ .Values.routing.epp.pluginsConfigFile }}"
+        - "config/{{ .Values.routing.epp.pluginsConfigFile }}"
         {{- end}}
         {{- with .Values.routing.epp.env }}
         env:
