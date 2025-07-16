@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: qwen-lws-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.10
+    helm.sh/chart: llm-d-modelservice-0.0.11
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ metadata:
   name: qwen-lws-llm-d-modelservice
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.10
+    helm.sh/chart: llm-d-modelservice-0.0.11
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -55,7 +55,7 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.10
+    helm.sh/chart: llm-d-modelservice-0.0.11
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
@@ -229,7 +229,7 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.10
+    helm.sh/chart: llm-d-modelservice-0.0.11
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"

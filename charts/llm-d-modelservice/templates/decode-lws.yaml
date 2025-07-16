@@ -14,8 +14,13 @@ spec:
   {{- end }}
   leaderWorkerTemplate:
     size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism) }}
+    {{- if .Values.decode.subGroupPolicy }}
+    subGroupPolicy:
+    {{- toYaml .Values.decode.subGroupPolicy | nindent 6 }}
+    {{- else }}
     subGroupPolicy:
       subGroupSize: 8
+    {{-  end }}
     workerTemplate:
       metadata:
         labels:
