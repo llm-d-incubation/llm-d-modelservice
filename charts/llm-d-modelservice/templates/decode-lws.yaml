@@ -16,7 +16,7 @@ spec:
     size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism) }}
     subGroupPolicy:
       subGroupSize: {{ int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism) }}
-    leaderTemplate:
+    workerTemplate:
       metadata:
         labels:
           {{- include "llm-d-modelservice.decodelabels" . | nindent 10 }}
@@ -31,18 +31,4 @@ spec:
         {{- (include "llm-d-modelservice.container" (merge (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism) $)) | nindent 8 }}
           {{- end }}
         {{- end }}
-
-    workerTemplate:
-      metadata:
-        labels:
-          {{- include "llm-d-modelservice.decodelabels" . | nindent 10 }}
-      spec:
-        {{- (include "llm-d-modelservice.modelPod" (merge . (dict "pdSpec" .Values.decode))) | nindent 6 }}
-        {{- with .Values.decode.containers }}
-        containers:
-          {{- range . }}
-        {{- (include "llm-d-modelservice.container" (merge (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism) $)) | nindent 8 }}
-          {{- end }}
-        {{- end }}
-
 {{- end }}
