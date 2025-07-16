@@ -15,9 +15,6 @@ spec:
     name: {{ include "llm-d-modelservice.eppServiceName" . }}
     {{- end }}
   selector:
-    {{- if .Values.multinode }}
-    leaderworkerset.sigs.k8s.io/worker-index: "0"
-    {{- end }}
     {{- include "llm-d-modelservice.pdlabels" . | nindent 4 }}
   targetPortNumber: {{ .Values.routing.servicePort }}
 {{- end }}

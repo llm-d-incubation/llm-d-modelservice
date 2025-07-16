@@ -240,7 +240,6 @@ spec:
     kind: Service
     name: qwen-lws-llm-d-modelservice-epp
   selector:
-    leaderworkerset.sigs.k8s.io/worker-index: "0"
     llm-d.ai/inferenceServing: "true"
     llm-d.ai/model: qwen-lws-llm-d-modelservice
   targetPortNumber: 8080
