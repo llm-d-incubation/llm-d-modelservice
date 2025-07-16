@@ -33,6 +33,10 @@ spec:
         - "9002"
         - --grpcHealthPort
         - "9003"
+        {{- if .Values.routing.epp.pluginsConfigFile }}
+        - "-configFile"
+        - "/config/{{ .Values.routing.epp.pluginsConfigFile }}"
+        {{- end}}
         {{- with .Values.routing.epp.env }}
         env:
         {{- toYaml . | nindent 8 }}
@@ -69,6 +73,15 @@ spec:
           successThreshold: 1
           failureThreshold: 3
         {{- end }}
+      {{- if .Values.routing.epp.pluginsConfigFile }}
+        volumeMounts:
+          - name: plugins-config-volume
+            mountPath: "/config"
+      volumes:
+      - name: plugins-config-volume
+        configMap:
+          name: {{ include "llm-d-modelservice.eppConfigName" . }}
+      {{- end }}
       serviceAccount: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
       serviceAccountName: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
 {{- end }}

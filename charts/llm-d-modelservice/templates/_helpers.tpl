@@ -193,6 +193,11 @@ resources:
 {{ include "llm-d-modelservice.eppName" . }}
 {{- end }}
 
+{{/* EPP Config name */}}
+{{- define "llm-d-modelservice.eppConfigName" -}}
+{{ include "llm-d-modelservice.eppName" . }}
+{{- end }}
+
 {{/* default inference pool name */}}
 {{- define "llm-d-modelservice.inferencePoolName" -}}
 {{- if .Values.routing.inferencePool.name -}}
