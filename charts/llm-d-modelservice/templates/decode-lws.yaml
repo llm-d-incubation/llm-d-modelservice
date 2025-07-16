@@ -15,7 +15,7 @@ spec:
   leaderWorkerTemplate:
     size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism) }}
     subGroupPolicy:
-      subGroupSize: {{ int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism) }}
+      subGroupSize: 8
     workerTemplate:
       metadata:
         labels:
