@@ -21,6 +21,8 @@ spec:
         labels:
           {{- include "llm-d-modelservice.decodelabels" . | nindent 10 }}
       spec:
+        hostIPC: true
+        hostPID: true
         {{- with .Values.routing }}
         {{ (include "llm-d-modelservice.routingProxy" .) | nindent 8 }}
         {{- end }}

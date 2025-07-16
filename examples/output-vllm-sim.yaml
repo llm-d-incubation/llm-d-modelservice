@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: vllm-sim-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.8
+    helm.sh/chart: llm-d-modelservice-0.0.10
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,7 +15,7 @@ kind: ServiceAccount
 metadata:
   name: vllm-sim-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.8
+    helm.sh/chart: llm-d-modelservice-0.0.10
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -82,7 +82,7 @@ kind: Service
 metadata:
   name: vllm-sim-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.8
+    helm.sh/chart: llm-d-modelservice-0.0.10
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -101,7 +101,7 @@ kind: Deployment
 metadata:
   name: vllm-sim-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.8
+    helm.sh/chart: llm-d-modelservice-0.0.10
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -149,13 +149,14 @@ spec:
             - "random"
             - --port
             - "8200"
+            - --tensor-parallel-size
+            - "$TP_SIZE"
           env:
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
             value: "1"
-          - name: DP_SIZE_LOCAL
-            value: "1"
+          
           - name: HF_HOME
             value: /model-cache
           
@@ -164,9 +165,10 @@ spec:
               {}
             requests:
               {}
+          
           volumeMounts:
-          - name: model-storage
-            mountPath: /model-cache
+            - name: model-storage
+              mountPath: /model-cache
 ---
 # Source: llm-d-modelservice/templates/epp-deployment.yaml
 apiVersion: apps/v1
@@ -189,7 +191,7 @@ spec:
       containers:
       - name: epp
         imagePullPolicy: Always
-        image: ghcr.io/llm-d/llm-d-inference-scheduler:0.0.3
+        image: ghcr.io/llm-d/llm-d-inference-scheduler:0.0.4
         args:
         - --poolName
         - vllm-sim-llm-d-modelservice
@@ -261,7 +263,7 @@ kind: Deployment
 metadata:
   name: vllm-sim-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.8
+    helm.sh/chart: llm-d-modelservice-0.0.10
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -293,13 +295,14 @@ spec:
             - "random"
             - --port
             - "8000"
+            - --tensor-parallel-size
+            - "$TP_SIZE"
           env:
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
             value: "1"
-          - name: DP_SIZE_LOCAL
-            value: "1"
+          
           - name: HF_HOME
             value: /model-cache
           
@@ -308,9 +311,10 @@ spec:
               {}
             requests:
               {}
+          
           volumeMounts:
-          - name: model-storage
-            mountPath: /model-cache
+            - name: model-storage
+              mountPath: /model-cache
 ---
 # Source: llm-d-modelservice/templates/httproute.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -319,7 +323,7 @@ metadata:
   name: vllm-sim-llm-d-modelservice
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.8
+    helm.sh/chart: llm-d-modelservice-0.0.10
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -328,20 +332,20 @@ spec:
     kind: Gateway
     name: inference-gateway
   rules:
-  - backendRefs:
-    - group: inference.networking.x-k8s.io
-      kind: InferencePool
-      name: vllm-sim-llm-d-modelservice
-      port: 8000
-      weight: 1
-    matches:
-    - headers:
-      - name: x-model-name
-        type: Exact
-        value: random
-      path:
-        type: PathPrefix
-        value: /
+    - backendRefs:
+      - group: inference.networking.x-k8s.io
+        kind: InferencePool
+        name: vllm-sim-llm-d-modelservice
+        port: 8000
+        weight: 1
+      matches:
+      - headers:
+        - name: x-model-name
+          type: Exact
+          value: random
+        path:
+          type: PathPrefix
+          value: /
 ---
 # Source: llm-d-modelservice/templates/inferencepool.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2

@@ -1,163 +1,113 @@
-# This values.yaml file creates the resources for Qwen/Qwen3-30B-A3B-FP8
-# See also defaults in chart values.yaml
-
-# When true, LeaderWorkerSet is used instead of Deployment
 multinode: true
 
 modelArtifacts:
-  uri: "pvc://tms-hf-cache/model-cache"
-  authSecretName: "hf-secret"
-  size: 5Mi 
+  uri: "hf://Qwen/Qwen3-30B-A3B-FP8"
+  size: 100Gi
+  authSecretName: "llm-d-hf-token"
 
 routing:
-  # This is the model name for the OpenAI request
   modelName: Qwen/Qwen3-30B-A3B-FP8
-  servicePort: 8080   # Sidecar listens on this port for requests. If there's no sidecar, the request goes here
+  servicePort: 8000
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: infra-wide-pd-inference-gateway
+
+  inferenceModel:
+    create: true
+
+  inferencePool:
+    create: false
+    name: gaie-pd
+
+  httpRoute:
+    create: true
 
   epp:
-    debugLevel: 5
+    create: false
 
-# Decode pod configuation
 decode:
   create: true
-
-  autoscaling: 
-    enabled: false
   replicas: 1
-
-  parallelism:  
-    data: 4
-    tensor: 1
-  
   acceleratorTypes:
     labelKey: gpu.nvidia.com/model
     labelValues:
       - H200
-
-  volumes:
-    # Volume for the init script from ConfigMap
-    - name: init-scripts-volume
-      configMap:
-        defaultMode: 0755
-        name: vllm-init-scripts-config
-    # Needed for NCCL to function
-    - name: dshm
-      emptyDir:
-        medium: Memory
-        sizeLimit: 1Gi
-    # - name: hf-cache
-    #   persistentVolumeClaim:
-    #     claimName: tms-hf-cache
-    - name: vllm
-      persistentVolumeClaim:
-        claimName: tms-vllm
-
+  parallelism:
+    data: 8 # these will be derived based performance testing
+    tensor: 1 # these will be derived based performance testing
   containers:
-    - name: vllm-worker
-      image: "quay.io/tms/vllm-dev-pplx:0.1.0"
+    - name: vllm-worker-decode
+      image: "quay.io/tms/vllm-dev-deepep:0.1.0"
       imagePullPolicy: Always
       workingDir: /code
-      stdin: true
-      tty: true
-      modelCommand: custom
-      command: ["/bin/sh","-c"]
+      command: ["/bin/bash","-c"]
+      modelCommand: "custom"
       args:
         - |
-          #################
-          # Interactive section
-          #################
-          # export VENV_PATH="/code/venv"
-          # source /init-scripts/common.sh
-          # /init-scripts/dotfiles.sh
-          # sleep infinity
-          #################
-          #
-          #################
-          # Install vLLM
-          #################
-          VLLM_USE_PRECOMPILED=1 /init-scripts/vllm.sh
+          ###################################################
+          # Figure out which GPU to use when 'privileged: true'
+          # vLLM requires that CPU_VISIBLE_DEVICES is set to device ordinals,
+          # so we need to remap the GPU UUIDs to indices.
+
+          echo "NVIDIA_VISIBLE_DEVICES=$NVIDIA_VISIBLE_DEVICES"
+          ALLOCATED_GPU_UUID=$(ls "$NVIDIA_VISIBLE_DEVICES" | head -n 1)
+          echo "Allocated GPU UUID:  $ALLOCATED_GPU_UUID"
+          GPU_MAP_DATA=$(nvidia-smi --query-gpu=uuid,index --format=csv,noheader)
+          echo "nvidia-smi output for UUIDs and indices:"
+          echo "$GPU_MAP_DATA"
+
+          export ALLOCATED_GPU_INDEX=$(
+            echo "$GPU_MAP_DATA" |
+            awk -F',' -v target_uuid="$ALLOCATED_GPU_UUID" '
+              {
+                gsub(/^[ \t]+|[ \t]+$/, "", $1)
+                if ($1 == target_uuid) {
+                  gsub(/^[ \t]+|[ \t]+$/, "", $2)
+                  print $2
+                  exit
+                }
+              }'
+          )
+
+          echo "Using GPU Device ID: $ALLOCATED_GPU_INDEX"
           #################
           # RUN vLLM
           #################
-          START_RANK=$(( ${LWS_WORKER_INDEX:-0} * DP_SIZE_LOCAL ))
-          if [ "${LWS_WORKER_INDEX:-0}" -eq 0 ]; then
-            #################
-            # Leader-only launch
-            #################
-            exec /app/venv/bin/vllm serve \
-              Qwen/Qwen3-30B-A3B-FP8 \
-              --port 8200 \
-              --disable-log-requests \
-              --enable-expert-parallel \
-              --tensor-parallel-size $TP_SIZE \
-              --data-parallel-size $DP_SIZE \
-              --data-parallel-size-local $DP_SIZE_LOCAL \
-              --data-parallel-address $(LWS_LEADER_ADDRESS) \
-              --data-parallel-rpc-port 5555 \
-              --data-parallel-start-rank $START_RANK \
-              --trust-remote-code
-          else
-            #################
-            # Worker-only launch
-            #################
-            exec /app/venv/bin/vllm serve \
-              Qwen/Qwen3-30B-A3B-FP8 \
-              --port 8200 \
-              --disable-log-requests \
-              --enable-expert-parallel \
-              --tensor-parallel-size $TP_SIZE \
-              --data-parallel-size $DP_SIZE \
-              --data-parallel-size-local $DP_SIZE_LOCAL \
-              --data-parallel-address $(LWS_LEADER_ADDRESS) \
-              --data-parallel-rpc-port 5555 \
-              --data-parallel-start-rank $START_RANK \
-              --trust-remote-code \
-              --headless
-          fi
-##################
-# Paste these args into the above vllm serve commands
-# to enable EPLB and API server scaleout.
-##################
-#  --enable-eplb \
-#  --num-redundant-experts 32 \
-#  --eplb-window-size 1000 \
-#  --eplb-step-interval 3000 \
-##################
-#  --api-server-count=8 \
-##################
+          export CUDA_VISIBLE_DEVICES=${ALLOCATED_GPU_INDEX}
+
+          vllm serve \
+            Qwen/Qwen3-30B-A3B-FP8 \
+            --port 8200 \
+            --disable-log-requests \
+            --enable-expert-parallel \
+            --tensor-parallel-size $TP_SIZE \
+            --data-parallel-size $(LWS_GROUP_SIZE) \
+            --data-parallel-address $(LWS_LEADER_ADDRESS) \
+            --data-parallel-rpc-port 5555 \
+            --data-parallel-rank $(LWS_WORKER_INDEX) \
+            --trust-remote-code  \
+            --kv_transfer_config '{"kv_connector":"NixlConnector","kv_role":"kv_both"}'
       env:
-        - name: VLLM_TORCH_PROFILER_DIR
-          value: "/code/traces"
         - name: VLLM_RANDOMIZE_DP_DUMMY_INPUTS
           value: "1"
-        # repo and branch are development versions
-        # will want to use release version
-        - name: VLLM_REPO_URL
-          value: "https://github.com/tlrmchlsmth/vllm.git"
-        - name: VLLM_BRANCH
-          value: "for_michael_k"
+        # The modelservice will create env this based on the value [decode|prefill].parallelism.tensor
+        # - name: TP_SIZE
+        #   value: "1"
         - name: VLLM_USE_DEEP_GEMM
           value: "1"
         - name: VLLM_ALL2ALL_BACKEND
-        #  value: "naive"
-          value: "pplx"
-        #  value: "deepep_high_throughput"
-        #  value: "deepep_low_latency"
-        # Needed for GDRCOPY to be used.
-        # See: https://github.com/NVIDIA/nvidia-container-toolkit/releases/tag/v1.15.0
+          value: "naive" # TEMP workaround to avoid issues with nvshmem
         - name: NVIDIA_GDRCOPY
           value: "enabled"
-        - name: NVSHMEM_DEBUG
-          value: "INFO"
-        # Uncomment for debugging
-        #- name: NVSHMEM_DEBUG_SUBSYS
-        #  value: "TRANSPORT,INIT,MEM,COLL,BOOTSTRAP"
-        - name: NVSHMEM_REMOTE_TRANSPORT
-          value: "ibgda"
-        - name: NVSHMEM_IB_ENABLE_IBGDA
-          value: "true"
-        - name: NVSHMEM_BOOTSTRAP_UID_SOCK_IFNAME
-          value: "eth0"
+        # - name: NVSHMEM_DEBUG
+        #   value: "INFO"
+        # - name: NVSHMEM_REMOTE_TRANSPORT
+        #   value: "ibgda"
+        # - name: NVSHMEM_IB_ENABLE_IBGDA
+        #   value: "true"
+        # - name: NVSHMEM_BOOTSTRAP_UID_SOCK_IFNAME
+        #   value: "eth0"
         - name: GLOO_SOCKET_IFNAME
           value: "eth0"
         - name: NCCL_SOCKET_IFNAME
@@ -166,187 +116,118 @@ decode:
           value: "ibp"
         - name: VLLM_LOGGING_LEVEL
           value: "DEBUG"
-        #MK - name: HF_HUB_CACHE
-        #MK   value: /huggingface-cache
-        - name: GH_TOKEN_FROM_SECRET
+        - name: HF_HUB_CACHE
+          value: /huggingface-cache
+        - name: HF_TOKEN
           valueFrom:
             secretKeyRef:
-              name: gh-token-secret
-              key: GH_TOKEN
-              optional: true
-        - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-          value: "6555"
+              name: llm-d-hf-token
+              key: HF_TOKEN
         - name: VLLM_NIXL_SIDE_CHANNEL_HOST
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-
       securityContext:
+        privileged: true
         capabilities:
           add:
           - "IPC_LOCK"
           - "SYS_RAWIO"
       resources:
         limits:
-          nvidia.com/gpu: 1
-          memory: 512Gi
+          memory: 128Gi
           ephemeral-storage: 64Gi
+          nvidia.com/gpu: "1"
           rdma/ib: 1
         requests:
-          cpu: 32
-          memory: 512Gi
+          cpu: 8
+          memory: 128Gi
           ephemeral-storage: 64Gi
-          nvidia.com/gpu: 1
+          nvidia.com/gpu: "1"
           rdma/ib: 1
-      volumeMounts:
-        - mountPath: /dev/shm
-          name: dshm
-        - name: init-scripts-volume
-          mountPath: /init-scripts
-        #MK - name: hf-cache
-        #MK   mountPath: /huggingface-cache
-        - name: vllm
-          mountPath: /code
-      mountModelVolume: true
+      mountModelVolume: false
 
-# Prefill pod configuration
 prefill:
-  autoscaling: 
-    enabled: false
+  create: true
   replicas: 1
-
-  parallelism:  
-    data: 4
-    tensor: 1
-  
   acceleratorTypes:
     labelKey: gpu.nvidia.com/model
     labelValues:
       - H200
-
-  volumes:
-    # Volume for the init script from ConfigMap
-    - name: init-scripts-volume
-      configMap:
-        defaultMode: 0755
-        name: vllm-init-scripts-config
-    # Needed for NCCL to function
-    - name: dshm
-      emptyDir:
-        medium: Memory
-        sizeLimit: 1Gi
-    # - name: hf-cache
-    #   persistentVolumeClaim:
-    #     claimName: tms-hf-cache
-    - name: vllm
-      persistentVolumeClaim:
-        claimName: tms-vllm
-
-
+  parallelism:
+    data: 8 # these will be derived based performance testing
+    tensor: 1 # these will be derived based performance testing
   containers:
-    - name: vllm-worker
-      image: "quay.io/tms/vllm-dev-pplx:0.1.0"
+    - name: vllm-worker-prefill
+      image: "quay.io/tms/vllm-dev-deepep:0.1.0"
       imagePullPolicy: Always
       workingDir: /code
-      stdin: true
-      tty: true
-      modelCommand: custom
-      command: ["/bin/sh","-c"]
+      command: ["/bin/bash","-c"]
+      modelCommand: "custom"
       args:
         - |
-          #################
-          # Interactive section
-          #################
-          # export VENV_PATH="/code/venv"
-          # source /init-scripts/common.sh
-          # /init-scripts/dotfiles.sh
-          # sleep infinity
-          #################
-          #
-          #################
-          # Install vLLM
-          #################
-          VLLM_USE_PRECOMPILED=1 /init-scripts/vllm.sh
+          ###################################################
+          # Figure out which GPU to use when 'privileged: true'
+          # vLLM requires that CPU_VISIBLE_DEVICES is set to device ordinals,
+          # so we need to remap the GPU UUIDs to indices.
+
+          echo "NVIDIA_VISIBLE_DEVICES=$NVIDIA_VISIBLE_DEVICES"
+          ALLOCATED_GPU_UUID=$(ls "$NVIDIA_VISIBLE_DEVICES" | head -n 1)
+          echo "Allocated GPU UUID:  $ALLOCATED_GPU_UUID"
+          GPU_MAP_DATA=$(nvidia-smi --query-gpu=uuid,index --format=csv,noheader)
+          echo "nvidia-smi output for UUIDs and indices:"
+          echo "$GPU_MAP_DATA"
+
+          export ALLOCATED_GPU_INDEX=$(
+            echo "$GPU_MAP_DATA" |
+            awk -F',' -v target_uuid="$ALLOCATED_GPU_UUID" '
+              {
+                gsub(/^[ \t]+|[ \t]+$/, "", $1)
+                if ($1 == target_uuid) {
+                  gsub(/^[ \t]+|[ \t]+$/, "", $2)
+                  print $2
+                  exit
+                }
+              }'
+          )
+
+          echo "Using GPU Device ID: $ALLOCATED_GPU_INDEX"
           #################
           # RUN vLLM
           #################
-          START_RANK=$(( ${LWS_WORKER_INDEX:-0} * DP_SIZE_LOCAL ))
-          if [ "${LWS_WORKER_INDEX:-0}" -eq 0 ]; then
-            #################
-            # Leader-only launch
-            #################
-            exec /app/venv/bin/vllm serve \
-              Qwen/Qwen3-30B-A3B-FP8 \
-              --port 8080 \
-              --disable-log-requests \
-              --enable-expert-parallel \
-              --tensor-parallel-size $TP_SIZE \
-              --data-parallel-size $DP_SIZE \
-              --data-parallel-size-local $DP_SIZE_LOCAL \
-              --data-parallel-address $(LWS_LEADER_ADDRESS) \
-              --data-parallel-rpc-port 5555 \
-              --data-parallel-start-rank $START_RANK \
-              --trust-remote-code
-          else
-            #################
-            # Worker-only launch
-            #################
-            exec /app/venv/bin/vllm serve \
-              Qwen/Qwen3-30B-A3B-FP8 \
-              --port 8080 \
-              --disable-log-requests \
-              --enable-expert-parallel \
-              --tensor-parallel-size $TP_SIZE \
-              --data-parallel-size $DP_SIZE \
-              --data-parallel-size-local $DP_SIZE_LOCAL \
-              --data-parallel-address $(LWS_LEADER_ADDRESS) \
-              --data-parallel-rpc-port 5555 \
-              --data-parallel-start-rank $START_RANK \
-              --trust-remote-code \
-              --headless
-          fi
-##################
-# Paste these args into the above vllm serve commands
-# to enable EPLB and API server scaleout.
-##################
-#  --enable-eplb \
-#  --num-redundant-experts 32 \
-#  --eplb-window-size 1000 \
-#  --eplb-step-interval 3000 \
-##################
-#  --api-server-count=8 \
-##################
+          export CUDA_VISIBLE_DEVICES=${ALLOCATED_GPU_INDEX}
+
+          vllm serve \
+            Qwen/Qwen3-30B-A3B-FP8 \
+            --port 8080 \
+            --disable-log-requests \
+            --enable-expert-parallel \
+            --tensor-parallel-size $TP_SIZE \
+            --data-parallel-size $(LWS_GROUP_SIZE) \
+            --data-parallel-address $(LWS_LEADER_ADDRESS) \
+            --data-parallel-rpc-port 5555 \
+            --data-parallel-rank $(LWS_WORKER_INDEX) \
+            --trust-remote-code \
+            --kv_transfer_config '{"kv_connector":"NixlConnector","kv_role":"kv_both"}'
       env:
-        - name: VLLM_TORCH_PROFILER_DIR
-          value: "/code/traces"
         - name: VLLM_RANDOMIZE_DP_DUMMY_INPUTS
           value: "1"
-        - name: VLLM_REPO_URL
-          value: "https://github.com/tlrmchlsmth/vllm.git"
-        - name: VLLM_BRANCH
-          value: "for_michael_k"
+        - name: TP_SIZE
+          value: "1"
         - name: VLLM_USE_DEEP_GEMM
           value: "1"
         - name: VLLM_ALL2ALL_BACKEND
-        #  value: "naive"
-          value: "pplx"
-        #  value: "deepep_high_throughput"
-        #  value: "deepep_low_latency"
-        # Needed for GDRCOPY to be used.
-        # See: https://github.com/NVIDIA/nvidia-container-toolkit/releases/tag/v1.15.0
+          value: "naive" # TEMP workaround to avoid issues with nvshmem
         - name: NVIDIA_GDRCOPY
           value: "enabled"
-        - name: NVSHMEM_DEBUG
-          value: "INFO"
-        # Uncomment for debugging
-        #- name: NVSHMEM_DEBUG_SUBSYS
-        #  value: "TRANSPORT,INIT,MEM,COLL,BOOTSTRAP"
-        - name: NVSHMEM_REMOTE_TRANSPORT
-          value: "ibgda"
-        - name: NVSHMEM_IB_ENABLE_IBGDA
-          value: "true"
-        - name: NVSHMEM_BOOTSTRAP_UID_SOCK_IFNAME
-          value: "eth0"
+        # - name: NVSHMEM_DEBUG
+        #   value: "INFO"
+        # - name: NVSHMEM_REMOTE_TRANSPORT
+        #   value: "ibgda"
+        # - name: NVSHMEM_IB_ENABLE_IBGDA
+        #   value: "true"
+        # - name: NVSHMEM_BOOTSTRAP_UID_SOCK_IFNAME
+        #   value: "eth0"
         - name: GLOO_SOCKET_IFNAME
           value: "eth0"
         - name: NCCL_SOCKET_IFNAME
@@ -355,44 +236,33 @@ prefill:
           value: "ibp"
         - name: VLLM_LOGGING_LEVEL
           value: "DEBUG"
-        #MK - name: HF_HUB_CACHE
-        #MK   value: /huggingface-cache
-        - name: GH_TOKEN_FROM_SECRET
+        - name: HF_HUB_CACHE
+          value: /huggingface-cache
+        - name: HF_TOKEN
           valueFrom:
             secretKeyRef:
-              name: gh-token-secret
-              key: GH_TOKEN
-              optional: true
-        - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-          value: "6555"
+              name: llm-d-hf-token
+              key: HF_TOKEN
         - name: VLLM_NIXL_SIDE_CHANNEL_HOST
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-
       securityContext:
+        privileged: true
         capabilities:
           add:
           - "IPC_LOCK"
           - "SYS_RAWIO"
       resources:
         limits:
-          nvidia.com/gpu: 1
-          memory: 512Gi
+          memory: 128Gi
           ephemeral-storage: 64Gi
+          nvidia.com/gpu: "1"
           rdma/ib: 1
         requests:
-          cpu: 32
-          memory: 512Gi
+          cpu: 8
+          memory: 128Gi
           ephemeral-storage: 64Gi
-          nvidia.com/gpu: 1
+          nvidia.com/gpu: "1"
           rdma/ib: 1
-      volumeMounts:
-        - mountPath: /dev/shm
-          name: dshm
-        - name: init-scripts-volume
-          mountPath: /init-scripts
-        - name: vllm
-          mountPath: /code
-      mountModelVolume: true
-    
+      mountModelVolume: false

@@ -24,6 +24,8 @@ spec:
         labels:
           {{- include "llm-d-modelservice.prefilllabels" . | nindent 10 }}
       spec:
+        hostIPC: true
+        hostPID: true
         {{- (include "llm-d-modelservice.modelPod" (merge . (dict "pdSpec" .Values.prefill))) | nindent 6 }}
         {{- with .Values.prefill.containers }}
         containers:

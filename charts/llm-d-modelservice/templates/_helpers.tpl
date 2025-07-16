@@ -267,8 +267,6 @@ Pod elements of deployment/lws spec template
 context is a pdSpec
 */}}
 {{- define "llm-d-modelservice.modelPod" -}}
-  hostIPC: true
-  hostPID: true
   {{- with .pdSpec.imagePullSecrets }}
   imagePullSecrets:
     {{- toYaml . | nindent 2 }}
@@ -317,9 +315,7 @@ context is a dict with helm root context plus:
   {{- end }}
   {{- (include "llm-d-modelservice.parallelismEnv" .) | nindent 2 }}
   {{- /* insert envs based on what modelArtifact prefix */}}
-  {{- if .container.mountModelVolume }}
   {{- (include "llm-d-modelservice.hfEnv" .) | nindent 2 }}
-  {{- end }}
   {{- with .container.livenessProbe }}
   livenessProbe:
     {{- toYaml . | nindent 2 }}
@@ -329,19 +325,7 @@ context is a dict with helm root context plus:
     {{- toYaml . | nindent 2 }}
   {{- end }}
   {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism)) | nindent 2 }}
-  {{- /* volumeMount */}}
-  {{- if or .container.volumeMounts .container.mountModelVolume }}
-  volumeMounts:
-  {{- end -}}
-  {{- /* user supplied volume mount in values */}}
-  {{- with .container.volumeMounts }}
-    {{- toYaml . | nindent 2 }}
-  {{- end }}
-  {{- /* what we add if mounModelVolume is true */}}
-  {{- if .container.mountModelVolume }}
-  - name: model-storage
-    mountPath: /model-cache
-  {{- end }}
+  {{- include "llm-d-modelservice.mountModelVolumeVolumeMounts" .container | nindent 2 }}
   {{- with .container.workingDir }}
   workingDir: {{ . }}
   {{- end }}
@@ -384,6 +368,8 @@ args:
 {{- (include "llm-d-modelservice.argsByProtocol" .) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+  - --tensor-parallel-size
+  - "$TP_SIZE"
 {{- with .container.args }}
   {{ toYaml . | nindent 2 }}
 {{- end }}
@@ -439,8 +425,10 @@ context is a dict with helm root context plus:
 {{- end }} {{- /* define "llm-d-modelservice.command" */}}
 
 {{- define "llm-d-modelservice.hfEnv" -}}
+{{- if .container.mountModelVolume }}
 - name: HF_HOME
   value: /model-cache
+{{- end }}
 {{- with .Values.modelArtifacts.authSecretName }}
 - name: HF_TOKEN
   valueFrom:
