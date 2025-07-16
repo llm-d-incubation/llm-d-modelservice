@@ -267,6 +267,8 @@ Pod elements of deployment/lws spec template
 context is a pdSpec
 */}}
 {{- define "llm-d-modelservice.modelPod" -}}
+  hostIPC: true
+  hostPID: true
   {{- with .pdSpec.imagePullSecrets }}
   imagePullSecrets:
     {{- toYaml . | nindent 2 }}
@@ -393,6 +395,8 @@ args:
 {{- (include "llm-d-modelservice.argsByProtocol" (merge . (dict "modelArg" true))) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+  - --tensor-parallel-size
+  - "$TP_SIZE"
 {{- with .container.args }}
   {{ toYaml . | nindent 2 }}
 {{- end }}
