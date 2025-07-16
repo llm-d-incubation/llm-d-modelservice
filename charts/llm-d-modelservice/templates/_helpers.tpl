@@ -368,8 +368,11 @@ args:
 {{- (include "llm-d-modelservice.argsByProtocol" .) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+  {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .container.parallelism) -}}
+  {{- if gt (int $tensorParallelism) 1 }}
   - --tensor-parallel-size
   - "$TP_SIZE"
+  {{- end }}
 {{- with .container.args }}
   {{ toYaml . | nindent 2 }}
 {{- end }}
@@ -381,8 +384,11 @@ args:
 {{- (include "llm-d-modelservice.argsByProtocol" (merge . (dict "modelArg" true))) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+  {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .container.parallelism) -}}
+  {{- if gt (int $tensorParallelism) 1 }}
   - --tensor-parallel-size
   - "$TP_SIZE"
+  {{- end }}
 {{- with .container.args }}
   {{ toYaml . | nindent 2 }}
 {{- end }}

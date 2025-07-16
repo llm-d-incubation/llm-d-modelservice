@@ -149,8 +149,6 @@ spec:
             - "facebook/opt-125m"
             - --port
             - "8200"
-            - --tensor-parallel-size
-            - "$TP_SIZE"
             
             - --enforce-eager
             - --kv-transfer-config
@@ -333,8 +331,6 @@ spec:
             - "facebook/opt-125m"
             - --port
             - "8000"
-            - --tensor-parallel-size
-            - "$TP_SIZE"
             
             - --enforce-eager
             - --kv-transfer-config

@@ -149,8 +149,6 @@ spec:
             - "random"
             - --port
             - "8200"
-            - --tensor-parallel-size
-            - "$TP_SIZE"
           env:
           - name: DP_SIZE
             value: "1"
@@ -295,8 +293,6 @@ spec:
             - "random"
             - --port
             - "8000"
-            - --tensor-parallel-size
-            - "$TP_SIZE"
           env:
           - name: DP_SIZE
             value: "1"
