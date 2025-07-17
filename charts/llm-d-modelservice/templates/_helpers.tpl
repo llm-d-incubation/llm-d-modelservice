@@ -258,7 +258,7 @@ volumeMounts:
 {{- end }}
 {{- /* user supplied volume mount in values */}}
 {{- with .volumeMounts }}
-  {{- toYaml . | nindent 8 }}
+  {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- /* what we add if mounModelVolume is true */}}
 {{- if .mountModelVolume }}
