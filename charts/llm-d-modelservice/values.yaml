@@ -29,6 +29,8 @@ routing:
     image: ghcr.io/llm-d/llm-d-routing-sidecar:0.0.6
     # target port on which VLLM should listen
     targetPort: 8200
+    # Specify a conenctor to overwrite the default: `nixl`
+    connector: nixlv2
 
   # Reference to parent gateway
   # cf. https://gateway-api.sigs.k8s.io/api-types/gateway/

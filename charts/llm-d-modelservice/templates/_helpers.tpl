@@ -98,7 +98,7 @@ initContainers:
     args:
       - --port={{ default 8080 .servicePort }}
       - --vllm-port={{ default 8200 .proxy.targetPort }}
-      - --connector=nixlv2
+      - --connector={{ .proxy.connector | default "nixlv2" }}
       - -v={{ default 5 .proxy.debugLevel }}
     image: {{ required "routing.proxy.image must be specified" .proxy.image }}
     imagePullPolicy: Always
