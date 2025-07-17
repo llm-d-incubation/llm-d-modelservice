@@ -100,6 +100,15 @@ initContainers:
       - --vllm-port={{ default 8200 .proxy.targetPort }}
       - --connector={{ .proxy.connector | default "nixlv2" }}
       - -v={{ default 5 .proxy.debugLevel }}
+      {{- if hasKey .proxy "secure" }}
+      - --secure-proxy={{ .proxy.secure }}
+      {{- end }}
+      {{- if hasKey .proxy "prefillerUseTLS" }}
+      - --prefiller-use-tls={{ .proxy.prefillerUseTLS }}
+      {{- end }}
+      {{- if hasKey .proxy "certPath" }}
+      - --cert-path={{ .proxy.certPath }}
+      {{- end }}
     image: {{ required "routing.proxy.image must be specified" .proxy.image }}
     imagePullPolicy: Always
     ports:

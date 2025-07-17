@@ -32,6 +32,19 @@ routing:
     # Specify a conenctor to overwrite the default: `nixl`
     connector: nixlv2
 
+    # Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.
+    secure: true
+
+    # Boolean: whether to use TLS when sending requests to prefillers. Arg is ommitted by default for compatability with legacy sidecar images.
+    # prefillerUseTLS: true
+
+    # The path to the certificate for secure proxy.  Arg is ommitted by default for compatability with legacy sidecar images.
+    # certPath: "/certs"
+
+    # Overwrite the verbosity of logging in the sidecar (defaults to 5)
+    # debugLevel: 5
+
+
   # Reference to parent gateway
   # cf. https://gateway-api.sigs.k8s.io/api-types/gateway/
   parentRefs:
