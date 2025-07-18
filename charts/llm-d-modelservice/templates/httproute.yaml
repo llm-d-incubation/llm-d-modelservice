@@ -19,7 +19,10 @@ spec:
   {{- end }}
   {{- else }}
   rules:
-    - backendRefs:
+    - timeouts:
+        backendRequest: "0s"
+        request: "0s"
+      backendRefs:
       - group: inference.networking.x-k8s.io
         kind: InferencePool
         name: {{ include "llm-d-modelservice.inferencePoolName" . }}
