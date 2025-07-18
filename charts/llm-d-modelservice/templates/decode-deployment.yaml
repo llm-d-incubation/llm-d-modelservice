@@ -5,6 +5,10 @@ metadata:
   name: {{ include "llm-d-modelservice.decodeName" . }}
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+  {{- if .Values.decode.annotations }}
+  annotations:
+    {{- toYaml .Values.decode.annotations | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ default 1 .Values.decode.replicas }}
   selector:

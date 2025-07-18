@@ -5,6 +5,10 @@ metadata:
   name: {{ include "llm-d-modelservice.prefillName" . }}
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+  {{- if .Values.prefill.annotations }}
+  annotations:
+    {{- toYaml .Values.prefill.annotations | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ default 1 .Values.prefill.replicas }}
   selector:

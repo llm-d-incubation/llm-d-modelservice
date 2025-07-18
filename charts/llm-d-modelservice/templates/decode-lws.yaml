@@ -8,6 +8,9 @@ metadata:
     {{- include "llm-d-modelservice.decodelabels" . | nindent 4 }}
   annotations:
     leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+    {{- with .Values.decode.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   {{- if not .Values.decode.autoscaling.enabled }}
   replicas: {{ default 1 .Values.decode.replicas }}

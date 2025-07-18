@@ -8,6 +8,9 @@ metadata:
     {{- include "llm-d-modelservice.prefilllabels" . | nindent 4 }}
   annotations:
     leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+    {{- with .Values.prefill.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   {{- if not .Values.prefill.autoscaling.enabled }}
   replicas: {{ default 1 .Values.prefill.replicas }}
