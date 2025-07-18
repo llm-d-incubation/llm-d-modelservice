@@ -378,6 +378,8 @@ args:
   - --tensor-parallel-size
   - "$TP_SIZE"
   {{- end }}
+  - --served-model-name
+  - {{ .Values.routing.modelName }}
 {{- with .container.args }}
   {{ toYaml . | nindent 2 }}
 {{- end }}
@@ -394,6 +396,8 @@ args:
   - --tensor-parallel-size
   - "$TP_SIZE"
   {{- end }}
+  - --served-model-name
+  - {{ .Values.routing.modelName }}
 {{- with .container.args }}
   {{ toYaml . | nindent 2 }}
 {{- end }}
@@ -436,9 +440,13 @@ context is a dict with helm root context plus:
 {{- end }} {{- /* define "llm-d-modelservice.command" */}}
 
 {{- define "llm-d-modelservice.hfEnv" -}}
+{{- $parsedArtifacts := regexSplit "://" .Values.modelArtifacts.uri -1 -}}
+{{- $protocol := first $parsedArtifacts -}}
+{{- if eq $protocol "hf" }}
 {{- if .container.mountModelVolume }}
 - name: HF_HOME
   value: /model-cache
+{{- end }}
 {{- end }}
 {{- with .Values.modelArtifacts.authSecretName }}
 - name: HF_TOKEN
