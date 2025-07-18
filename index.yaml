@@ -3,6 +3,23 @@ entries:
   llm-d-modelservice:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2025-07-18T13:47:49.107994971Z"
+    description: A Helm chart for ModelService in llm-d
+    digest: 816b4c2ccb4b02ab6e151be723a9d26ebe2a2724bf1943aedb76163fd5552a91
+    maintainers:
+    - email: jing.chen2@ibm.com
+      name: Jing Chen
+      url: https://github.com/jgchn
+    - email: kalantar@us.ibm.com
+      name: Michael Kalantar
+      url: https://github.com/kalantar
+    name: llm-d-modelservice
+    type: application
+    urls:
+    - https://github.com/llm-d-incubation/llm-d-modelservice/releases/download/llm-d-modelservice-0.0.16/llm-d-modelservice-0.0.16.tgz
+    version: 0.0.16
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2025-07-18T01:41:26.427614823Z"
     description: A Helm chart for ModelService in llm-d
     digest: 5129cc4996a125d390a9f2330e8f0fb0c48bb80c3ed4d822199ffb2f752ec401
@@ -211,4 +228,4 @@ entries:
     urls:
     - llm-d-modelservice-0.0.2.tgz
     version: 0.0.2
-generated: "2025-07-18T01:41:26.427720389Z"
+generated: "2025-07-18T13:47:49.108110557Z"
