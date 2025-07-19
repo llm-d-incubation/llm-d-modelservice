@@ -51,6 +51,9 @@ spec:
         - containerPort: 9090
           name: metrics
           protocol: TCP
+        {{- with .Values.routing.epp.extraContainerPorts }}
+        {{- toYaml . | nindent 2 }}
+        {{- end }}
         {{- if (not .Values.routing.epp.disableReadinessProbe) }}
         readinessProbe:
           grpc:
