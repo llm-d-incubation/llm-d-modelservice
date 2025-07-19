@@ -61,6 +61,8 @@ routing:
     # extensionRef:
 
   inferenceModel:
+    # Criticality options: ["Critical", "Standard", "Sheddable"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84
+    # criticality: Critical
     create: false
 
   # Configuration of HTTPRoute (mapping of requests through gateway to InferencePool)
