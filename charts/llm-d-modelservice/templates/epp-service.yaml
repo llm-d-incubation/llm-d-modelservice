@@ -8,7 +8,8 @@ metadata:
 spec:
   type: {{ .Values.routing.epp.service.type }}
   ports:
-    - port: {{ .Values.routing.epp.service.port }}
+    - name: grpc-ext-proc
+      port: {{ .Values.routing.epp.service.port }}
       targetPort: {{ .Values.routing.epp.service.targetPort }}
       protocol: TCP
       appProtocol: {{ .Values.routing.epp.service.appProtocol }}
