@@ -51,7 +51,9 @@ spec:
         - containerPort: 9090
           name: metrics
           protocol: TCP
-        {{- if (not .Values.routing.epp.disableReadinessProbe) }}
+        {{- with .Values.routing.epp.extraContainerPorts }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         readinessProbe:
           grpc:
             port: 9003
@@ -61,8 +63,6 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
-        {{- end }}
-        {{- if (not .Values.routing.epp.disableLivenessProbe) }}
         livenessProbe:
           grpc:
             port: 9003
@@ -72,7 +72,6 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
-        {{- end }}
       {{- if .Values.routing.epp.pluginsConfigFile }}
         volumeMounts:
           - name: plugins-config-volume
