@@ -6,6 +6,9 @@ metadata:
     {{- include "llm-d-modelservice.pdlabels" . | nindent 4 }}
   name: {{ include "llm-d-modelservice.inferenceModelName" . }}
 spec:
+  {{- if .Values.routing.inferenceModel.criticality }}
+  criticality: {{ .Values.routing.inferenceModel.criticality }}
+  {{- end}}
   modelName: {{ .Values.routing.modelName }}
   poolRef:
     name: {{ include "llm-d-modelservice.inferencePoolName" . }}
