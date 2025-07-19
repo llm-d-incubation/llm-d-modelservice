@@ -12,6 +12,9 @@ spec:
       targetPort: {{ .Values.routing.epp.service.targetPort }}
       protocol: TCP
       appProtocol: {{ .Values.routing.epp.service.appProtocol }}
+    {{- with .Values.routing.epp.service.extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   selector:
     llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
 {{- end }}
