@@ -54,6 +54,7 @@ spec:
         {{- with .Values.routing.epp.extraContainerPorts }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+        {{- if (not .Values.routing.epp.disableReadinessProbe) }}
         readinessProbe:
           grpc:
             port: 9003
@@ -63,6 +64,8 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
+        {{- end }}
+        {{- if (not .Values.routing.epp.disableLivenessProbe) }}
         livenessProbe:
           grpc:
             port: 9003
@@ -72,6 +75,7 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
+        {{- end }}
       {{- if .Values.routing.epp.pluginsConfigFile }}
         volumeMounts:
           - name: plugins-config-volume
