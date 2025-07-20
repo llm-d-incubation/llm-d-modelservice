@@ -33,7 +33,7 @@ routing:
     connector: nixlv2
 
     # Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.
-    secure: true
+    # secure: true
 
     # Boolean: whether to use TLS when sending requests to prefillers. Arg is ommitted by default for compatability with legacy sidecar images.
     # prefillerUseTLS: true
