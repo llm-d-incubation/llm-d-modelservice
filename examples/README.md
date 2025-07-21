@@ -40,9 +40,9 @@ Note: `alias k=kubectl`
     ```
     curl http://localhost:8000/v1/completions -vvv \
         -H "Content-Type: application/json" \
-        -H "x-model-name: random" \
+        -H "x-model-name: random/model" \
         -d '{
-        "model": "random",
+        "model": "random/model",
         "prompt": "Hello, "
     }'
     ```
@@ -94,7 +94,7 @@ Note: `alias k=kubectl`
     {"choices":[{"finish_reason":"length","index":0,"logprobs":null,"prompt_logprobs":null,"stop_reason":null,"text":" That is my dad. He was a wautdig with a shooting blade on"}],"created":1751031325,"id":"cmpl-aca48bc2-fe95-4c3b-843d-1dbcf94c40c7","kv_transfer_params":null,"model":"facebook/opt-125m","object":"text_completion","usage":{"completion_tokens":16,"prompt_tokens":4,"prompt_tokens_details":null,"total_tokens":20}}
     ```
 
-2. `Qwen/Qwen3-30B-A3B-FP8`: This example uses a model (from Hugging Face) assumed to already be downloaded to a PVC. It also highlights the use of a custom vllm command. This is work in progress.
+3. `Qwen/Qwen3-30B-A3B-FP8`: This example uses a model (from Hugging Face) assumed to already be downloaded to a PVC. It also highlights the use of a custom vllm command. This is work in progress.
 
     Dry-run:
 

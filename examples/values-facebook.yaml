@@ -15,14 +15,18 @@ routing:
   modelName: facebook/opt-125m
   servicePort: 8000
 
-  # inherit from chart values.yaml
-  # proxy:
+  # other fields are inherited from chart values.yaml
+  proxy:
+    secure: false
 
   # to change name of inference-gateway
   # parentRefs:
   # - name: inference-gateway
 
   inferencePool:
+    create: true
+
+  inferenceModel:
     create: true
 
   httpRoute:
