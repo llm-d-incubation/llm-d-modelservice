@@ -61,9 +61,9 @@ routing:
     # extensionRef:
 
   inferenceModel:
-    # Criticality options: ["Critical", "Standard", "Sheddable"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84
-    # criticality: Critical
     create: false
+    # Criticality options: ["Critical", "Standard", "Sheddable"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84
+    criticality: Critical
 
   # Configuration of HTTPRoute (mapping of requests through gateway to InferencePool)
   # cf. https://gateway-api.sigs.k8s.io/api-types/httproute/
@@ -101,7 +101,7 @@ routing:
       port: 9002
       targetPort: 9002
       appProtocol: http2
-    image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.0-rc.2
+    image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.0
     replicas: 1
     debugLevel: 4
     disableReadinessProbe: false
