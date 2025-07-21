@@ -332,11 +332,15 @@ context is a dict with helm root context plus:
   {{- (include "llm-d-modelservice.hfEnv" .) | nindent 2 }}
   {{- with .container.livenessProbe }}
   livenessProbe:
-    {{- toYaml . | nindent 2 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- with .container.readinessProbe }}
   readinessProbe:
-    {{- toYaml . | nindent 2 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .container.startupProbe }}
+  startupProbe:
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism)) | nindent 2 }}
   {{- include "llm-d-modelservice.mountModelVolumeVolumeMounts" .container | nindent 2 }}
