@@ -10,7 +10,7 @@ metadata:
     {{- toYaml .Values.decode.annotations | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ default 1 .Values.decode.replicas }}
+  replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
   selector:
     matchLabels:
       {{- include "llm-d-modelservice.decodelabels" . | nindent 6 }}

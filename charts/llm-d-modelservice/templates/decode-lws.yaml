@@ -15,7 +15,7 @@ metadata:
     {{- end }}
 spec:
   {{- if not .Values.decode.autoscaling.enabled }}
-  replicas: {{ default 1 .Values.decode.replicas }}
+  replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
   {{- end }}
   leaderWorkerTemplate:
     size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism) }}

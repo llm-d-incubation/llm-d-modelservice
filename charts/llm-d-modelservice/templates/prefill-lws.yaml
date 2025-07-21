@@ -15,7 +15,7 @@ metadata:
     {{- end }}
 spec:
   {{- if not .Values.prefill.autoscaling.enabled }}
-  replicas: {{ default 1 .Values.prefill.replicas }}
+  replicas: {{ ternary .Values.prefill.replicas 1 (hasKey .Values.prefill "replicas") }}
   {{- end }}
   leaderWorkerTemplate:
     size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.prefill.parallelism) }}

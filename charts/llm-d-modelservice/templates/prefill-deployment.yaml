@@ -10,7 +10,7 @@ metadata:
     {{- toYaml .Values.prefill.annotations | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ default 1 .Values.prefill.replicas }}
+  replicas: {{ ternary .Values.prefill.replicas 1 (hasKey .Values.prefill "replicas") }}
   selector:
     matchLabels:
       {{- include "llm-d-modelservice.prefilllabels" . | nindent 6 }}
