@@ -18,6 +18,10 @@ spec:
     metadata:
       labels:
         {{- include "llm-d-modelservice.prefilllabels" . | nindent 8 }}
+      {{- if .Values.prefill.annotations }}
+      annotations:
+        {{- toYaml .Values.prefill.annotations | nindent 8 }}
+      {{- end }}
     spec:
       {{- (include "llm-d-modelservice.modelPod" (merge . (dict "pdSpec" .Values.prefill))) | nindent 4 }}
       {{- with .Values.prefill.containers }}

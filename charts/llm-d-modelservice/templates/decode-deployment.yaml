@@ -18,6 +18,10 @@ spec:
     metadata:
       labels:
         {{- include "llm-d-modelservice.decodelabels" . | nindent 8 }}
+      {{- if .Values.decode.annotations }}
+      annotations:
+        {{- toYaml .Values.decode.annotations | nindent 8 }}
+      {{- end }}
     spec:
       {{- with .Values.routing }}
       {{- (include "llm-d-modelservice.routingProxy" .) | nindent 6 }}

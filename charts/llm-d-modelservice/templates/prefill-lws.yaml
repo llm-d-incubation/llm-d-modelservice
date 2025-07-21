@@ -6,13 +6,15 @@ metadata:
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
     {{- include "llm-d-modelservice.prefilllabels" . | nindent 4 }}
+  {{- if or .Values.prefill.subGroupExclusiveTopology .Values.prefill.annotations }}
   annotations:
-    {{- if .Values.prefill.subGroupExclusiveToplogy }}
+  {{- if .Values.prefill.subGroupExclusiveTopology }}
     leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+  {{- end }}
+  {{- if .Values.prefill.annotations }}
+    {{ toYaml .Values.prefill.annotations | nindent 4 }}
     {{- end }}
-    {{- with .Values.prefill.annotations }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
+  {{- end }}
 spec:
   {{- if not .Values.prefill.autoscaling.enabled }}
   replicas: {{ default 1 .Values.prefill.replicas }}
@@ -30,6 +32,15 @@ spec:
       metadata:
         labels:
           {{- include "llm-d-modelservice.prefilllabels" . | nindent 10 }}
+        {{- if or .Values.prefill.subGroupExclusiveTopology .Values.prefill.annotations }}
+        annotations:
+        {{- if .Values.prefill.subGroupExclusiveTopology }}
+          leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+        {{- end }}
+        {{- if .Values.prefill.annotations }}
+          {{ toYaml .Values.prefill.annotations | nindent 10 }}
+          {{- end }}
+        {{- end }}
       spec:
         {{- if hasKey .Values.prefill "hostIPC" }}
         hostIPC: {{ .Values.prefill.hostIPC }}

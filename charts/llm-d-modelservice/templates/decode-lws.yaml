@@ -6,13 +6,15 @@ metadata:
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
     {{- include "llm-d-modelservice.decodelabels" . | nindent 4 }}
+  {{- if or .Values.decode.subGroupExclusiveTopology .Values.decode.annotations }}
   annotations:
-    {{- if .Values.decode.subGroupExclusiveToplogy }}
+  {{- if .Values.decode.subGroupExclusiveTopology }}
     leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+  {{- end }}
+  {{- if .Values.decode.annotations }}
+    {{ toYaml .Values.decode.annotations | nindent 4 }}
     {{- end }}
-    {{- with .Values.decode.annotations }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
+  {{- end }}
 spec:
   {{- if not .Values.decode.autoscaling.enabled }}
   replicas: {{ default 1 .Values.decode.replicas }}
@@ -27,6 +29,15 @@ spec:
       metadata:
         labels:
           {{- include "llm-d-modelservice.decodelabels" . | nindent 10 }}
+        {{- if or .Values.decode.subGroupExclusiveTopology .Values.decode.annotations }}
+        annotations:
+        {{- if .Values.decode.subGroupExclusiveTopology }}
+          leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+        {{- end }}
+        {{- if .Values.decode.annotations }}
+          {{ toYaml .Values.decode.annotations | nindent 10 }}
+          {{- end }}
+        {{- end }}
       spec:
         {{- if hasKey .Values.decode "hostIPC" }}
         hostIPC: {{ .Values.decode.hostIPC }}
