@@ -13,6 +13,9 @@ routing:
   modelName: random/model
   servicePort: 8000
 
+  proxy:
+    secure: false
+
   httpRoute:
     matches:
     - path:
