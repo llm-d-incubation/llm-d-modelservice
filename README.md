@@ -10,7 +10,7 @@ Active scearios supported:
 - P/D disaggregation
 - Multi-node inference, utilizing data parallelism
 - One pod per node (see [`llm-d-infra`](https://github.com/llm-d-incubation/llm-d-infra/tree/main/quickstart/examples/wide-ep-lws) for the ModelService [values](https://github.com/llm-d-incubation/llm-d-infra/tree/main/quickstart/examples/wide-ep-lws/ms-wide-ep/values.yaml) file)
-- One pod per DP rank (in progress)
+- One pod per DP rank
 
 Integration with `llm-d` components:
 - Quickstart guide in `llm-d-infra` depends on ModelService
@@ -28,24 +28,19 @@ helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-models
 helm repo update
 ```
 
-ModelService operates under the assumption that `llm-d-infra` has been installed in a Kuberentes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d-infra` Quickstart](https://github.com/llm-d-incubation/llm-d-infra/tree/main/quickstart) for more information. This helm chart requires external CRDs to be installed for usage.
+ModelService operates under the assumption that `llm-d-infra` has been installed in a Kuberentes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d-infra` Quickstart](https://github.com/llm-d-incubation/llm-d-infra/tree/main/quickstart) for more information.
 
-At a minimal, the following should be installed:
-1. Kubernetes Gateway API CRDs
+At a minimal, follow [these steps](https://github.com/llm-d-incubation/llm-d-infra/blob/main/quickstart/README-step-by-step.md#1-installing-gaie-kubernetes-infrastructure) to install the required external CRDs as the ModelService helm chart depends on them.
 
-    ```
-    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
-    ```
+## Examples
 
-2. Kubernetes Gateway API Inference Extension CRDs
+See [examples](/examples) for how to use this Helm chart. Some examples contain placeholders for components such as the gateway name. Use the `--set` flag to override placeholders. For example,
 
-    ```
-    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api-inference-extension/releases/download/v0.4.0/manifests.yaml
+```
+helm install cpu-only llm-d-modelservice -f examples/values-cpu.yaml --set prefill.replicas=0 --set "routing.parentRefs[0].name=MYGATEWAY"
+```
 
-    ```
-
-
-See [examples](/examples) for how to use this Helm chart.
+Check Helm's [official docs](https://helm.sh/docs/intro/using_helm/) for more guidance.
 
 ## Values
 Below are the values you can set.
