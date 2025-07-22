@@ -1,10 +1,17 @@
+# This values.yaml file creates the resources for a One Pod Per DP Rank scenario
+# See also defaults in chart values.yaml
+
+# When true, LeaderWorkerSet is used instead of Deployment
 multinode: true
 
 modelArtifacts:
+# This is the model name used to start vLLM.
   uri: "hf://Qwen/Qwen3-30B-A3B-FP8"
   size: 100Gi
   authSecretName: "llm-d-hf-token"
 
+# Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
+# also describes elements for Gateway API Inference Extension configuration
 routing:
   modelName: Qwen/Qwen3-30B-A3B-FP8
   servicePort: 8000
@@ -13,6 +20,8 @@ routing:
       kind: Gateway
       name: infra-wide-pd-inference-gateway
 
+  # required for certain gateways (e.g. Kgateway) but not others (Istio)
+  # creating this so that it works for all gateways
   inferenceModel:
     create: true
 

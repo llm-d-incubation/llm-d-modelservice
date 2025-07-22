@@ -6,13 +6,18 @@ The ModelService Helm Chart proposal is accepted on June 10, 2025. Read more abo
 
 TL;DR:
 
-Active scearios supported
-- P/D disaggregation using deployments
-- P/D disaggregation using LeaderWorkerSets
+Active scearios supported:
+- P/D disaggregation
+- Multi-node inference, utilizing data parallelism
 - One pod per DP rank (in progress)
+- One pod per node (in progress)
 
-Near future roadmap
-- Migrate `llm-d-deployer` and quickstart to use this helm chart
+Integration with `llm-d` components:
+- Quickstart guide in `llm-d-infra` depends on ModelService
+- Flexible configuration of `llm-d-inference-scheduler` for routing
+- Features `llm-d-routing-sidecar` in P/D disaggregation
+- Utilized in benchmarking experiments in `llm-d-benchmark`
+- Effortless use of `llm-d-inference-sim` for CPU-only workloads
 
 ## Getting started
 
@@ -23,7 +28,7 @@ helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-models
 helm repo update
 ```
 
-ModelService operates under the assumption that `llm-d-deployer` has been installed in a Kuberentes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d-deployer` Quickstart](https://github.com/llm-d/llm-d-deployer/blob/main/quickstart/README.md) for more information. This helm chart requires external CRDs to be installed for usage.
+ModelService operates under the assumption that `llm-d-infra` has been installed in a Kuberentes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d-infra` Quickstart](https://github.com/llm-d-incubation/llm-d-infra/tree/main/quickstart) for more information. This helm chart requires external CRDs to be installed for usage.
 
 At a minimal, the following should be installed:
 1. Kubernetes Gateway API CRDs

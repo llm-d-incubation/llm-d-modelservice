@@ -1,4 +1,5 @@
-# This values.yaml file creates the resources for random
+# This values.yaml file creates the resources for CPU-only scenario
+# Uses a vLLM simulator
 # See also defaults in chart values.yaml
 
 # When true, LeaderWorkerSet is used instead of Deployment

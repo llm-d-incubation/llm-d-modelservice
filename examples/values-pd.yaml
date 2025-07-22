@@ -1,4 +1,5 @@
-# This values.yaml file creates the resources for facebook/opt-125m
+# This values.yaml file creates the resources for a P/D disaggregation scenario
+# Uses a small model: facebook/opt-125m
 # See also defaults in chart values.yaml
 
 # When true, LeaderWorkerSet is used instead of Deployment
@@ -26,6 +27,8 @@ routing:
   inferencePool:
     create: true
 
+  # required for certain gateways (e.g. Kgateway) but not others (Istio)
+  # creating this so that it works for all gateways
   inferenceModel:
     create: true
 
