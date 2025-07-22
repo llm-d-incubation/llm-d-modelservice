@@ -20,13 +20,13 @@ Note: `alias k=kubectl`
     Dry run:
 
     ```
-    helm template vllm-sim llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-cpu.yaml
+    helm template cpu-sim llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-cpu.yaml
     ```
 
     To install in a Kind cluster, use `helm install` instead of `helm template`:
 
     ```
-    helm install vllm-sim llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-cpu.yaml
+    helm install cpu-sim llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-cpu.yaml
     ```
 
     Port forward the inference gateway service.
@@ -59,14 +59,14 @@ Note: `alias k=kubectl`
     Dry-run:
 
     ```
-    helm template facebook llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml
+    helm template pd llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml
     ```
 
     or install in a cluster
 
 
     ```
-    helm install facebook llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml
+    helm install pd llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml
     ```
 
 
@@ -99,7 +99,7 @@ Note: `alias k=kubectl`
     Dry-run:
 
     ```
-    helm template qwen llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-one-pod-per-dp-rank.yaml
+    helm template multinode llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-one-pod-per-dp-rank.yaml
     ```
 
 To run this example, setup the environment using https://github.com/tlrmchlsmth/vllm-dp-lws.
