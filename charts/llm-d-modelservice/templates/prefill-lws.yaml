@@ -46,13 +46,13 @@ spec:
         hostIPC: {{ .Values.prefill.hostIPC }}
         {{- end }}
         {{- if hasKey .Values.prefill "hostPID" }}
-        hostPID: {{ .Values.decprefillode.hostPID }}
+        hostPID: {{ .Values.prefill.hostPID }}
         {{- end }}
-        {{- (include "llm-d-modelservice.modelPod" (merge . (dict "pdSpec" .Values.prefill))) | nindent 6 }}
+        {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
         {{- with .Values.prefill.containers }}
         containers:
           {{- range . }}
-        {{- (include "llm-d-modelservice.container" (merge (dict "role" "prefill" "container" . "parallelism" $.Values.prefill.parallelism) $)) | nindent 8 }}
+        {{- (include "llm-d-modelservice.container" (dict "role" "prefill" "container" . "parallelism" $.Values.prefill.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart)) | nindent 8 }}
           {{- end }}
         {{- end }}
 

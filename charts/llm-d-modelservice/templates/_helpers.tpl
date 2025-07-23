@@ -286,8 +286,8 @@ context is a pdSpec
     {{- toYaml . | nindent 2 }}
   {{- end }}
   serviceAccountName: {{ include "llm-d-modelservice.pdServiceAccountName" . }}
-  {{- if .Values.schedulerName }}
-  schedulerName: {{ .Values.schedulerName }}
+  {{- if or .pdSpec.schedulerName .Values.schedulerName }}
+  schedulerName: {{ .pdSpec.schedulerName | default .Values.schedulerName }}
   {{- end }}
   {{- with .pdSpec.podSecurityContext }}
   securityContext:
