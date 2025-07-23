@@ -1,5 +1,8 @@
 # This values.yaml file is a default values file. It can be overridden using another.
 
+# schedulerName -- Name of the scheduler to use for scheduling model pods
+# schedulerName: default-scheduler
+
 modelArtifacts:
   # model URI. One of:
   #   hf://model/name - model on Hugging Face
