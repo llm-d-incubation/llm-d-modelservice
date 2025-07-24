@@ -12,7 +12,7 @@ Note: `alias k=kubectl`
 
 > If you only want to deploy model instances without routing support, append `--set inferencePool=false --set httpRoute=false` to the example commands.
 
-1. CPU-only in Kind
+1. CPU-only
 
     Make sure there is a gateway (Kgateway or Istio) deployed in the cluster. Follow [these instructions](https://gateway-api-inference-extension.sigs.k8s.io/guides/#__tabbed_3_2) on how to set up a gateway. Once done, update `routing.parentRefs[*].name` in this [values file](values-cpu.yaml#L18) to use the name for the Gateway (`llm-d-inference-gateway-istio`) in the cluster or override with the `--set "routing.parentRefs[0].name=MYGATEWAY"` flag.
 
@@ -23,7 +23,7 @@ Note: `alias k=kubectl`
     helm template cpu-sim llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-cpu.yaml
     ```
 
-    To install in a Kind cluster, use `helm install` instead of `helm template`:
+    To install, use `helm install` instead of `helm template`:
 
     ```
     helm install cpu-sim llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-cpu.yaml
