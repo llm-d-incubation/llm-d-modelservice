@@ -375,7 +375,7 @@ context is a dict with helm root context plus:
   {{- if .modelArg }}
   - --model
   {{- end }}
-  - /{{ $path }}
+  - /model-cache/{{ $path }}
 {{- else if eq $protocol "oci" }}
 {{- /* TBD */}}
 {{- fail "arguments for oci:// not implemented" }}
