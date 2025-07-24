@@ -45,6 +45,11 @@ decode:
   parallelism:
     data: 8 # these will be derived based performance testing
     tensor: 1 # these will be derived based performance testing
+  hostIPC: true
+  hostPID: true
+  subGroupPolicy:
+    subGroupSize: 8
+  subGroupExclusiveTopology: true
   containers:
     - name: vllm-worker-decode
       image: "quay.io/tms/vllm-dev-deepep:0.1.0"
@@ -166,6 +171,11 @@ prefill:
   parallelism:
     data: 8 # these will be derived based performance testing
     tensor: 1 # these will be derived based performance testing
+  hostIPC: true
+  hostPID: true
+  subGroupPolicy:
+    subGroupSize: 8
+  subGroupExclusiveTopology: true
   containers:
     - name: vllm-worker-prefill
       image: "quay.io/tms/vllm-dev-deepep:0.1.0"
