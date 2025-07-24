@@ -380,7 +380,7 @@ context is a dict with helm root context plus:
 {{- /* TBD */}}
 {{- fail "arguments for oci:// not implemented" }}
 {{- end }}
-{{- end }} {{- /* define "llm-d-modelservice.vllmServeArgs" */}}
+{{- end }} {{- /* define "llm-d-modelservice.argsByProtocol" */}}
 
 {{- define "llm-d-modelservice.vllmServeModelCommand" -}}
 {{- /* override command and set model and --port arguments */}}
@@ -478,4 +478,4 @@ context is a dict with helm root context plus:
   value: {{ include "llm-d-modelservice.dataParallelism" .parallelism | quote }}
 - name: TP_SIZE
   value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
-{{- end }} {{- /* define "llm-d-modelservice.pvcEnv" */}}
+{{- end }} {{- /* define "llm-d-modelservice.parallelismEnv" */}}
