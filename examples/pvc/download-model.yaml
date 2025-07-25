@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: model-downloader
+spec:
+  volumes:
+    - name: model-storage
+      persistentVolumeClaim:
+        claimName: model-pvc
+
+  # Downloads the model to PVC
+  initContainers:
+    - name: download-model
+      image: quay.io/fedora/python:3.10
+      command:
+        - /bin/bash
+        - -c
+        - >
+          pip install --no-cache-dir huggingface_hub &&
+          python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='facebook/opt-125m', local_dir='/models', local_dir_use_symlinks=False)"
+
+      # Note: change the repo_id parameter above for use case
+      # Make sure that your PVC (model-pvc in this case) has enough storage to download the model
+
+      volumeMounts:
+        - name: model-storage
+          mountPath: /models
+
+  containers:
+    - name: model-consumer
+      image: ubuntu
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: model-storage
+          mountPath: /models
+
+  restartPolicy: Never

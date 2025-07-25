@@ -104,6 +104,10 @@ Note: `alias k=kubectl`
 
 To run this example, setup the environment using https://github.com/tlrmchlsmth/vllm-dp-lws.
 
+4. Loading a model from a PVC
+
+    See [this README](./pvc/download-model.md).
+
 ## Troubleshooting:
 
 Differences between your environment and that in which the above examples were tested may mean the need to modify the input values files. Some common examples we are seen are:
