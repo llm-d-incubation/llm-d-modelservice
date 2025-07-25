@@ -91,10 +91,10 @@ Make sure that for the container of your interst in `prefill.containers` or `dec
 - A read-only volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true`
 - `--model` arg for that container is set to `model-cache/<path/to/model>` where `mountModelVolume: true`
 
-⚠️ You do **not** need to configure volumeMounts for containers where  `mountModelVolume: true`. ModelService will automatically populate the pod specification and mount the model files.
+⚠️ You do **not** need to configure volumeMounts for containers where  `mountModelVolume: true`ModelService will automatically populate the pod specification and mount the model files.
 
 However, if you want to add your own volume specifications, you may do so under `decode.volumes`. If you would like to add more `volumeMounts` to a container, regardless whether if `mountModelVolume` is true, you may do so under `decode.containers`.
 
-💡 You may optionally set the `--served-model-name`  in your container to be used for the OpenAI request, otherwise the request name must be a long string like `"model": "model-cache/<path/to/model>"`. Note that this argument is added automatically using the option `modelCommand: vllmServe`, using `routing.modelName` as the value to the `--served-model-name` argument.
+💡 You may optionally set the `--served-model-name`  in your container to be used for the OpenAI request, otherwise the request name must be a long string like `"model": "model-cache/<path/to/model>"`. Note that this argument is added automatically using the option `modelCommand: vllmServe` or `imageDefault`, using `routing.modelName` as the value to the `--served-model-name` argument.
 
 > For security purposes, a read-only volume is mounted to the pods to prevent a pod from deleting the model files in case another model service installation uses the same PVC. If you would like to write to the PVC, you should not do so through ModelService, but rather through your own pod like the download-model/pvc-debugger without the read-only restriction.
