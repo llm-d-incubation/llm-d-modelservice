@@ -57,7 +57,7 @@ Since the PVC is RWO, we can mount to this PVC in the next step.
 
 ## 2. Use ModelService to quickly mount the model
 
-Examine [this values file](../values-pvc.yaml) for an example of how to use a PVC. Note that the path after the `<pvc-name>` is the path on the PVC which the downloaded files can be found. If you don't know the path, create a debug pod and exec into it to find out. The path should not contain the mountPath of that debug pod. For example, if inside the pod, the path is which model files can be found is `/mnt/huggingface/cache/models/`, then use just `huggingface/cache/models/` as the `<path/to/model>` because `/mnt` is specific to the mountPath of that debug pod.
+Examine [this values file](../values-pvc.yaml) for an example of how to use a PVC. Note that the path after the `<pvc-name>` is the path on the PVC which the downloaded files can be found. If you don't know the path, create a debug pod (see an example manifest [here](./pvc-debugger.yaml)) and exec (`k exec -it pvc-debugger -- bin/bash`) into it to find out. The path should not contain the mountPath of that debug pod. For example, if inside the pod, the path is which model files can be found is `/mnt/huggingface/cache/models/`, then use just `huggingface/cache/models/` as the `<path/to/model>` because `/mnt` is specific to the mountPath of that debug pod.
 
 ### URI format
 "pvc://<pvc-name>/<path/to/model>"
