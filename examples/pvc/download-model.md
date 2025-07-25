@@ -11,9 +11,9 @@ There are some requirements for the PV or StorageClass. In particular, select a 
   - this is to ensure that at least one pod can mount to the storage volume and download the model, which can be later read by another pod
   - RWX will also support multinode and multiple replicas, while RWO won't
 
-You should then ask your administrator for a PVC that is available in your cluster. Assuming that a RWX PVC is available, which allows many pods across nodes to read-write to the volume, you can create a pod using the following spec which downloads your desire model onto the PVC.
+You should then ask your administrator for a PVC that is available in your cluster. If such PVC is not present, the following example PVC spec is provided.
 
-> You may use a RWO PVC, but after the pod downloads the model, you must delete the pod so that the vllm pods can claim the PVC. Also, a RWO PVC may not work for multinode examples.
+> You may use a RWO PVC, but after the pod downloads the model, you must delete the pod so that the vllm pods can claim the PVC. Also, a RWO PVC may not work for multinode examples and for models deployed with multiple replicas.
 
 You can apply the following [PVC manifest](pvc.yaml), which is the bare minimal spec.
 
@@ -37,7 +37,7 @@ alias k=kubectl
 k apply -f examples/pvc/pvc.yaml
 ```
 
-The following manifest is a pod which downloads the model on an InitContainer. We will need to fetch the path of the model later by exec into the running container. Check out this [download-model.yaml](./download-model.yaml) for such manifest. You may need to edit the Python script which downloads the model with the name of your desired model. Also, some models require a token, which you must supply. Modify the Python script for your usecase.
+Assuming that a RWX PVC is now available, which allows many pods across nodes to read-write to the volume, create a pod using the following spec which downloads your desire model onto the PVC through an InitContainer. We will need to fetch the path of the model later by exec into the running container. Check out this [download-model.yaml](./download-model.yaml) for such manifest. You may need to edit the Python script which downloads the model with the name of your desired model. Also, some models require a token, which you must supply. Modify the Python script for your usecase.
 
 ```
 k apply -f examples/pvc/download-model.yaml
