@@ -64,18 +64,37 @@ README.md   flax_model.msgpack  merges.txt              special_tokens_map.json 
 
 ## 2. Use ModelService to quickly mount the model
 
-Examine [this values file](../values-pvc.yaml) for an example of how to use a PVC. Note that the path after the `<pvc-name>` is the path on the PVC which the downloaded files can be found. If you don't know the path, create a debug pod (see an example manifest [here](./pvc-debugger.yaml)) and exec (`k exec -it pvc-debugger -- bin/bash`) into it to find out. The path should not contain the mountPath of that debug pod. For example, if inside the pod, the path is which model files can be found is `/mnt/huggingface/cache/models/`, then use just `huggingface/cache/models/` as the `<path/to/model>` because `/mnt` is specific to the mountPath of that debug pod.
+Examine [this values file](../values-pd.yaml) for an example of how to use a PVC. The only change is the URI, which should follow the following format.
 
-### URI format
-"pvc://pvc-name/<path/to/model>"
+```yaml
+modelArtifacts:
+  uri: pvc://pvc-name/<path/to/model>
+```
+
+You can install the ModelService quickly using this command:
+
+```
+helm install pvc-example llm-d-modelservice/llm-d-modelservice \
+-f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml \
+--set modelArtifacts.uri="pvc://pvc-name/<path/to/model>"
+```
+
+Examine [output-pvc.yaml](../output-pvc.yaml) to view the Kubernetes resources that will be applied upon the above command.
+
+Note that the path after the `<pvc-name>` is the path on the PVC which the downloaded files can be found. If you don't know the path, create a debug pod (see an example manifest [here](./pvc-debugger.yaml)) and exec (`k exec -it pvc-debugger -- bin/bash`) into it to find out. The path should not contain the mountPath of that debug pod. For example, if inside the pod, the path is which model files can be found is `/mnt/huggingface/cache/models/`, then use just `huggingface/cache/models/` as the `<path/to/model>` because `/mnt` is specific to the mountPath of that debug pod.
+
 
 Make sure that for the container of your interst in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pvc.yaml#L90)) for the volume mounts to be created correctly.
 
 ### Behavior
 - A read-only PVC volume with the name `model-storage` is created for the deployment
 - A read-only volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true`
-- `--model` args is set to `model-cache/<path/to/model>`
+- `--model` arg for that container is set to `model-cache/<path/to/model>` where `mountModelVolume: true`
 
-You may optionally set the `--served-model-name`  in your container to be used for the OpenAI request, otherwise the request name must be a long string like `"model": "model-cache/<path/to/model>`"`.
+⚠️ You do **not** need to configure volumeMounts for containers where  `mountModelVolume: true`. ModelService will automatically populate the pod specification and mount the model files.
+
+However, if you want to add your own volume specifications, you may do so under `decode.volumes`. If you would like to add more `volumeMounts` to a container, regardless whether if `mountModelVolume` is true, you may do so under `decode.containers`.
+
+💡 You may optionally set the `--served-model-name`  in your container to be used for the OpenAI request, otherwise the request name must be a long string like `"model": "model-cache/<path/to/model>"`. Note that this argument is added automatically using the option `modelCommand: vllmServe`, using `routing.modelName` as the value to the `--served-model-name` argument.
 
 > For security purposes, a read-only volume is mounted to the pods to prevent a pod from deleting the model files in case another model service installation uses the same PVC. If you would like to write to the PVC, you should not do so through ModelService, but rather through your own pod like the download-model/pvc-debugger without the read-only restriction.

@@ -248,7 +248,7 @@ spec:
           name: metrics-volume
         - name: model-storage
           persistentVolumeClaim:
-            claimName: model-pvc
+            claimName: pvc-name
             readOnly: true
       containers:
         - name: vllm
@@ -256,14 +256,12 @@ spec:
           
           command: ["vllm", "serve"]
           args:
-            - /model-cache/models
+            - /model-cache/<path/to/model>
             - --port
             - "8200"
             - --served-model-name
             - facebook/opt-125m
             
-            - --served-model-name
-            - facebook/opt-125m
             - --enforce-eager
             - --kv-transfer-config
             - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
@@ -405,7 +403,7 @@ spec:
           name: metrics-volume
         - name: model-storage
           persistentVolumeClaim:
-            claimName: model-pvc
+            claimName: pvc-name
             readOnly: true
       containers:
         - name: vllm
@@ -413,14 +411,12 @@ spec:
           
           command: ["vllm", "serve"]
           args:
-            - /model-cache/models
+            - /model-cache/<path/to/model>
             - --port
             - "8000"
             - --served-model-name
             - facebook/opt-125m
             
-            - --served-model-name
-            - facebook/opt-125m
             - --enforce-eager
             - --kv-transfer-config
             - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
