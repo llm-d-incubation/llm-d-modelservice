@@ -4,7 +4,7 @@ metadata:
   name: model-pvc
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany             # <--- Change to ReadWriteOnce if your StorageClass only provides RWO
   resources:
     requests:
       storage: 5Gi              # <--- make sure your PV has enough storage for this claim

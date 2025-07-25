@@ -5,9 +5,13 @@ Downloading large models from Hugging Face can take a significant amount of time
 
 ## 1. How to download the model onto a PVC
 
-There are some requirements you may set for the PV, such as setting `persistentVolumeReclaimPolicy: Retain` so that after the downloaded model remains despite no PVCs attached to the PV. Contact your cluster administrator for such PV requirements.
+There are some requirements for the PV or StorageClass. In particular, select a storage class that provides
+- a retention policy of `Retain`, to ensure that the model downloaded remains on the PV despite no PVCs attached
+- the desired access: **ReadWriteMany RWX** (preferred) vs. ReadWriteOnce RWO
+  - this is to ensure that at least one pod can mount to the storage volume and download the model, which can be later read by another pod
+  - RWX will also support multinode and multiple replicas, while RWO won't
 
-You should then ask your administrator for a PVC that is available in your cluster. Assuming that a RWM PVC is available, which allows many pods across nodes to read-write to the volume, you can create a pod using the following spec which downloads your desire model onto the PVC.
+You should then ask your administrator for a PVC that is available in your cluster. Assuming that a RWX PVC is available, which allows many pods across nodes to read-write to the volume, you can create a pod using the following spec which downloads your desire model onto the PVC.
 
 > You may use a RWO PVC, but after the pod downloads the model, you must delete the pod so that the vllm pods can claim the PVC. Also, a RWO PVC may not work for multinode examples.
 
@@ -20,7 +24,7 @@ metadata:
   name: model-pvc
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany             # <--- Change to ReadWriteOnce if your StorageClass only provides RWO
   resources:
     requests:
       storage: 5Gi              # <--- make sure your PV has enough storage for this claim
@@ -55,15 +59,8 @@ LICENSE.md  config.json         generation_config.json  pytorch_model.bin       
 README.md   flax_model.msgpack  merges.txt              special_tokens_map.json  tokenizer_config.json
 ```
 
-Delete this pod so the pods created in the next step can claim this PVC. If you have a RWM PVC, then you do not need to delete the `model-downloader` pod.
+> If using RWO: delete this pod so the pods created in the next step can claim this PVC. If you have a RWX PVC, then you do not need to delete the `model-downloader` pod.
 
-Otherwise,
-
-```
-k delete po model-downloader
-```
-
-so that other pods can claim this PVC in the next step.
 
 ## 2. Use ModelService to quickly mount the model
 
