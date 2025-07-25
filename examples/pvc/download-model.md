@@ -7,9 +7,11 @@ Downloading large models from Hugging Face can take a significant amount of time
 
 There are some requirements you may set for the PV, such as setting `persistentVolumeReclaimPolicy: Retain` so that after the downloaded model remains despite no PVCs attached to the PV. Contact your cluster administrator for such PV requirements.
 
-You should then ask your administrator for a PVC that is available in your cluster. Assuming that at least a ReadWriteOnce (RWO) PVC is available, which allows read-write by a single node, you can create a pod using the following spec which downloads your desire model onto the PVC.
+You should then ask your administrator for a PVC that is available in your cluster. Assuming that a RWM PVC is available, which allows many pods across nodes to read-write to the volume, you can create a pod using the following spec which downloads your desire model onto the PVC.
 
-For example, you can apply the following PVC manifest, which is the bare minimal spec. Your cluster may require you to use a StorageClass.
+> You may use a RWO PVC, but after the pod downloads the model, you must delete the pod so that the vllm pods can claim the PVC. Also, a RWO PVC may not work for multinode examples.
+
+You can apply the following [PVC manifest](pvc.yaml), which is the bare minimal spec.
 
 ```yaml
 apiVersion: v1
@@ -21,17 +23,23 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 5Gi              # <--- make sure your PV has enough storage for this claim
+  volumeName: model-pv          # <--- change this to reflect the name of the PV
+  storageClass: standard        # <--- change this to reflect the storage class of your PV
 ```
-
-The following manifest is a pod which downloads the model on an InitContainer. We will need to fetch the path of the model later by exec into the running container. Check out this [download-model.yaml](./download-model.yaml) for such manifest.
 
 ```
 alias k=kubectl
-k apply -f download-model.yaml
+k apply -f examples/pvc/pvc.yaml
 ```
 
-And wait for the pod to be in the `Running` state.
+The following manifest is a pod which downloads the model on an InitContainer. We will need to fetch the path of the model later by exec into the running container. Check out this [download-model.yaml](./download-model.yaml) for such manifest. You may need to edit the Python script which downloads the model with the name of your desired model. Also, some models require a token, which you must supply. Modify the Python script for your usecase.
+
+```
+k apply -f examples/pvc/download-model.yaml
+```
+
+Wait for the pod to be in the `Running` state.
 
 ```
 NAME                                                   READY   STATUS    RESTARTS   AGE
@@ -47,13 +55,15 @@ LICENSE.md  config.json         generation_config.json  pytorch_model.bin       
 README.md   flax_model.msgpack  merges.txt              special_tokens_map.json  tokenizer_config.json
 ```
 
-Delete this pod so the pods created in the next step can claim this PVC. If you have a RMW PVC, then you do not need to delete the `model-downloader` pod.
+Delete this pod so the pods created in the next step can claim this PVC. If you have a RWM PVC, then you do not need to delete the `model-downloader` pod.
+
+Otherwise,
 
 ```
 k delete po model-downloader
 ```
 
-Since the PVC is RWO, we can mount to this PVC in the next step.
+so that other pods can claim this PVC in the next step.
 
 ## 2. Use ModelService to quickly mount the model
 
@@ -65,8 +75,8 @@ Examine [this values file](../values-pvc.yaml) for an example of how to use a PV
 Make sure that for the container of your interst in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pvc.yaml#L90)) for the volume mounts to be created correctly.
 
 ### Behavior
-- A read-only PVC volume with the name model-storage is created for the deployment
-- A read-only volumeMount with the mountPath: model-cache is created for each container where `mountModelVolume: true`
+- A read-only PVC volume with the name `model-storage` is created for the deployment
+- A read-only volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true`
 - `--model` args is set to `model-cache/<path/to/model>`
 
 You may optionally set the `--served-model-name`  in your container to be used for the OpenAI request, otherwise the request name must be a long string like `"model": "model-cache/<path/to/model>`"`.

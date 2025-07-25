@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi              # <--- make sure your PV has enough storage for this claim
+  volumeName: model-pv          # <--- change this to reflect the name of the PV
+  storageClass: standard        # <--- change this to reflect the storage class of your PV
