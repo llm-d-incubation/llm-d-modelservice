@@ -81,3 +81,4 @@ Make sure that for the container of your interst in `prefill.containers` or `dec
 
 You may optionally set the `--served-model-name`  in your container to be used for the OpenAI request, otherwise the request name must be a long string like `"model": "model-cache/<path/to/model>`"`.
 
+> For security purposes, a read-only volume is mounted to the pods to prevent a pod from deleting the model files in case another model service installation uses the same PVC. If you would like to write to the PVC, you should not do so through ModelService, but rather through your own pod like the download-model/pvc-debugger without the read-only restriction.
