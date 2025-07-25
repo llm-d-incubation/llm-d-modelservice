@@ -5,8 +5,8 @@ kind: ServiceAccount
 metadata:
   name: qwen-lws-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.11
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: llm-d-modelservice/templates/httproute.yaml
@@ -16,8 +16,8 @@ metadata:
   name: qwen-lws-llm-d-modelservice
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.11
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   parentRefs:
@@ -25,7 +25,10 @@ spec:
     kind: Gateway
     name: infra-wide-pd-inference-gateway
   rules:
-    - backendRefs:
+    - timeouts:
+        backendRequest: "0s"
+        request: "0s"
+      backendRefs:
       - group: inference.networking.x-k8s.io
         kind: InferencePool
         name: gaie-pd
@@ -45,6 +48,7 @@ metadata:
     llm-d.ai/model: qwen-lws-llm-d-modelservice
   name: qwen-lws-llm-d-modelservice
 spec:
+  criticality: Critical
   modelName: Qwen/Qwen3-30B-A3B-FP8
   poolRef:
     name: gaie-pd
@@ -55,8 +59,8 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.11
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
     llm-d.ai/model: qwen-lws-llm-d-modelservice
@@ -75,6 +79,8 @@ spec:
           llm-d.ai/inferenceServing: "true"
           llm-d.ai/model: qwen-lws-llm-d-modelservice
           llm-d.ai/role: decode
+        annotations:
+          leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
       spec:
         hostIPC: true
         hostPID: true
@@ -86,7 +92,7 @@ spec:
               - --vllm-port=8200
               - --connector=nixlv2
               - -v=5
-            image: ghcr.io/llm-d/llm-d-routing-sidecar:0.0.6
+            image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.2.0
             imagePullPolicy: Always
             ports:
               - containerPort: 8000
@@ -107,12 +113,14 @@ spec:
                     values:
                       - H200
         volumes:
+          - emptyDir: {}
+            name: metrics-volume
           - name: model-storage
             emptyDir: 
               sizeLimit: 100Gi
         containers:
         - name: vllm-worker-decode
-          image: quay.io/tms/vllm-dev-deepep:0.1.0
+          image: ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1
           securityContext:
             capabilities:
               add:
@@ -229,8 +237,8 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.11
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
     llm-d.ai/model: qwen-lws-llm-d-modelservice
@@ -252,6 +260,8 @@ spec:
           llm-d.ai/inferenceServing: "true"
           llm-d.ai/model: qwen-lws-llm-d-modelservice
           llm-d.ai/role: prefill
+        annotations:
+          leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
       spec:
         hostIPC: true
         hostPID: true
@@ -267,12 +277,14 @@ spec:
                     values:
                       - H200
         volumes:
+          - emptyDir: {}
+            name: metrics-volume
           - name: model-storage
             emptyDir: 
               sizeLimit: 100Gi
         containers:
         - name: vllm-worker-prefill
-          image: quay.io/tms/vllm-dev-deepep:0.1.0
+          image: ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1
           securityContext:
             capabilities:
               add:

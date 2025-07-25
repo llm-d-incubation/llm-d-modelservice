@@ -52,7 +52,7 @@ decode:
   subGroupExclusiveTopology: true
   containers:
     - name: vllm-worker-decode
-      image: "quay.io/tms/vllm-dev-deepep:0.1.0"
+      image: "ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1"
       imagePullPolicy: Always
       workingDir: /code
       command: ["/bin/bash","-c"]
@@ -178,7 +178,7 @@ prefill:
   subGroupExclusiveTopology: true
   containers:
     - name: vllm-worker-prefill
-      image: "quay.io/tms/vllm-dev-deepep:0.1.0"
+      image: "ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1"
       imagePullPolicy: Always
       workingDir: /code
       command: ["/bin/bash","-c"]

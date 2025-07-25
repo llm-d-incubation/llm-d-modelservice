@@ -54,7 +54,7 @@ decode:
   replicas: 1
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d:0.0.8"
+    image: "ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1"
     modelCommand: vllmServe
     args:
       - "--enforce-eager"
@@ -93,7 +93,7 @@ prefill:
   replicas: 1
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d:0.0.8"
+    image: "ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1"
     modelCommand: vllmServe
     args:
       - "--enforce-eager"

@@ -3,28 +3,28 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: vllm-sim-llm-d-modelservice-epp
+  name: cpu-sim-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.19
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: llm-d-modelservice/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: vllm-sim-llm-d-modelservice
+  name: cpu-sim-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.19
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: llm-d-modelservice/templates/epp-plugin-configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: vllm-sim-llm-d-modelservice-epp
-  namespace: e2e-solution
+  name: cpu-sim-llm-d-modelservice-epp
+  namespace: default
 data:
   default-config.yaml: |
     apiVersion: inference.networking.x-k8s.io/v1alpha1
@@ -128,7 +128,7 @@ data:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: vllm-sim-llm-d-modelservice-epp
+  name: cpu-sim-llm-d-modelservice-epp
 rules:
 - apiGroups:
   - inference.networking.x-k8s.io
@@ -172,23 +172,23 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: vllm-sim-llm-d-modelservice-epp
+  name: cpu-sim-llm-d-modelservice-epp
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: vllm-sim-llm-d-modelservice-epp
+  name: cpu-sim-llm-d-modelservice-epp
 subjects:
 - kind: ServiceAccount
-  name: vllm-sim-llm-d-modelservice-epp
+  name: cpu-sim-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/epp-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: vllm-sim-llm-d-modelservice-epp
+  name: cpu-sim-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.19
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -199,29 +199,29 @@ spec:
       protocol: TCP
       appProtocol: http2
   selector:
-    llm-d.ai/epp: vllm-sim-llm-d-modelservice-epp
+    llm-d.ai/epp: cpu-sim-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/decode-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vllm-sim-llm-d-modelservice-decode
+  name: cpu-sim-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.19
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: vllm-sim-llm-d-modelservice
+      llm-d.ai/model: cpu-sim-llm-d-modelservice
       llm-d.ai/role: decode
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: vllm-sim-llm-d-modelservice
+        llm-d.ai/model: cpu-sim-llm-d-modelservice
         llm-d.ai/role: decode
     spec:
       initContainers:
@@ -232,7 +232,7 @@ spec:
             - --connector=nixlv2
             - -v=5
             - --secure-proxy=false
-          image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.2.0-rc2
+          image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.2.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -242,7 +242,7 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
     
-      serviceAccountName: vllm-sim-llm-d-modelservice
+      serviceAccountName: cpu-sim-llm-d-modelservice
       volumes:
         - emptyDir: {}
           name: metrics-volume
@@ -283,29 +283,29 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vllm-sim-llm-d-modelservice-epp
+  name: cpu-sim-llm-d-modelservice-epp
   labels:
-    llm-d.ai/epp: vllm-sim-llm-d-modelservice-epp
-  namespace: e2e-solution
+    llm-d.ai/epp: cpu-sim-llm-d-modelservice-epp
+  namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      llm-d.ai/epp: vllm-sim-llm-d-modelservice-epp
+      llm-d.ai/epp: cpu-sim-llm-d-modelservice-epp
   template:
     metadata:
       labels:
-        llm-d.ai/epp: vllm-sim-llm-d-modelservice-epp
+        llm-d.ai/epp: cpu-sim-llm-d-modelservice-epp
     spec:
       containers:
       - name: epp
         imagePullPolicy: Always
-        image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.0
+        image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1
         args:
         - --poolName
-        - vllm-sim-llm-d-modelservice
+        - cpu-sim-llm-d-modelservice
         - --poolNamespace
-        - e2e-solution
+        - default
         - -v
         - "6"
         - --zap-encoder
@@ -332,35 +332,35 @@ spec:
       volumes:
       - name: plugins-config-volume
         configMap:
-          name: vllm-sim-llm-d-modelservice-epp
-      serviceAccount: vllm-sim-llm-d-modelservice-epp
-      serviceAccountName: vllm-sim-llm-d-modelservice-epp
+          name: cpu-sim-llm-d-modelservice-epp
+      serviceAccount: cpu-sim-llm-d-modelservice-epp
+      serviceAccountName: cpu-sim-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/prefill-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vllm-sim-llm-d-modelservice-prefill
+  name: cpu-sim-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.19
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: vllm-sim-llm-d-modelservice
+      llm-d.ai/model: cpu-sim-llm-d-modelservice
       llm-d.ai/role: prefill
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: vllm-sim-llm-d-modelservice
+        llm-d.ai/model: cpu-sim-llm-d-modelservice
         llm-d.ai/role: prefill
     spec:
     
-      serviceAccountName: vllm-sim-llm-d-modelservice
+      serviceAccountName: cpu-sim-llm-d-modelservice
       volumes:
         - emptyDir: {}
           name: metrics-volume
@@ -401,11 +401,11 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: vllm-sim-llm-d-modelservice
-  namespace: e2e-solution
+  name: cpu-sim-llm-d-modelservice
+  namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.0.19
-    app.kubernetes.io/version: "0.0.1"
+    helm.sh/chart: llm-d-modelservice-0.2.0
+    app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   parentRefs:
@@ -419,7 +419,7 @@ spec:
       backendRefs:
       - group: inference.networking.x-k8s.io
         kind: InferencePool
-        name: vllm-sim-llm-d-modelservice
+        name: cpu-sim-llm-d-modelservice
         port: 8000
         weight: 1
       matches:
@@ -435,15 +435,15 @@ spec:
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
-  name: vllm-sim-llm-d-modelservice
-  namespace: e2e-solution
+  name: cpu-sim-llm-d-modelservice
+  namespace: default
 spec:
   extensionRef:
     failureMode: FailClose
     group: ""
     kind: Service
-    name: vllm-sim-llm-d-modelservice-epp
+    name: cpu-sim-llm-d-modelservice-epp
   selector:
     llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: vllm-sim-llm-d-modelservice
+    llm-d.ai/model: cpu-sim-llm-d-modelservice
   targetPortNumber: 8000
