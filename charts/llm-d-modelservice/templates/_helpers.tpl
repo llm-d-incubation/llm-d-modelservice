@@ -489,7 +489,7 @@ context is a dict with helm root context plus:
 {{- $hfhubcache := join "/" $middle }}
 {{- if .container.mountModelVolume }}
 - name: HF_HUB_CACHE
-  value: {{ $hfhubcache }}
+  value: /model-cache/{{ $hfhubcache }}
 {{- end }}
 {{- end }}
 {{- end }}
