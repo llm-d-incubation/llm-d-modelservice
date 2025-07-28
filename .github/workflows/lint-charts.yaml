@@ -21,6 +21,11 @@ jobs:
           python-version: '3.x'
           check-latest: true
 
+      - name: Build repo dependencies 
+        run: |
+          cd charts/llm-d-modelservice
+          helm dependency build
+
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.7.0
 
