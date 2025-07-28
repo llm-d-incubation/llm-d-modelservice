@@ -9,7 +9,7 @@ spec:
   {{- if .Values.routing.inferenceModel.criticality }}
   criticality: {{ .Values.routing.inferenceModel.criticality }}
   {{- end}}
-  modelName: {{ .Values.routing.modelName }}
+  modelName: {{ .Values.modelArtifacts.name }}
   poolRef:
     name: {{ include "llm-d-modelservice.inferencePoolName" . }}
 {{- end }}

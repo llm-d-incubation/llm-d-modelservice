@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: facebook-pd-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,7 +15,7 @@ kind: ServiceAccount
 metadata:
   name: facebook-pd-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -187,7 +187,7 @@ kind: Service
 metadata:
   name: facebook-pd-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -207,7 +207,7 @@ kind: Deployment
 metadata:
   name: facebook-pd-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -259,7 +259,7 @@ spec:
             - --port
             - "8200"
             - --served-model-name
-            - facebook/opt-125m
+            - "facebook/opt-125m"
             
             - --enforce-eager
             - --kv-transfer-config
@@ -380,7 +380,7 @@ kind: Deployment
 metadata:
   name: facebook-pd-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -415,7 +415,7 @@ spec:
             - --port
             - "8000"
             - --served-model-name
-            - facebook/opt-125m
+            - "facebook/opt-125m"
             
             - --enforce-eager
             - --kv-transfer-config
@@ -438,6 +438,8 @@ spec:
           - name: TP_SIZE
             value: "1"
           
+          - name: HF_HOME
+            value: /model-cache
           
           resources:
             limits:
@@ -448,6 +450,10 @@ spec:
               cpu: "16"
               memory: 16Gi
               nvidia.com/gpu: "1"
+          
+          volumeMounts:
+            - name: model-storage
+              mountPath: /model-cache
 ---
 # Source: llm-d-modelservice/templates/httproute.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -456,7 +462,7 @@ metadata:
   name: facebook-pd-llm-d-modelservice
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -464,6 +470,7 @@ spec:
   - group: gateway.networking.k8s.io
     kind: Gateway
     name: inference-gateway
+    namespace: 'default'
   rules:
     - timeouts:
         backendRequest: "0s"
@@ -476,12 +483,9 @@ spec:
         weight: 1
       matches:
       - headers:
-        - name: x-model-name
+        - name: 'x-model-name'
           type: Exact
-          value: facebook/opt-125m
-        path:
-          type: PathPrefix
-          value: /
+          value: 'facebook/opt-125m'
 ---
 # Source: llm-d-modelservice/templates/inferencemodel.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2

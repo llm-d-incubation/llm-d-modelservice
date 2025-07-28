@@ -7,13 +7,14 @@ multinode: false
 
 modelArtifacts:
 # This is the model name used to start vLLM.
-  uri: "hf://facebook/opt-125m"
+  name: facebook/opt-125m
+  uri: hf://"{{ .Values.modelArtifacts.name }}"
   size: 20Gi
 
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:
-  modelName: facebook/opt-125m
+  # modelName: facebook/opt-125m
   servicePort: 8000
 
   # other fields are inherited from chart values.yaml
@@ -35,13 +36,10 @@ routing:
   httpRoute:
     create: true
     matches:
-    - path:
-        type: PathPrefix
-        value: /
-      headers:
-      - name: x-model-name
+    - headers:
+      - name: "{{ .Values.routing.matchHeader }}"
         type: Exact
-        value: facebook/opt-125m
+        value: "{{ .Values.routing.matchHeaderValue }}"
 
   epp:
     create: true
@@ -126,3 +124,4 @@ prefill:
         cpu: "16"
         memory: 16Gi
         nvidia.com/gpu: "1"
+    mountModelVolume: true

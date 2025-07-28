@@ -10,7 +10,7 @@ metadata:
 spec:
   {{- with .Values.routing.parentRefs }}
   parentRefs:
-  {{- . | toYaml | nindent 2}}
+  {{- include "common.tplvalues.render" (dict "value" . "context" $) | nindent 2 }}
   {{- end }}
   {{- if .Values.routing.httpRoute.rules }}
   rules:
@@ -31,7 +31,7 @@ spec:
       {{- if .Values.routing.httpRoute.matches }}
       matches:
       {{- with .Values.routing.httpRoute.matches }}
-      {{- toYaml . | nindent 6 }}
+      {{- include "common.tplvalues.render" (dict "value" (include "common.tplvalues.render" (dict "value" . "context" $)) "context" $) | nindent 6 }}
       {{- end }}
       {{- else }}
       matches:

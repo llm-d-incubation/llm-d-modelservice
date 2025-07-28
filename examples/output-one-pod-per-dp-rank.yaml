@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: qwen-lws-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ metadata:
   name: qwen-lws-llm-d-modelservice
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -24,6 +24,7 @@ spec:
   - group: gateway.networking.k8s.io
     kind: Gateway
     name: infra-wide-pd-inference-gateway
+    namespace: 'default'
   rules:
     - timeouts:
         backendRequest: "0s"
@@ -59,7 +60,7 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
@@ -237,7 +238,7 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"

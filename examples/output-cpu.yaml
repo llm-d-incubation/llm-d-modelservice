@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: cpu-sim-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,7 +15,7 @@ kind: ServiceAccount
 metadata:
   name: cpu-sim-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -187,7 +187,7 @@ kind: Service
 metadata:
   name: cpu-sim-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -207,7 +207,7 @@ kind: Deployment
 metadata:
   name: cpu-sim-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -255,11 +255,11 @@ spec:
           
           args:
             - --model
-            - "random/model"
+            - random/model
             - --port
             - "8200"
             - --served-model-name
-            - random/model
+            - "random/model"
           env:
           - name: DP_SIZE
             value: "1"
@@ -342,7 +342,7 @@ kind: Deployment
 metadata:
   name: cpu-sim-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -373,11 +373,11 @@ spec:
           
           args:
             - --model
-            - "random/model"
+            - random/model
             - --port
             - "8000"
             - --served-model-name
-            - random/model
+            - "random/model"
           env:
           - name: DP_SIZE
             value: "1"
@@ -404,7 +404,7 @@ metadata:
   name: cpu-sim-llm-d-modelservice
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.0
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -412,6 +412,7 @@ spec:
   - group: gateway.networking.k8s.io
     kind: Gateway
     name: inference-gateway
+    namespace: 'default'
   rules:
     - timeouts:
         backendRequest: "0s"
@@ -427,9 +428,6 @@ spec:
         - name: x-model-name
           type: Exact
           value: random/model
-        path:
-          type: PathPrefix
-          value: /
 ---
 # Source: llm-d-modelservice/templates/inferencepool.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2

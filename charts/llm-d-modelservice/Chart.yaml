@@ -30,3 +30,13 @@ maintainers:
   - name: "Michael Kalantar"
     email: "kalantar@us.ibm.com"
     url: "https://github.com/kalantar"
+
+sources:
+  - https://github.com/llm-d-incubation/llm-d-modelservice
+
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: "2.27.0"

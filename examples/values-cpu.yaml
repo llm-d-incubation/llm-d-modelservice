@@ -6,11 +6,13 @@
 multinode: false
 
 modelArtifacts:
-  uri: "hf://random/model"
+  # name is the value of the model parameter in OpenAI requests
+  name: random/model
+  uri: "hf://{{ .Values.modelArtifacts.name }}"
   size: 5Mi
 
 routing:
-  # This is the model name for the OpenAI request
+  # deprecated
   modelName: random/model
   servicePort: 8000
 
@@ -18,11 +20,11 @@ routing:
     secure: false
 
   httpRoute:
+    create: true
+    matchLabel: x-model-name
+    value: random
     matches:
-    - path:
-        type: PathPrefix
-        value: /
-      headers:
+    - headers:
       - name: x-model-name
         type: Exact
         value: random/model
