@@ -333,6 +333,10 @@ context is a dict with helm root context plus:
   {{- (include "llm-d-modelservice.parallelismEnv" .) | nindent 2 }}
   {{- /* insert envs based on what modelArtifact prefix */}}
   {{- (include "llm-d-modelservice.hfEnv" .) | nindent 2 }}
+  {{- with .container.ports }}
+  ports:
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
   {{- with .container.livenessProbe }}
   livenessProbe:
     {{- toYaml . | nindent 4 }}

@@ -1,0 +1,40 @@
+{{- if and .Values.decode.create .Values.decode.monitoring.podmonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "llm-d-modelservice.decodeName" . }}-podmonitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    app.kubernetes.io/component: decode
+  {{- with .Values.decode.monitoring.podmonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.decode.monitoring.podmonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "llm-d-modelservice.decodelabels" . | nindent 6 }}
+  podMetricsEndpoints:
+  - port: {{ .Values.decode.monitoring.podmonitor.port | default (include "llm-d-modelservice.vllmPort" (dict "role" "decode" "Values" .Values)) }}
+    path: {{ .Values.decode.monitoring.podmonitor.path | default "/metrics" }}
+    interval: {{ .Values.decode.monitoring.podmonitor.interval | default "30s" }}
+    {{- with .Values.decode.monitoring.podmonitor.scrapeTimeout }}
+    scrapeTimeout: {{ . }}
+    {{- end }}
+    {{- with .Values.decode.monitoring.podmonitor.relabelings }}
+    relabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.decode.monitoring.podmonitor.metricRelabelings }}
+    metricRelabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- with .Values.decode.monitoring.podmonitor.namespaceSelector }}
+  namespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

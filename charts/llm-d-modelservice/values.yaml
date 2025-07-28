@@ -158,7 +158,9 @@ decode:
     image: "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0"
     modelCommand: imageDefault
     ports:
-      - containerPort: 5557
+      - containerPort: 8200  # vLLM service port (from routing.proxy.targetPort)
+        protocol: TCP
+      - containerPort: 5557  # NIXL side channel
         protocol: TCP
     mountModelVolume: true
     volumeMounts:
@@ -188,6 +190,31 @@ decode:
   # -- Not set by default
   # -- Only an option for LWS (multinode)
   # subGroupExclusiveToplogy: true
+
+  # Monitoring configuration for decode pods
+  monitoring:
+    # PodMonitor configuration for Prometheus Operator
+    podmonitor:
+      # enabled -- Create PodMonitor resource for decode deployment
+      enabled: false
+      # port -- Port name or number to scrape metrics from (defaults to vllmPort: decode=8200, prefill=8000)
+      # port: 8200
+      # path -- HTTP path to scrape metrics from
+      path: "/metrics"
+      # interval -- Interval at which metrics should be scraped
+      interval: "30s"
+      # scrapeTimeout -- Timeout after which the scrape is ended
+      # scrapeTimeout: "10s"
+      # labels -- Additional labels to be added to the PodMonitor
+      labels: {}
+      # annotations -- Additional annotations to be added to the PodMonitor
+      annotations: {}
+      # relabelings -- RelabelConfigs to apply to samples before scraping
+      relabelings: []
+      # metricRelabelings -- MetricRelabelConfigs to apply to samples before ingestion
+      metricRelabelings: []
+      # namespaceSelector -- Selector to select which namespaces the Endpoints objects are discovered from
+      # namespaceSelector: {}
 
 # Prefill pod configuation
 prefill:
@@ -203,7 +230,9 @@ prefill:
     image: "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0"
     modelCommand: imageDefault
     ports:
-      - containerPort: 5557
+      - containerPort: 8000  # vLLM service port (from routing.servicePort)
+        protocol: TCP
+      - containerPort: 5557  # NIXL side channel
         protocol: TCP
     mountModelVolume: true
     volumeMounts:
@@ -233,3 +262,29 @@ prefill:
   # -- Not set by default
   # -- Only an option for LWS (multinode)
   # subGroupExclusiveToplogy: true
+
+
+  # Monitoring configuration for prefill pods
+  monitoring:
+    # PodMonitor configuration for Prometheus Operator
+    podmonitor:
+      # enabled -- Create PodMonitor resource for prefill deployment
+      enabled: false
+      # port -- Port name or number to scrape metrics from (defaults to vllmPort: decode=8200, prefill=8000)
+      # port: 8000
+      # path -- HTTP path to scrape metrics from
+      path: "/metrics"
+      # interval -- Interval at which metrics should be scraped
+      interval: "30s"
+      # scrapeTimeout -- Timeout after which the scrape is ended
+      # scrapeTimeout: "10s"
+      # labels -- Additional labels to be added to the PodMonitor
+      labels: {}
+      # annotations -- Additional annotations to be added to the PodMonitor
+      annotations: {}
+      # relabelings -- RelabelConfigs to apply to samples before scraping
+      relabelings: []
+      # metricRelabelings -- MetricRelabelConfigs to apply to samples before ingestion
+      metricRelabelings: []
+      # namespaceSelector -- Selector to select which namespaces the Endpoints objects are discovered from
+      # namespaceSelector: {}
