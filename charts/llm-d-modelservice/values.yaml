@@ -29,7 +29,7 @@ routing:
   matchHeader: x-model-name
   # for (default) header based routing, the value of header on which this requests should be sent to this model
   matchHeaderValue: "{{ .Values.modelArtifacts.name }}"
-  
+
   # Deprecated
   # modelName: random/modelId
   # port the inference engine (VLLM) listens
