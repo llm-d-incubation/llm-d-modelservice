@@ -14,7 +14,7 @@ modelArtifacts:
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:
-  matchHeaderValue: Qwen/Qwen3-30B-A3B-FP8
+  matchHeaderValue: "{{ .Values.modelArtifacts.name }}"
   servicePort: 8000
   parentRefs:
     - group: gateway.networking.k8s.io
