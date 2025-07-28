@@ -106,7 +106,7 @@ To run this example, setup the environment using https://github.com/tlrmchlsmth/
 
 4. Loading a model from a PVC
 
-    See [this README](./pvc/download-model.md).
+    See [this README](./pvc/README.md).
 
 ## Troubleshooting:
 
