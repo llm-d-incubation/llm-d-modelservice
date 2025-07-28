@@ -32,6 +32,8 @@ ModelService operates under the assumption that `llm-d-infra` has been installed
 
 At a minimal, follow [these steps](https://github.com/llm-d-incubation/llm-d-infra/blob/main/quickstart/README-step-by-step.md#1-installing-gaie-kubernetes-infrastructure) to install the required external CRDs as the ModelService helm chart depends on them.
 
+Note that in order to create HTTPRoute objects last, Helm hooks are used. As a consequence, these objects are not deleted when `helm delete` is executed. They should be manually deleted to avoid unexpected routing problems.
+
 ## Examples
 
 See [examples](/examples) for how to use this Helm chart. Some examples contain placeholders for components such as the gateway name. Use the `--set` flag to override placeholders. For example,
