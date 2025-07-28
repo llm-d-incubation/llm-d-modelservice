@@ -123,5 +123,5 @@ Make sure that for the container of your interst in `prefill.containers` or `dec
 ### Behavior
 - A read-only PVC volume with the name `model-storage` is created for the deployment
 - A read-only volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true`
-- `HF_HUB_CACHE` environemnt variable for that container is set to `model-cache/path/to/hf_hub_cache` where `mountModelVolume: true`
+- `HF_HUB_CACHE` environment variable for that container is set to `model-cache/path/to/hf_hub_cache` where `mountModelVolume: true`
 - `--model` arugment is set to `namespace/modelID`

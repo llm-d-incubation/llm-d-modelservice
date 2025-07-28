@@ -256,7 +256,7 @@ spec:
           
           command: ["vllm", "serve"]
           args:
-            - namespace/modelID
+            - namespace/modelid
             - --port
             - "8200"
             - --served-model-name
@@ -284,8 +284,10 @@ spec:
             value: "1"
           
           - name: HF_HUB_CACHE
-            value: /model-cache/path/to/hf_hub_cache
+            value: /model-cache/path/to/hfhubcache
           ports:
+          - containerPort: 8200
+            protocol: TCP
           - containerPort: 5557
             protocol: TCP
           
@@ -416,7 +418,7 @@ spec:
           
           command: ["vllm", "serve"]
           args:
-            - namespace/modelID
+            - namespace/modelid
             - --port
             - "8000"
             - --served-model-name

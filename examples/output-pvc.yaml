@@ -284,6 +284,8 @@ spec:
             value: "1"
           
           ports:
+          - containerPort: 8200
+            protocol: TCP
           - containerPort: 5557
             protocol: TCP
           

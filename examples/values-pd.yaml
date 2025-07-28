@@ -74,6 +74,8 @@ decode:
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
     ports:
+      - containerPort: 8200
+        protocol: TCP
       - containerPort: 5557
         protocol: TCP
     resources:

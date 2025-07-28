@@ -286,6 +286,8 @@ spec:
           - name: HF_HOME
             value: /model-cache
           ports:
+          - containerPort: 8200
+            protocol: TCP
           - containerPort: 5557
             protocol: TCP
           
