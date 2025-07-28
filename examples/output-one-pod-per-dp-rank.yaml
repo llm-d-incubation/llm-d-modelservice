@@ -5,39 +5,9 @@ kind: ServiceAccount
 metadata:
   name: qwen-lws-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
----
-# Source: llm-d-modelservice/templates/httproute.yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: qwen-lws-llm-d-modelservice
-  namespace: default
-  labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
-    app.kubernetes.io/version: "v0.2.0"
-    app.kubernetes.io/managed-by: Helm
-spec:
-  parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: infra-wide-pd-inference-gateway
-  rules:
-    - timeouts:
-        backendRequest: "0s"
-        request: "0s"
-      backendRefs:
-      - group: inference.networking.x-k8s.io
-        kind: InferencePool
-        name: gaie-pd
-        port: 8000
-        weight: 1
-      matches:
-      - path:
-          type: PathPrefix
-          value: /
 ---
 # Source: llm-d-modelservice/templates/inferencemodel.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2
@@ -59,7 +29,7 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
@@ -116,8 +86,9 @@ spec:
           - emptyDir: {}
             name: metrics-volume
           - name: model-storage
-            emptyDir: 
+            emptyDir:
               sizeLimit: 100Gi
+          
         containers:
         - name: vllm-worker-decode
           image: ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1
@@ -237,7 +208,7 @@ kind: LeaderWorkerSet
 metadata:
   name: qwen-lws-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/inferenceServing: "true"
@@ -280,8 +251,9 @@ spec:
           - emptyDir: {}
             name: metrics-volume
           - name: model-storage
-            emptyDir: 
+            emptyDir:
               sizeLimit: 100Gi
+          
         containers:
         - name: vllm-worker-prefill
           image: ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1
@@ -396,3 +368,35 @@ spec:
               rdma/ib: 1
           
           workingDir: /code
+---
+# Source: llm-d-modelservice/templates/httproute.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: qwen-lws-llm-d-modelservice
+  namespace: default
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.2.1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+spec:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: infra-wide-pd-inference-gateway
+  rules:
+    - timeouts:
+        backendRequest: "0s"
+        request: "0s"
+      backendRefs:
+      - group: inference.networking.x-k8s.io
+        kind: InferencePool
+        name: gaie-pd
+        port: 8000
+        weight: 1
+      matches:
+      - path:
+          type: PathPrefix
+          value: /

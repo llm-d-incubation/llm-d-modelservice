@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: pvc-hf-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,7 +15,7 @@ kind: ServiceAccount
 metadata:
   name: pvc-hf-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -187,7 +187,7 @@ kind: Service
 metadata:
   name: pvc-hf-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -207,7 +207,7 @@ kind: Deployment
 metadata:
   name: pvc-hf-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -384,7 +384,7 @@ kind: Deployment
 metadata:
   name: pvc-hf-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.0
+    helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -459,40 +459,6 @@ spec:
               memory: 16Gi
               nvidia.com/gpu: "1"
 ---
-# Source: llm-d-modelservice/templates/httproute.yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: pvc-hf-llm-d-modelservice
-  namespace: default
-  labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.0
-    app.kubernetes.io/version: "v0.2.0"
-    app.kubernetes.io/managed-by: Helm
-spec:
-  parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: inference-gateway
-  rules:
-    - timeouts:
-        backendRequest: "0s"
-        request: "0s"
-      backendRefs:
-      - group: inference.networking.x-k8s.io
-        kind: InferencePool
-        name: pvc-hf-llm-d-modelservice
-        port: 8000
-        weight: 1
-      matches:
-      - headers:
-        - name: x-model-name
-          type: Exact
-          value: facebook/opt-125m
-        path:
-          type: PathPrefix
-          value: /
----
 # Source: llm-d-modelservice/templates/inferencemodel.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferenceModel
@@ -523,3 +489,39 @@ spec:
     llm-d.ai/inferenceServing: "true"
     llm-d.ai/model: pvc-hf-llm-d-modelservice
   targetPortNumber: 8000
+---
+# Source: llm-d-modelservice/templates/httproute.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pvc-hf-llm-d-modelservice
+  namespace: default
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.2.1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+spec:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: inference-gateway
+  rules:
+    - timeouts:
+        backendRequest: "0s"
+        request: "0s"
+      backendRefs:
+      - group: inference.networking.x-k8s.io
+        kind: InferencePool
+        name: pvc-hf-llm-d-modelservice
+        port: 8000
+        weight: 1
+      matches:
+      - headers:
+        - name: x-model-name
+          type: Exact
+          value: facebook/opt-125m
+        path:
+          type: PathPrefix
+          value: /
