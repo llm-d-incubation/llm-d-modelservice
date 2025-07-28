@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: facebook-pd-llm-d-modelservice-epp
+  name: pvc-hf-llm-d-modelservice-epp
   labels:
     helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
@@ -13,7 +13,7 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: facebook-pd-llm-d-modelservice
+  name: pvc-hf-llm-d-modelservice
   labels:
     helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
@@ -23,7 +23,7 @@ metadata:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: facebook-pd-llm-d-modelservice-epp
+  name: pvc-hf-llm-d-modelservice-epp
   namespace: default
 data:
   default-config.yaml: |
@@ -128,7 +128,7 @@ data:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: facebook-pd-llm-d-modelservice-epp
+  name: pvc-hf-llm-d-modelservice-epp
 rules:
 - apiGroups:
   - inference.networking.x-k8s.io
@@ -172,20 +172,20 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: facebook-pd-llm-d-modelservice-epp
+  name: pvc-hf-llm-d-modelservice-epp
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: facebook-pd-llm-d-modelservice-epp
+  name: pvc-hf-llm-d-modelservice-epp
 subjects:
 - kind: ServiceAccount
-  name: facebook-pd-llm-d-modelservice-epp
+  name: pvc-hf-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/epp-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: facebook-pd-llm-d-modelservice-epp
+  name: pvc-hf-llm-d-modelservice-epp
   labels:
     helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
@@ -199,13 +199,13 @@ spec:
       protocol: TCP
       appProtocol: http2
   selector:
-    llm-d.ai/epp: facebook-pd-llm-d-modelservice-epp
+    llm-d.ai/epp: pvc-hf-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/decode-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: facebook-pd-llm-d-modelservice-decode
+  name: pvc-hf-llm-d-modelservice-decode
   labels:
     helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
@@ -215,13 +215,13 @@ spec:
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: facebook-pd-llm-d-modelservice
+      llm-d.ai/model: pvc-hf-llm-d-modelservice
       llm-d.ai/role: decode
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: facebook-pd-llm-d-modelservice
+        llm-d.ai/model: pvc-hf-llm-d-modelservice
         llm-d.ai/role: decode
     spec:
       initContainers:
@@ -242,25 +242,25 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
     
-      serviceAccountName: facebook-pd-llm-d-modelservice
+      serviceAccountName: pvc-hf-llm-d-modelservice
       volumes:
         - emptyDir: {}
           name: metrics-volume
         - name: model-storage
-          emptyDir:
-            sizeLimit: 20Gi
-        
+          persistentVolumeClaim:
+            claimName: pvc-name
+            readOnly: true
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1
           
           command: ["vllm", "serve"]
           args:
-            - "facebook/opt-125m"
+            - namespace/modelid
             - --port
             - "8200"
             - --served-model-name
-            - "facebook/opt-125m"
+            - facebook/opt-125m
             
             - --enforce-eager
             - --kv-transfer-config
@@ -283,8 +283,8 @@ spec:
           - name: TP_SIZE
             value: "1"
           
-          - name: HF_HOME
-            value: /model-cache
+          - name: HF_HUB_CACHE
+            value: /model-cache/path/to/hfhubcache
           ports:
           - containerPort: 8200
             protocol: TCP
@@ -309,19 +309,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: facebook-pd-llm-d-modelservice-epp
+  name: pvc-hf-llm-d-modelservice-epp
   labels:
-    llm-d.ai/epp: facebook-pd-llm-d-modelservice-epp
+    llm-d.ai/epp: pvc-hf-llm-d-modelservice-epp
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      llm-d.ai/epp: facebook-pd-llm-d-modelservice-epp
+      llm-d.ai/epp: pvc-hf-llm-d-modelservice-epp
   template:
     metadata:
       labels:
-        llm-d.ai/epp: facebook-pd-llm-d-modelservice-epp
+        llm-d.ai/epp: pvc-hf-llm-d-modelservice-epp
     spec:
       containers:
       - name: epp
@@ -329,7 +329,7 @@ spec:
         image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1
         args:
         - --poolName
-        - facebook-pd-llm-d-modelservice
+        - pvc-hf-llm-d-modelservice
         - --poolNamespace
         - default
         - -v
@@ -376,15 +376,15 @@ spec:
       volumes:
       - name: plugins-config-volume
         configMap:
-          name: facebook-pd-llm-d-modelservice-epp
-      serviceAccount: facebook-pd-llm-d-modelservice-epp
-      serviceAccountName: facebook-pd-llm-d-modelservice-epp
+          name: pvc-hf-llm-d-modelservice-epp
+      serviceAccount: pvc-hf-llm-d-modelservice-epp
+      serviceAccountName: pvc-hf-llm-d-modelservice-epp
 ---
 # Source: llm-d-modelservice/templates/prefill-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: facebook-pd-llm-d-modelservice-prefill
+  name: pvc-hf-llm-d-modelservice-prefill
   labels:
     helm.sh/chart: llm-d-modelservice-v0.2.1
     app.kubernetes.io/version: "v0.2.0"
@@ -394,35 +394,35 @@ spec:
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: facebook-pd-llm-d-modelservice
+      llm-d.ai/model: pvc-hf-llm-d-modelservice
       llm-d.ai/role: prefill
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: facebook-pd-llm-d-modelservice
+        llm-d.ai/model: pvc-hf-llm-d-modelservice
         llm-d.ai/role: prefill
     spec:
     
-      serviceAccountName: facebook-pd-llm-d-modelservice
+      serviceAccountName: pvc-hf-llm-d-modelservice
       volumes:
         - emptyDir: {}
           name: metrics-volume
         - name: model-storage
-          emptyDir:
-            sizeLimit: 20Gi
-        
+          persistentVolumeClaim:
+            claimName: pvc-name
+            readOnly: true
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1
           
           command: ["vllm", "serve"]
           args:
-            - "facebook/opt-125m"
+            - namespace/modelid
             - --port
             - "8000"
             - --served-model-name
-            - "facebook/opt-125m"
+            - facebook/opt-125m
             
             - --enforce-eager
             - --kv-transfer-config
@@ -445,8 +445,6 @@ spec:
           - name: TP_SIZE
             value: "1"
           
-          - name: HF_HOME
-            value: /model-cache
           ports:
           - containerPort: 8000
             protocol: TCP
@@ -462,10 +460,6 @@ spec:
               cpu: "16"
               memory: 16Gi
               nvidia.com/gpu: "1"
-          
-          volumeMounts:
-            - name: model-storage
-              mountPath: /model-cache
 ---
 # Source: llm-d-modelservice/templates/inferencemodel.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2
@@ -473,36 +467,36 @@ kind: InferenceModel
 metadata:
   labels:
     llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: facebook-pd-llm-d-modelservice
-  name: facebook-pd-llm-d-modelservice
+    llm-d.ai/model: pvc-hf-llm-d-modelservice
+  name: pvc-hf-llm-d-modelservice
 spec:
   criticality: Critical
   modelName: facebook/opt-125m
   poolRef:
-    name: facebook-pd-llm-d-modelservice
+    name: pvc-hf-llm-d-modelservice
 ---
 # Source: llm-d-modelservice/templates/inferencepool.yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
-  name: facebook-pd-llm-d-modelservice
+  name: pvc-hf-llm-d-modelservice
   namespace: default
 spec:
   extensionRef:
     failureMode: FailClose
     group: ""
     kind: Service
-    name: facebook-pd-llm-d-modelservice-epp
+    name: pvc-hf-llm-d-modelservice-epp
   selector:
     llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: facebook-pd-llm-d-modelservice
+    llm-d.ai/model: pvc-hf-llm-d-modelservice
   targetPortNumber: 8000
 ---
 # Source: llm-d-modelservice/templates/httproute.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: facebook-pd-llm-d-modelservice
+  name: pvc-hf-llm-d-modelservice
   namespace: default
   labels:
     helm.sh/chart: llm-d-modelservice-v0.2.1
@@ -515,7 +509,6 @@ spec:
   - group: gateway.networking.k8s.io
     kind: Gateway
     name: inference-gateway
-    namespace: 'default'
   rules:
     - timeouts:
         backendRequest: "0s"
@@ -523,11 +516,14 @@ spec:
       backendRefs:
       - group: inference.networking.x-k8s.io
         kind: InferencePool
-        name: facebook-pd-llm-d-modelservice
+        name: pvc-hf-llm-d-modelservice
         port: 8000
         weight: 1
       matches:
       - headers:
-        - name: 'x-model-name'
+        - name: x-model-name
           type: Exact
-          value: 'facebook/opt-125m'
+          value: facebook/opt-125m
+        path:
+          type: PathPrefix
+          value: /
