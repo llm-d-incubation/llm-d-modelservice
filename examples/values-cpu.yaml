@@ -21,9 +21,9 @@ routing:
     create: true
     matches:
     - headers:
-      - name: "{{ .Values.routing.matchHeader }}"
+      - name: x-model-name
         type: Exact
-        value: "{{ .Values.routing.matchHeaderValue }}"
+        value: "{{ .Values.modelArtifacts.name }}"
 
   epp:
     create: true

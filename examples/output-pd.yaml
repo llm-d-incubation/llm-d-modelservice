@@ -528,6 +528,6 @@ spec:
         weight: 1
       matches:
       - headers:
-        - name: 'x-model-name'
+        - name: x-model-name
           type: Exact
           value: 'facebook/opt-125m'

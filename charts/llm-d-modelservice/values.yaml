@@ -25,11 +25,6 @@ multinode: false
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:
-  # for (default) header based routing, the header that is used to route inference requests
-  matchHeader: x-model-name
-  # for (default) header based routing, the value of header on which this requests should be sent to this model
-  matchHeaderValue: "{{ .Values.modelArtifacts.name }}"
-
   # Deprecated
   # modelName: random/modelId
   # port the inference engine (VLLM) listens
