@@ -14,7 +14,6 @@ modelArtifacts:
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:
-  # modelName: facebook/opt-125m
   servicePort: 8000
 
   # other fields are inherited from chart values.yaml

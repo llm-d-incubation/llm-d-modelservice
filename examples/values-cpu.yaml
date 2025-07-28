@@ -12,8 +12,6 @@ modelArtifacts:
   size: 5Mi
 
 routing:
-  # deprecated
-  modelName: random/model
   servicePort: 8000
 
   proxy:
@@ -21,13 +19,11 @@ routing:
 
   httpRoute:
     create: true
-    matchLabel: x-model-name
-    value: random
     matches:
     - headers:
-      - name: x-model-name
+      - name: "{{ .Values.routing.matchHeader }}"
         type: Exact
-        value: random/model
+        value: "{{ .Values.routing.matchHeaderValue }}"
 
   epp:
     create: true
