@@ -240,9 +240,10 @@ Context is .Values.modelArtifacts
 {{- $path := last $parsedArtifacts -}}
 {{- if eq $protocol "hf" -}}
 - name: model-storage
-  emptyDir: 
+  emptyDir:
     sizeLimit: {{ default "0" .size }}
-{{- else if eq $protocol "pvc" }}
+{{/* supports pvc or pvc+hf prefixes */}}
+{{- else if hasPrefix "pvc" $protocol }}
 {{- $parsedArtifacts := regexSplit "/" $path -1 -}}
 {{- $claim := first $parsedArtifacts -}}
 - name: model-storage
@@ -302,7 +303,7 @@ context is a pdSpec
     {{- toYaml .pdSpec.volumes | nindent 4 }}
   {{- end -}}
   {{ include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 4}}
-{{- end }} 
+{{- end }}
 
 {{/*
 Container elements of deployment/lws spec template
@@ -380,6 +381,15 @@ context is a dict with helm root context plus:
   - --model
   {{- end }}
   - /model-cache/{{ $path }}
+{{- else if eq $protocol "pvc+hf" }}
+{{- $claimpath := regexSplit "/" $other -1 -}}
+{{- $length := len $claimpath }}
+{{- $namespace := index $claimpath (sub $length 2) -}}
+{{- $modelID := last $claimpath -}}
+  {{- if .modelArg }}
+  - --model
+  {{- end }}
+  - {{ $namespace }}/{{ $modelID }}
 {{- else if eq $protocol "oci" }}
 {{- /* TBD */}}
 {{- fail "arguments for oci:// not implemented" }}
@@ -462,10 +472,25 @@ context is a dict with helm root context plus:
 {{- define "llm-d-modelservice.hfEnv" -}}
 {{- $parsedArtifacts := regexSplit "://" .Values.modelArtifacts.uri -1 -}}
 {{- $protocol := first $parsedArtifacts -}}
+{{- $other := last $parsedArtifacts -}}
+{{- if contains "hf" $protocol }}
 {{- if eq $protocol "hf" }}
 {{- if .container.mountModelVolume }}
 - name: HF_HOME
   value: /model-cache
+{{- end }}
+{{- end }}
+{{- if eq $protocol "pvc+hf" }}
+{{- $claimpath := regexSplit "/" $other -1 -}}
+{{- $length := len $claimpath }}
+{{- $start := 1 }}
+{{- $end := sub $length 2 }}
+{{- $middle := slice $claimpath $start $end }}
+{{- $hfhubcache := join "/" $middle }}
+{{- if .container.mountModelVolume }}
+- name: HF_HUB_CACHE
+  value: {{ $hfhubcache }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- with .Values.modelArtifacts.authSecretName }}
