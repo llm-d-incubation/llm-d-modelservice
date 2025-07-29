@@ -71,9 +71,9 @@ decode:
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
     ports:
-      - containerPort: 8200
+      - containerPort: 8200  # from routing.proxy.targetPort
         protocol: TCP
-      - containerPort: 5557
+      - containerPort: 5557  # NIXL side channel
         protocol: TCP
     resources:
       limits:
@@ -112,9 +112,9 @@ prefill:
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
     ports:
-      - containerPort: 8000
+      - containerPort: 8000  # from routing.servicePort
         protocol: TCP
-      - containerPort: 5557
+      - containerPort: 5557  # NIXL side channel
         protocol: TCP
     resources:
       limits:

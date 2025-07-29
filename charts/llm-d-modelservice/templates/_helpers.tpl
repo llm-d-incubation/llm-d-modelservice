@@ -336,7 +336,7 @@ context is a dict with helm root context plus:
   {{- (include "llm-d-modelservice.hfEnv" .) | nindent 2 }}
   {{- with .container.ports }}
   ports:
-    {{- toYaml . | nindent 2 }}
+    {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
   {{- with .container.livenessProbe }}
   livenessProbe:

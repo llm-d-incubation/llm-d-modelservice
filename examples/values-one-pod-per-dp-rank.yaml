@@ -148,6 +148,11 @@ decode:
           add:
           - "IPC_LOCK"
           - "SYS_RAWIO"
+      ports:
+      - containerPort: 8200  # from routing.proxy.targetPort
+        protocol: TCP
+      - containerPort: 5557  # NIXL side channel
+        protocol: TCP
       resources:
         limits:
           memory: 128Gi
@@ -273,6 +278,11 @@ prefill:
           add:
           - "IPC_LOCK"
           - "SYS_RAWIO"
+      ports:
+      - containerPort: 8000  # from routing.servicePort
+        protocol: TCP
+      - containerPort: 5557  # NIXL side channel
+        protocol: TCP
       resources:
         limits:
           memory: 128Gi
