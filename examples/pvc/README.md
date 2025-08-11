@@ -68,7 +68,7 @@ Examine [this values file](../values-pd.yaml) for an example of how to use a PVC
 
 ```yaml
 modelArtifacts:
-  uri: pvc://pvc-name/<path/to/model>
+  uri: pvc://pvc-name/path/to/model
 ```
 
 You can install the ModelService quickly using this command:
@@ -76,7 +76,7 @@ You can install the ModelService quickly using this command:
 ```
 helm install pvc-example llm-d-modelservice/llm-d-modelservice \
 -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml \
---set modelArtifacts.uri="pvc://pvc-name/<path/to/model>"
+--set modelArtifacts.uri="pvc://pvc-name/path/to/model"
 ```
 
 Examine [output-pvc.yaml](../output-pvc.yaml) to view the Kubernetes resources that will be applied upon the above command.
@@ -115,7 +115,7 @@ You can install the ModelService quickly using this command:
 ```
 helm install pvc-hf-example llm-d-modelservice/llm-d-modelservice \
 -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml \
---set modelArtifacts.uri="pvc+hf://pvc-name/path/to/hf_hub_cache/namespace/modelID"
+--set modelArtifacts.uri="pvc+hf://pvc-name/path/to/hf_hub_cache/facebook/opt-125m"
 ```
 
 Make sure that for the container of your interst in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pvc.yaml#L90)) for the volume mounts to be created correctly.
@@ -124,4 +124,4 @@ Make sure that for the container of your interst in `prefill.containers` or `dec
 - A read-only PVC volume with the name `model-storage` is created for the deployment
 - A read-only volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true`
 - `HF_HUB_CACHE` environment variable for that container is set to `model-cache/path/to/hf_hub_cache` where `mountModelVolume: true`
-- `--model` arugment is set to `namespace/modelID`
+- `--model` arugment is set to `facebook/opt-125m`

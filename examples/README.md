@@ -94,15 +94,9 @@ Note: `alias k=kubectl`
     {"choices":[{"finish_reason":"length","index":0,"logprobs":null,"prompt_logprobs":null,"stop_reason":null,"text":" That is my dad. He was a wautdig with a shooting blade on"}],"created":1751031325,"id":"cmpl-aca48bc2-fe95-4c3b-843d-1dbcf94c40c7","kv_transfer_params":null,"model":"facebook/opt-125m","object":"text_completion","usage":{"completion_tokens":16,"prompt_tokens":4,"prompt_tokens_details":null,"total_tokens":20}}
     ```
 
-3. Multi-node inference: uses a model (from Hugging Face) assumed to already be downloaded to a PVC. It also highlights the use of a custom vllm command. This is work in progress.
+3. Wide Expert Parallelism (EP/DP) with LeaderWorkerSet
 
-    Dry-run:
-
-    ```
-    helm template multinode llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-one-pod-per-dp-rank.yaml
-    ```
-
-To run this example, setup the environment using https://github.com/tlrmchlsmth/vllm-dp-lws.
+See https://github.com/tlrmchlsmth/llm-d-infra/blob/dev/quickstart/examples/wide-ep-lws/README.md
 
 4. Loading a model from a PVC
 

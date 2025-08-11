@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: pd-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.1
+    helm.sh/chart: llm-d-modelservice-v0.2.4
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -15,7 +15,7 @@ kind: ServiceAccount
 metadata:
   name: pd-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.1
+    helm.sh/chart: llm-d-modelservice-v0.2.4
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -187,7 +187,7 @@ kind: Service
 metadata:
   name: pd-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.1
+    helm.sh/chart: llm-d-modelservice-v0.2.4
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -207,7 +207,7 @@ kind: Deployment
 metadata:
   name: pd-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.1
+    helm.sh/chart: llm-d-modelservice-v0.2.4
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -252,7 +252,7 @@ spec:
         
       containers:
         - name: vllm
-          image: ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1
+          image: ghcr.io/llm-d/llm-d:v0.2.0
           
           command: ["vllm", "serve"]
           args:
@@ -386,7 +386,7 @@ kind: Deployment
 metadata:
   name: pd-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.1
+    helm.sh/chart: llm-d-modelservice-v0.2.4
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -414,7 +414,7 @@ spec:
         
       containers:
         - name: vllm
-          image: ghcr.io/llm-d/llm-d-dev:v0.2.0-rc.1
+          image: ghcr.io/llm-d/llm-d:v0.2.0
           
           command: ["vllm", "serve"]
           args:
@@ -505,7 +505,7 @@ metadata:
   name: pd-llm-d-modelservice
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.1
+    helm.sh/chart: llm-d-modelservice-v0.2.4
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
   annotations:
