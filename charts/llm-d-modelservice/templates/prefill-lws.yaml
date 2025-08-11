@@ -42,9 +42,11 @@ spec:
           {{- end }}
         {{- end }}
       spec:
+        {{- /* DEPRECATED; use extraConfig.hostIPC instead */ -}}
         {{- if hasKey .Values.prefill "hostIPC" }}
         hostIPC: {{ .Values.prefill.hostIPC }}
         {{- end }}
+        {{- /* DEPRECATED; use extraConfig.hostPID instead */ -}}
         {{- if hasKey .Values.prefill "hostPID" }}
         hostPID: {{ .Values.prefill.hostPID }}
         {{- end }}
