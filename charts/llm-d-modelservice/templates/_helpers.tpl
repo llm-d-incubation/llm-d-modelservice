@@ -282,6 +282,9 @@ Pod elements of deployment/lws spec template
 context is a pdSpec
 */}}
 {{- define "llm-d-modelservice.modelPod" -}}
+  {{- with .pdSpec.extraConfig }}
+    {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
+  {{- end }}
   {{- with .pdSpec.imagePullSecrets }}
   imagePullSecrets:
     {{- toYaml . | nindent 2 }}
@@ -315,6 +318,9 @@ context is a dict with helm root context plus:
 {{- define "llm-d-modelservice.container" -}}
 - name: {{ default "vllm" .container.name }}
   image: {{ required "image of container is required" .container.image }}
+  {{- with .container.extraConfig }}
+    {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
+  {{- end }}
   {{- with .container.securityContext }}
   securityContext:
     {{- toYaml . | nindent 4 }}
@@ -325,11 +331,9 @@ context is a dict with helm root context plus:
   {{- /* handle command and args */}}
   {{- include "llm-d-modelservice.command" . | nindent 2 }}
   {{- /* insert user's env for this container */}}
-  {{- if or .container.env .container.mountModelVolume }}
   env:
-  {{- end }}
   {{- with .container.env }}
-    {{- toYaml . | nindent 2 }}
+    {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
   {{- (include "llm-d-modelservice.parallelismEnv" .) | nindent 2 }}
   {{- /* insert envs based on what modelArtifact prefix */}}
