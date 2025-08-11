@@ -285,18 +285,21 @@ context is a pdSpec
   {{- with .pdSpec.extraConfig }}
     {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.imagePullSecrets instead */ -}}
   {{- with .pdSpec.imagePullSecrets }}
   imagePullSecrets:
     {{- toYaml . | nindent 2 }}
   {{- end }}
-  serviceAccountName: {{ include "llm-d-modelservice.pdServiceAccountName" . }}
+  {{- /* DEPRECATED; use extraConfig.scheulerName instead */ -}}
   {{- if or .pdSpec.schedulerName .Values.schedulerName }}
   schedulerName: {{ .pdSpec.schedulerName | default .Values.schedulerName }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.securityContext instead */ -}}
   {{- with .pdSpec.podSecurityContext }}
   securityContext:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  serviceAccountName: {{ include "llm-d-modelservice.pdServiceAccountName" . }}
   {{- with .pdSpec.acceleratorTypes }}
   {{- include "llm-d-modelservice.acceleratorTypes" . | nindent 2 }}
   {{- end -}}
@@ -321,10 +324,12 @@ context is a dict with helm root context plus:
   {{- with .container.extraConfig }}
     {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.securityContext instead */ -}}
   {{- with .container.securityContext }}
   securityContext:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.imagePullPolicy instead */ -}}
   {{- with .container.imagePullPolicy }}
   imagePullPolicy: {{ . }}
   {{- end }}
@@ -342,26 +347,32 @@ context is a dict with helm root context plus:
   ports:
     {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.livenessProbe instead */ -}}
   {{- with .container.livenessProbe }}
   livenessProbe:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.readinessProbe instead */ -}}
   {{- with .container.readinessProbe }}
   readinessProbe:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.startupProbe instead */ -}}
   {{- with .container.startupProbe }}
   startupProbe:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism)) | nindent 2 }}
   {{- include "llm-d-modelservice.mountModelVolumeVolumeMounts" (dict "container" .container "Values" .Values) | nindent 2 }}
+  {{- /* DEPRECATED; use extraConfig.workingDir instead */ -}}
   {{- with .container.workingDir }}
   workingDir: {{ . }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.stdin instead */ -}}
   {{- with .container.stdin }}
   stdin: {{ . }}
   {{- end }}
+  {{- /* DEPRECATED; use extraConfig.tty instead */ -}}
   {{- with .container.tty }}
   tty: {{ . }}
   {{- end }}
