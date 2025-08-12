@@ -18,9 +18,9 @@ spec:
     metadata:
       labels:
         {{- include "llm-d-modelservice.prefilllabels" . | nindent 8 }}
-      {{- if .Values.prefill.annotations }}
+      {{- if .Values.prefill.podAnnotations }}
       annotations:
-        {{- toYaml .Values.prefill.annotations | nindent 8 }}
+        {{- toYaml .Values.prefill.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
       {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
