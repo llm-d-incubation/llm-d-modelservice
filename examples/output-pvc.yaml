@@ -215,14 +215,10 @@ spec:
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: pvc-llm-d-modelservice
-      llm-d.ai/role: decode
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: pvc-llm-d-modelservice
-        llm-d.ai/role: decode
     spec:
       initContainers:
         - name: routing-proxy
@@ -392,13 +388,11 @@ spec:
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: pvc-llm-d-modelservice
       llm-d.ai/role: prefill
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: pvc-llm-d-modelservice
         llm-d.ai/role: prefill
     spec:
     
@@ -469,7 +463,6 @@ kind: InferenceModel
 metadata:
   labels:
     llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: pvc-llm-d-modelservice
   name: pvc-llm-d-modelservice
 spec:
   criticality: Critical
@@ -491,7 +484,6 @@ spec:
     name: pvc-llm-d-modelservice-epp
   selector:
     llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: pvc-llm-d-modelservice
   targetPortNumber: 8000
 ---
 # Source: llm-d-modelservice/templates/httproute.yaml

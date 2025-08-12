@@ -61,7 +61,6 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/* Create common shared by prefill and decode deployment/LWS */}}
 {{- define "llm-d-modelservice.pdlabels" -}}
 llm-d.ai/inferenceServing: "true"
-llm-d.ai/model: {{ (include "llm-d-modelservice.fullname" .) -}}
 {{- end }}
 
 {{/* Create labels for the prefill deployment/LWS */}}
@@ -73,7 +72,6 @@ llm-d.ai/role: prefill
 {{/* Create labels for the decode deployment/LWS */}}
 {{- define "llm-d-modelservice.decodelabels" -}}
 {{ include "llm-d-modelservice.pdlabels" . }}
-llm-d.ai/role: decode
 {{- end }}
 
 {{/* Create node affinity from acceleratorTypes in Values */}}
