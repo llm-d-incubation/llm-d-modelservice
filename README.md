@@ -94,6 +94,7 @@ Below are the values you can set.
 | `decode.acceleratorTypes.labelKey`     | Key of label on node that identifies the hosted GPU type                                                          | string       | N/A                                         |
 | `decode.acceleratorTypes.labelValue`   | Value of label on node that identifies type of hosted GPU                                                         | string       | N/A                                         |
 | `prefill`                              | Same fields supported in `decode`                                                                                 | See above    | See above                                   |
+| `extraObjects`                         | Additional Kubernetes objects to be deployed alongside the main application                                        | List         | []                                          |
 
 ## Contribute
 

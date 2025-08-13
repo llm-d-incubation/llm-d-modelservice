@@ -305,3 +305,15 @@ prefill:
       metricRelabelings: []
       # namespaceSelector -- Selector to select which namespaces the Endpoints objects are discovered from
       # namespaceSelector: {}
+
+
+# Extra objects to be deployed alongside the main application
+extraObjects: []
+# Example:
+# extraObjects:
+#   - apiVersion: v1
+#     kind: ConfigMap
+#     metadata:
+#       name: example-config
+#     data:
+#       key: value
