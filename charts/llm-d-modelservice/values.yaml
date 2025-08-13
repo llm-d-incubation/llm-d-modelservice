@@ -43,6 +43,8 @@ accelerator:
         value: "1"
       - name: SYCL_DEVICE_FILTER
         value: "gpu"
+      - name: ZE_AFFINITY_MASK
+        value: "0"
 
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration

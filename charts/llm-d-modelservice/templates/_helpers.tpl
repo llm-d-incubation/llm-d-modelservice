@@ -558,15 +558,3 @@ context is a dict with helm root context plus:
 - name: ACCELERATOR_TYPE
   value: {{ .Values.accelerator.type | default "nvidia" | quote }}
 {{- end }} {{- /* define "llm-d-modelservice.parallelismEnv" */}}
-
-{{/* XPU and Intel GPU specific environment setup */}}
-{{- define "llm-d-modelservice.xpuEnv" -}}
-{{- if eq .Values.accelerator.type "intel" }}
-- name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
-  value: "1"
-- name: SYCL_DEVICE_FILTER
-  value: "gpu"
-- name: ZE_AFFINITY_MASK
-  value: "0"
-{{- end }}
-{{- end }} {{- /* define "llm-d-modelservice.xpuEnv" */}}
