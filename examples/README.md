@@ -12,6 +12,30 @@ Note: `alias k=kubectl`
 
 > If you only want to deploy model instances without routing support, append `--set inferencePool=false --set httpRoute=false` to the example commands.
 
+## Available Examples
+
+| Example | Description | Hardware Requirements |
+|---------|-------------|----------------------|
+| `values-cpu.yaml` | CPU-only inference example | Single node, no GPU required |
+| `values-pd.yaml` | Prefill/decode disaggregation example | Multi-GPU, demonstrates P/D splitting |
+| `values-xpu.yaml` | Intel XPU single-node example | Intel Data Center GPU Max |
+| `values-xpu-pd.yaml` | Intel XPU with P/D disaggregation | Intel XPU with prefill/decode splitting |
+| `pvc/` | Persistent volume examples | Shows different storage options |
+
+## Intel XPU Examples
+
+For Intel XPU (Data Center GPU Max) deployments:
+
+```bash
+# Single-node XPU deployment
+helm install my-xpu-model llm-d-modelservice/llm-d-modelservice -f values-xpu.yaml
+
+# XPU with prefill/decode disaggregation  
+helm install my-xpu-pd-model llm-d-modelservice/llm-d-modelservice -f values-xpu-pd.yaml
+```
+
+## Usage Examples
+
 1. CPU-only
 
     Make sure there is a gateway (Kgateway or Istio) deployed in the cluster. Follow [these instructions](https://gateway-api-inference-extension.sigs.k8s.io/guides/#__tabbed_3_2) on how to set up a gateway. Once done, update `routing.parentRefs[*].name` in this [values file](values-cpu.yaml#L18) to use the name for the Gateway (`llm-d-inference-gateway-istio`) in the cluster or override with the `--set "routing.parentRefs[0].name=MYGATEWAY"` flag.

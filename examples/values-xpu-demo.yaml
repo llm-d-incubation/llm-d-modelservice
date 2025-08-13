@@ -1,0 +1,73 @@
+# Intel XPU Demo Configuration for Kind Cluster
+# This is a demo configuration that simulates Intel XPU without real hardware
+
+# Model configuration
+modelArtifacts:
+  name: "microsoft/DialoGPT-medium"
+  uri: "hf://microsoft/DialoGPT-medium"
+
+# Accelerator configuration - Demo mode using CPU to simulate XPU
+accelerator:
+  type: intel
+  resources:
+    intel: "cpu"  # Using CPU instead of intel.com/gpu for demo
+  env:
+    intel:
+      - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
+        value: "1"
+      - name: SYCL_DEVICE_FILTER
+        value: "gpu"
+      - name: INTEL_GPU_VISIBLE_DEVICES
+        value: "0"
+
+# Routing configuration
+routing:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: inference-gateway
+    namespace: "{{ .Release.Namespace }}"
+
+# Decode configuration for single-node deployment
+decode:
+  create: true
+  replicas: 1
+  parallelism:
+    dataParallel: 1
+    tensorParallel: 1
+  
+  # Node affinity for Intel XPU nodes
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: accelerator
+              operator: In
+              values:
+                - intel-xpu
+                - intel-gpu-max
+
+  containers:
+    - name: vllm
+      image: "ghcr.io/llm-d/llm-d-vllm:v0.2.0"  # Using regular vLLM image for demo
+      
+      # Resource configuration - reduced for demo
+      resources:
+        requests:
+          cpu: "1"
+          memory: "2Gi"
+        limits:
+          cpu: "2"
+          memory: "4Gi"
+      
+      env:
+        - name: VLLM_LOGGING_LEVEL
+          value: DEBUG
+
+# Prefill configuration disabled for single-node setup
+prefill:
+  create: false
+
+# Multi-node disabled
+multinode: false

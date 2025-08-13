@@ -22,6 +22,28 @@ modelArtifacts:
 # When true, a LeaderWorkerSet is used instead of a Deployment
 multinode: false
 
+# Global accelerator configuration
+# Supported types: nvidia, intel, amd, google
+accelerator:
+  # Type of accelerator to use
+  type: nvidia
+  # Resource names for different accelerator types
+  resources:
+    nvidia: "nvidia.com/gpu"
+    intel: "gpu.intel.com/i915"
+    amd: "amd.com/gpu"
+    google: "google.com/tpu"
+  # Environment variables specific to accelerator types
+  env:
+    nvidia:
+      - name: CUDA_VISIBLE_DEVICES
+        value: "0"
+    intel:
+      - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
+        value: "1"
+      - name: SYCL_DEVICE_FILTER
+        value: "gpu"
+
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:

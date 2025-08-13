@@ -1,0 +1,124 @@
+# Example values for Intel XPU deployment
+# This configuration is designed for Intel Data Center GPU Max series (XPU)
+
+modelArtifacts:
+  name: microsoft/DialoGPT-medium
+  uri: "hf://microsoft/DialoGPT-medium"
+  size: 5Gi
+
+# Configure accelerator for Intel XPU
+accelerator:
+  type: intel
+  # Intel GPU resource names may vary by deployment
+  resources:
+    intel: "gpu.intel.com/i915"
+  env:
+    intel:
+      - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
+        value: "1"
+      - name: SYCL_DEVICE_FILTER
+        value: "gpu"
+      - name: INTEL_GPU_VISIBLE_DEVICES
+        value: "0"
+
+# Routing configuration
+routing:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: inference-gateway
+    namespace: "{{ .Release.Namespace }}"
+  
+  httpRoute:
+    create: true
+    matches:
+      - path:
+          type: PathPrefix
+          value: /
+        headers:
+        - name: x-model-name
+          type: Exact
+          value: "{{ .Values.modelArtifacts.name }}"
+
+  epp:
+    create: true
+    # Use compatible EPP image for Intel XPU
+    image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1
+
+# Decode pod configuration for Intel XPU
+decode:
+  create: true
+  replicas: 1
+  containers:
+  - name: "vllm"
+    # Use Intel LLM Scaler vLLM image
+    image: "intel/llm-scaler-vllm:latest"
+    # Use direct command instead of modelCommand
+    command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+    args:
+      - "--model"
+      - "microsoft/DialoGPT-medium"
+      - "--device"
+      - "xpu"
+      - "--enforce-eager"
+      - "--port"
+      - "8200"
+      - "--host"
+      - "0.0.0.0"
+      - "--served-model-name"
+      - "microsoft/DialoGPT-medium"
+      - "--trust-remote-code"
+      - "--dtype"
+      - "float16"
+      - "--disable-sliding-window"
+      - "--gpu-memory-util"
+      - "0.9"
+      - "--no-enable-prefix-caching"
+      - "--max-num-batched-tokens"
+      - "8192"
+      - "--disable-log-requests"
+      - "--max-model-len"
+      - "8192"
+      - "--block-size"
+      - "64"
+      - "-tp"
+      - "1"
+    env:
+      # Intel XPU specific environment variables
+      - name: TORCH_LLM_ALLREDUCE
+        value: "1"
+      - name: VLLM_USE_V1
+        value: "1"
+      - name: CCL_ZE_IPC_EXCHANGE
+        value: "pidfd"
+      - name: VLLM_ALLOW_LONG_MAX_MODEL_LEN
+        value: "1"
+      - name: VLLM_WORKER_MULTIPROC_METHOD
+        value: "spawn"
+      - name: VLLM_LOGGING_LEVEL
+        value: DEBUG
+    ports:
+      - containerPort: 8200
+        protocol: TCP
+    resources:
+      limits:
+        memory: 16Gi
+        cpu: "8"
+      requests:
+        cpu: "4"
+        memory: 8Gi
+    mountModelVolume: true
+
+  # XPU-specific node affinity
+  acceleratorTypes:
+    labelKey: "accelerator"
+    labelValues:
+      - "intel-xpu"
+      - "intel-gpu-max"
+
+# Disable prefill for simple XPU example
+prefill:
+  create: false
+
+# When true, use LeaderWorkerSet for multi-node XPU setups
+multinode: false
