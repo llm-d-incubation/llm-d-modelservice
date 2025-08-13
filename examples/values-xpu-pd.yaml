@@ -64,7 +64,7 @@ decode:
       - "--kv-transfer-config"
       - '{"kv_connector":"XPUConnector", "kv_role":"kv_both"}'
     env:
-      - name: INTEL_GPU_VISIBLE_DEVICES
+      - name: ZE_AFFINITY_MASK
         value: "0"
       - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
         value: "1"
@@ -112,7 +112,7 @@ prefill:
       - "--kv-transfer-config"
       - '{"kv_connector":"XPUConnector", "kv_role":"kv_both"}'
     env:
-      - name: INTEL_GPU_VISIBLE_DEVICES
+      - name: ZE_AFFINITY_MASK
         value: "0"
       - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
         value: "1"

@@ -566,7 +566,7 @@ context is a dict with helm root context plus:
   value: "1"
 - name: SYCL_DEVICE_FILTER
   value: "gpu"
-- name: INTEL_GPU_VISIBLE_DEVICES
+- name: ZE_AFFINITY_MASK
   value: "0"
 {{- end }}
 {{- end }} {{- /* define "llm-d-modelservice.xpuEnv" */}}
