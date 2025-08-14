@@ -2,9 +2,9 @@
 # This configuration is designed for Intel Data Center GPU Max series (XPU)
 
 modelArtifacts:
-  name: microsoft/DialoGPT-medium
-  uri: "hf://microsoft/DialoGPT-medium"
-  size: 5Gi
+  name: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+  uri: "hf://deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+  size: 10Gi
 
 # Configure accelerator for Intel XPU
 accelerator:
@@ -20,6 +20,19 @@ accelerator:
         value: "gpu"
       - name: ZE_AFFINITY_MASK
         value: "0"
+      # Proxy configuration for Intel XPU
+      - name: HTTP_PROXY
+        value: "http://proxy-dmz.intel.com:911"
+      - name: HTTPS_PROXY
+        value: "http://proxy-dmz.intel.com:912"
+      - name: http_proxy
+        value: "http://proxy-dmz.intel.com:911"
+      - name: https_proxy
+        value: "http://proxy-dmz.intel.com:912"
+      - name: NO_PROXY
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      - name: no_proxy
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
 
 # Routing configuration
 routing:
@@ -51,22 +64,22 @@ decode:
   replicas: 1
   containers:
   - name: "vllm"
-    # Use Intel LLM Scaler vLLM image
-    image: "intel/llm-scaler-vllm:latest"
-    # Use direct command instead of modelCommand
+    # Use custom vLLM image
+    image: "vllm-yuanwu:latest"
+    imagePullPolicy: Never
+    # Use custom mode to control all arguments
+    modelCommand: "custom"
     command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
     args:
       - "--model"
-      - "microsoft/DialoGPT-medium"
-      - "--device"
-      - "xpu"
+      - "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
       - "--enforce-eager"
       - "--port"
       - "8200"
       - "--host"
       - "0.0.0.0"
       - "--served-model-name"
-      - "microsoft/DialoGPT-medium"
+      - "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
       - "--trust-remote-code"
       - "--dtype"
       - "float16"
@@ -75,10 +88,10 @@ decode:
       - "0.9"
       - "--no-enable-prefix-caching"
       - "--max-num-batched-tokens"
-      - "8192"
+      - "4096"
       - "--disable-log-requests"
       - "--max-model-len"
-      - "8192"
+      - "4096"
       - "--block-size"
       - "64"
       - "-tp"
@@ -97,16 +110,31 @@ decode:
         value: "spawn"
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
+      # Proxy configuration for model download
+      - name: HTTP_PROXY
+        value: "http://proxy-dmz.intel.com:911"
+      - name: HTTPS_PROXY
+        value: "http://proxy-dmz.intel.com:912"
+      - name: http_proxy
+        value: "http://proxy-dmz.intel.com:911"
+      - name: https_proxy
+        value: "http://proxy-dmz.intel.com:912"
+      - name: NO_PROXY
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      - name: no_proxy
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
     ports:
       - containerPort: 8200
         protocol: TCP
     resources:
       limits:
-        memory: 16Gi
+        memory: 24Gi
         cpu: "8"
+        gpu.intel.com/i915: "1"
       requests:
         cpu: "4"
-        memory: 8Gi
+        memory: 12Gi
+        gpu.intel.com/i915: "1"
     mountModelVolume: true
 
   # XPU-specific node affinity

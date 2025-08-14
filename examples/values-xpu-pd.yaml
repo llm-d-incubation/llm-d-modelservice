@@ -1,5 +1,9 @@
 # Example values for Intel XPU with Prefill/Decode disaggregation
-# This configuration demonstrates P/D disaggregation on Intel XPU
+# WARNING: Intel XPU does not currently support P/D disaggregation
+# This configuration is for reference only - testing shows:
+# - SimpleConnector: Not supported
+# - NixlConnector: Requires NIXL library which is not available
+# Use values-xpu.yaml for working Intel XPU deployment instead
 
 modelArtifacts:
   name: microsoft/DialoGPT-large
@@ -52,20 +56,28 @@ routing:
 # Decode pod configuration for Intel XPU
 decode:
   create: true
-  replicas: 1
+  replicas: 1  # Just 1 decode pod
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d-xpu:v0.2.0"
-    modelCommand: vllmServe
+    image: "vllm-yuanwu:latest"
+    imagePullPolicy: Never
+    modelCommand: custom
+    command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
     args:
-      - "--device"
-      - "xpu"
+      - "--model"
+      - "microsoft/DialoGPT-large"
       - "--enforce-eager"
+      - "--tensor-parallel-size"
+      - "1"  # TP=1 for each decode pod (using 1 XPU each)
+      - "--port"
+      - "8200"
+      - "--host"
+      - "0.0.0.0"
       - "--kv-transfer-config"
-      - '{"kv_connector":"XPUConnector", "kv_role":"kv_both"}'
+      - '{"kv_connector":"NixlConnector", "kv_role":"kv_consumer"}'
     env:
       - name: ZE_AFFINITY_MASK
-        value: "0"
+        value: "0"  # Decode pod uses XPU 0
       - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
         value: "1"
       - name: VLLM_NIXL_SIDE_CHANNEL_HOST
@@ -76,6 +88,30 @@ decode:
         value: "5557"
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
+      # Intel XPU specific environment variables
+      - name: TORCH_LLM_ALLREDUCE
+        value: "1"
+      - name: VLLM_USE_V1
+        value: "1"
+      - name: CCL_ZE_IPC_EXCHANGE
+        value: "pidfd"
+      - name: VLLM_ALLOW_LONG_MAX_MODEL_LEN
+        value: "1"
+      - name: VLLM_WORKER_MULTIPROC_METHOD
+        value: "spawn"
+      # Proxy configuration for model download
+      - name: HTTP_PROXY
+        value: "http://proxy-dmz.intel.com:911"
+      - name: HTTPS_PROXY
+        value: "http://proxy-dmz.intel.com:912"
+      - name: http_proxy
+        value: "http://proxy-dmz.intel.com:911"
+      - name: https_proxy
+        value: "http://proxy-dmz.intel.com:912"
+      - name: NO_PROXY
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      - name: no_proxy
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
     ports:
       - containerPort: 8200
         protocol: TCP
@@ -83,13 +119,13 @@ decode:
         protocol: TCP
     resources:
       limits:
-        memory: 32Gi
-        cpu: "16"
-        intel.com/gpu: "1"
+        memory: 24Gi  # Reduced memory since each pod uses 1 XPU
+        cpu: "8"      # Reduced CPU
+        gpu.intel.com/i915: "1"  # Each decode pod uses 1 XPU
       requests:
-        cpu: "8"
-        memory: 16Gi
-        intel.com/gpu: "1"
+        cpu: "4"
+        memory: 12Gi
+        gpu.intel.com/i915: "1"
     mountModelVolume: true
 
   acceleratorTypes:
@@ -100,20 +136,28 @@ decode:
 # Prefill pod configuration for Intel XPU
 prefill:
   create: true
-  replicas: 1
+  replicas: 1  # Just 1 prefill pod
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d-xpu:v0.2.0"
-    modelCommand: vllmServe
+    image: "vllm-yuanwu:latest"
+    imagePullPolicy: Never
+    modelCommand: custom
+    command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
     args:
-      - "--device"
-      - "xpu"
+      - "--model"
+      - "microsoft/DialoGPT-large"
       - "--enforce-eager"
+      - "--tensor-parallel-size"
+      - "1"  # TP=1 for prefill
+      - "--port"
+      - "8000"
+      - "--host"
+      - "0.0.0.0"
       - "--kv-transfer-config"
-      - '{"kv_connector":"XPUConnector", "kv_role":"kv_both"}'
+      - '{"kv_connector":"NixlConnector", "kv_role":"kv_producer"}'
     env:
       - name: ZE_AFFINITY_MASK
-        value: "0"
+        value: "1"  # Prefill pod uses XPU 1
       - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
         value: "1"
       - name: VLLM_NIXL_SIDE_CHANNEL_PORT
@@ -124,6 +168,30 @@ prefill:
             fieldPath: status.podIP
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
+      # Intel XPU specific environment variables
+      - name: TORCH_LLM_ALLREDUCE
+        value: "1"
+      - name: VLLM_USE_V1
+        value: "1"
+      - name: CCL_ZE_IPC_EXCHANGE
+        value: "pidfd"
+      - name: VLLM_ALLOW_LONG_MAX_MODEL_LEN
+        value: "1"
+      - name: VLLM_WORKER_MULTIPROC_METHOD
+        value: "spawn"
+      # Proxy configuration for model download
+      - name: HTTP_PROXY
+        value: "http://proxy-dmz.intel.com:911"
+      - name: HTTPS_PROXY
+        value: "http://proxy-dmz.intel.com:912"
+      - name: http_proxy
+        value: "http://proxy-dmz.intel.com:911"
+      - name: https_proxy
+        value: "http://proxy-dmz.intel.com:912"
+      - name: NO_PROXY
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      - name: no_proxy
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
     ports:
       - containerPort: 8000
         protocol: TCP
@@ -133,11 +201,11 @@ prefill:
       limits:
         memory: 32Gi
         cpu: "16"
-        intel.com/gpu: "1"
+        gpu.intel.com/i915: "1"
       requests:
         cpu: "8"
         memory: 16Gi
-        intel.com/gpu: "1"
+        gpu.intel.com/i915: "1"
     mountModelVolume: true
 
   acceleratorTypes:
