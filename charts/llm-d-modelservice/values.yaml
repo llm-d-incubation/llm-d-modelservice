@@ -218,6 +218,12 @@ routing:
     # - name: ENABLE_KVCACHE_AWARE_SCORER
     #   value: "false"
 
+    # Monitoring configuration for EPP
+    monitoring:
+      # ServiceMonitor configuration for EPP metrics collection with Prometheus Operator
+      servicemonitor:
+        enabled: false
+        interval: "10s"
 
 # @schema
 # additionalProperties: true

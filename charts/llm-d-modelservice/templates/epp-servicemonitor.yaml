@@ -1,0 +1,25 @@
+{{- if .Values.routing.epp.monitoring.servicemonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}-monitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - interval: {{ .Values.routing.epp.monitoring.servicemonitor.interval }}
+    port: "metrics"
+    path: "/metrics"
+    authorization:
+      credentials:
+        key: token
+        name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}-token
+  jobLabel: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "llm-d-modelservice.eppLabels" . | nindent 6 }}
+{{- end }}

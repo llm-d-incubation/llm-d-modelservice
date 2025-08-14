@@ -4,17 +4,18 @@ kind: Deployment
 metadata:
   name: {{ include "llm-d-modelservice.eppName" . }}
   labels:
-    llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    {{- include "llm-d-modelservice.eppLabels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ default 1 .Values.routing.epp.replicas }}
   selector:
     matchLabels:
-      llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
+      {{- include "llm-d-modelservice.eppLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
+        {{- include "llm-d-modelservice.eppLabels" . | nindent 8 }}
     spec:
       containers:
       - name: epp

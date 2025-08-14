@@ -255,6 +255,11 @@ resources:
 {{- end -}}
 {{- end }}
 
+{{/* EPP labels */}}
+{{- define "llm-d-modelservice.eppLabels" -}}
+llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
+{{- end }}
+
 {{/* default http route name */}}
 {{- define "llm-d-modelservice.httpRouteName" -}}
 {{ include "llm-d-modelservice.fullname" . }}
