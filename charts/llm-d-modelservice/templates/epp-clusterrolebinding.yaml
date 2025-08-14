@@ -1,0 +1,16 @@
+{{- if .Values.routing.epp.monitoring.servicemonitor.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "llm-d-modelservice.eppName" . }}-metrics
+subjects:
+- kind: ServiceAccount
+  name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
