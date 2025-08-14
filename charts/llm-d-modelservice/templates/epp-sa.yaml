@@ -1,8 +1,9 @@
-{{- if .Values.routing.epp.create -}}
+{{- if or .Values.routing.epp.create .Values.routing.epp.monitoring.servicemonitor.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    app.kubernetes.io/component: epp
 {{- end }}

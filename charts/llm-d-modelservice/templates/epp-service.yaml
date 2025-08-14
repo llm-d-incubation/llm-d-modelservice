@@ -13,6 +13,12 @@ spec:
       targetPort: {{ .Values.routing.epp.service.targetPort }}
       protocol: TCP
       appProtocol: {{ .Values.routing.epp.service.appProtocol }}
+    {{- if .Values.routing.epp.monitoring.servicemonitor.enabled }}
+    - name: http-metrics
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+    {{- end }}
     {{- with .Values.routing.epp.service.extraPorts }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
