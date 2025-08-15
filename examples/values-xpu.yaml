@@ -1,0 +1,106 @@
+# Example values for Intel XPU deployment
+# This configuration is designed for Intel Data Center GPU Max series (XPU)
+
+modelArtifacts:
+  name: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+  uri: "hf://deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+  size: 10Gi
+
+# Configure accelerator for Intel XPU
+accelerator:
+  type: intel
+  # Intel GPU resource names may vary by deployment
+  resources:
+    intel: "gpu.intel.com/i915"
+  env:
+    intel:
+      - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
+        value: "1"
+      - name: SYCL_DEVICE_FILTER
+        value: "gpu"
+      - name: ZE_AFFINITY_MASK
+        value: "0"
+
+# Routing configuration
+routing:
+  proxy:
+    enabled: false
+
+# Decode pod configuration for Intel XPU
+decode:
+  create: true
+  replicas: 1
+  containers:
+  - name: "vllm"
+    # Use custom vLLM image
+    image: "ghcr.io/llm-d/llm-d-xpu:v0.2.0"
+    # Use custom mode to control all arguments
+    modelCommand: "custom"
+    command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+    args:
+      - "--model"
+      - "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+      - "--enforce-eager"
+      - "--port"
+      - "8000"
+      - "--host"
+      - "0.0.0.0"
+      - "--served-model-name"
+      - "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+      - "--trust-remote-code"
+      - "--dtype"
+      - "float16"
+      - "--disable-sliding-window"
+      - "--gpu-memory-util"
+      - "0.9"
+      - "--no-enable-prefix-caching"
+      - "--max-num-batched-tokens"
+      - "4096"
+      - "--disable-log-requests"
+      - "--max-model-len"
+      - "4096"
+      - "--block-size"
+      - "64"
+      - "-tp"
+      - "1"
+    env:
+      # Intel XPU specific environment variables
+      - name: TORCH_LLM_ALLREDUCE
+        value: "1"
+      - name: VLLM_USE_V1
+        value: "1"
+      - name: CCL_ZE_IPC_EXCHANGE
+        value: "pidfd"
+      - name: VLLM_ALLOW_LONG_MAX_MODEL_LEN
+        value: "1"
+      - name: VLLM_WORKER_MULTIPROC_METHOD
+        value: "spawn"
+      - name: VLLM_LOGGING_LEVEL
+        value: DEBUG
+    ports:
+      - containerPort: 8000
+        protocol: TCP
+    resources:
+      limits:
+        memory: 24Gi
+        cpu: "8"
+        gpu.intel.com/i915: "1"
+      requests:
+        cpu: "4"
+        memory: 12Gi
+        gpu.intel.com/i915: "1"
+    mountModelVolume: true
+
+  # XPU-specific node affinity
+  acceleratorTypes:
+    labelKey: "accelerator"
+    labelValues:
+      - "intel-xpu"
+      - "intel-gpu-max"
+
+# Disable prefill for simple XPU example
+prefill:
+  create: false
+
+# When true, use LeaderWorkerSet for multi-node XPU setups
+multinode: false
