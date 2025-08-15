@@ -99,19 +99,6 @@ decode:
         value: "1"
       - name: VLLM_WORKER_MULTIPROC_METHOD
         value: "spawn"
-      # Proxy configuration for model download
-      - name: HTTP_PROXY
-        value: "http://proxy-dmz.intel.com:911"
-      - name: HTTPS_PROXY
-        value: "http://proxy-dmz.intel.com:912"
-      - name: http_proxy
-        value: "http://proxy-dmz.intel.com:911"
-      - name: https_proxy
-        value: "http://proxy-dmz.intel.com:912"
-      - name: NO_PROXY
-        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-      - name: no_proxy
-        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
     ports:
       - containerPort: 8200
         protocol: TCP
@@ -179,19 +166,6 @@ prefill:
         value: "1"
       - name: VLLM_WORKER_MULTIPROC_METHOD
         value: "spawn"
-      # Proxy configuration for model download
-      - name: HTTP_PROXY
-        value: "http://proxy-dmz.intel.com:911"
-      - name: HTTPS_PROXY
-        value: "http://proxy-dmz.intel.com:912"
-      - name: http_proxy
-        value: "http://proxy-dmz.intel.com:911"
-      - name: https_proxy
-        value: "http://proxy-dmz.intel.com:912"
-      - name: NO_PROXY
-        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-      - name: no_proxy
-        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
     ports:
       - containerPort: 8000
         protocol: TCP
