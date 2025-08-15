@@ -78,6 +78,7 @@ llm-d.ai/role: decode
 
 {{/* Create node affinity from acceleratorTypes in Values */}}
 {{- define "llm-d-modelservice.acceleratorTypes" -}}
+{{- if .labelKey }}
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
@@ -89,6 +90,7 @@ affinity:
             values:
             {{- toYaml . | nindent 14 }}
             {{- end }}
+{{- end }}
 {{- end }}
 
 {{/* Create the init container for the routing proxy/sidecar for decode pods */}}
