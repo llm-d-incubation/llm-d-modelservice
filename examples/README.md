@@ -29,9 +29,6 @@ For Intel XPU (Data Center GPU Max) deployments:
 ```bash
 # Single-node XPU deployment
 helm install my-xpu-model llm-d-modelservice/llm-d-modelservice -f values-xpu.yaml
-
-# XPU with prefill/decode disaggregation  
-helm install my-xpu-pd-model llm-d-modelservice/llm-d-modelservice -f values-xpu-pd.yaml
 ```
 
 ## Usage Examples
