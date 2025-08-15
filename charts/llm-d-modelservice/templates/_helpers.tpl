@@ -93,6 +93,7 @@ affinity:
 
 {{/* Create the init container for the routing proxy/sidecar for decode pods */}}
 {{- define "llm-d-modelservice.routingProxy" -}}
+{{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) }}
 initContainers:
   - name: routing-proxy
     args:
@@ -118,6 +119,7 @@ initContainers:
     securityContext:
       allowPrivilegeEscalation: false
       runAsNonRoot: true
+{{- end }}
 {{- end }}
 
 {{/* Desired P/D tensor parallelism -- user set or defaults to 1 */}}
