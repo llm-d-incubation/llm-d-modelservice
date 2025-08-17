@@ -101,6 +101,12 @@ routing:
         #   type: Exact
         #   value: facebook/opt-125m
 
+    # Allow people to opt out of timeouts by unsetting the default value.
+    # They are set to 0s which in most situations defaults to the providers max timeout.
+    timeouts:
+      backendRequest: 0s
+      request: 0s
+
   # Configuration of EPP (endpoint picker)
   # cf. https://github.com/llm-d/llm-d-inference-scheduler
   epp:
