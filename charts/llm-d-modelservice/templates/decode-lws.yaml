@@ -39,6 +39,10 @@ spec:
           {{- end }}
         {{- end }}
       spec:
+        {{- if .Values.decode.nodeSelector }}
+        nodeSelector:
+          {{- toYaml .Values.decode.nodeSelector | nindent 10 }}
+        {{- end }}
         {{- /* DEPRECATED; use extraConfig.hostIPC instead */ -}}
         {{- if hasKey .Values.decode "hostIPC" }}
         hostIPC: {{ .Values.decode.hostIPC }}

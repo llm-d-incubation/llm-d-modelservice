@@ -42,6 +42,10 @@ spec:
           {{- end }}
         {{- end }}
       spec:
+        {{- if .Values.prefill.nodeSelector }}
+        nodeSelector:
+          {{- toYaml .Values.prefill.nodeSelector | nindent 10 }}
+        {{- end }}
         {{- /* DEPRECATED; use extraConfig.hostIPC instead */ -}}
         {{- if hasKey .Values.prefill "hostIPC" }}
         hostIPC: {{ .Values.prefill.hostIPC }}
