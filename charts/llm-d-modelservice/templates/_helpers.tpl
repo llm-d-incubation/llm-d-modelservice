@@ -170,11 +170,8 @@ nvidia.com/gpu
 {{- if and .resources .resources.limits }}
 {{- $limits = deepCopy .resources.limits }}
 {{- end }}
-{{- if gt (int $tensorParallelism) 1 }}
+{{- if ge (int $tensorParallelism) 1 }}
 {{- $limits = mergeOverwrite $limits (dict $acceleratorResource $tensorParallelism) }}
-{{- else }}
-{{- /* Always add 1 GPU resource when TP=1 */}}
-{{- $limits = mergeOverwrite $limits (dict $acceleratorResource 1) }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
