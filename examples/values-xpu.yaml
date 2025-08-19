@@ -6,21 +6,6 @@ modelArtifacts:
   uri: "hf://deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
   size: 10Gi
 
-# Configure accelerator for Intel XPU
-accelerator:
-  type: intel
-  # Intel GPU resource names may vary by deployment
-  resources:
-    intel: "gpu.intel.com/i915"
-  env:
-    intel:
-      - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
-        value: "1"
-      - name: SYCL_DEVICE_FILTER
-        value: "gpu"
-      - name: ZE_AFFINITY_MASK
-        value: "0"
-
 # Routing configuration
 routing:
   proxy:

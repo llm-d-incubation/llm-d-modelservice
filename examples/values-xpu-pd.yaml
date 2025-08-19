@@ -10,18 +10,6 @@ modelArtifacts:
   uri: "hf://microsoft/DialoGPT-large"
   size: 10Gi
 
-# Configure accelerator for Intel XPU
-accelerator:
-  type: intel
-  resources:
-    intel: "gpu.intel.com/i915"
-  env:
-    intel:
-      - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
-        value: "1"
-      - name: SYCL_DEVICE_FILTER
-        value: "gpu"
-
 routing:
   servicePort: 8000
   proxy:
