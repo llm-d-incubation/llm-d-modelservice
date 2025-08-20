@@ -62,6 +62,7 @@ routing:
   # Configuration of VLLM routing sidecar
   # cf. https://github.com/llm-d/llm-d-routing-sidecar/
   proxy:
+    enabled: true
     image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.2.0
     # target port on which VLLM should listen
     targetPort: 8200
