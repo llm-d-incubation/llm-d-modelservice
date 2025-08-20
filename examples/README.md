@@ -130,7 +130,8 @@ kubectl apply -k 'https://github.com/intel/intel-device-plugins-for-kubernetes/d
 Single-node XPU deployment.
 
 ```
-helm install my-xpu-model llm-d-modelservice/llm-d-modelservice -f values-xpu.yaml
+helm install llm-xpu ../charts/llm-d-modelservice -f values-xpu.yaml --namespace llm-d --create-namespace
+
 ```
 
 Get the name of decode pod.
