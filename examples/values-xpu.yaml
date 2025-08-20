@@ -6,6 +6,9 @@ modelArtifacts:
   uri: "hf://deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
   size: 10Gi
 
+accelerator:
+  type: "intel"
+
 # Routing configuration
 routing:
   proxy:
@@ -62,6 +65,21 @@ decode:
         value: "spawn"
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
+      - name: HTTP_PROXY
+        value: "http://proxy-dmz.intel.com:911"
+      - name: HTTPS_PROXY
+        value: "http://proxy-dmz.intel.com:912"
+      - name: http_proxy
+        value: "http://proxy-dmz.intel.com:911"
+      - name: https_proxy
+        value: "http://proxy-dmz.intel.com:912"
+      - name: NO_PROXY
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      - name: no_proxy
+        value: ".intel.com,intel.com,localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      - name: ACCELERATOR_TYPE
+        value: "intel-xpu"
+
     ports:
       - containerPort: 8000
         protocol: TCP
