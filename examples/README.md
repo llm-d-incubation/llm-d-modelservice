@@ -22,15 +22,6 @@ Note: `alias k=kubectl`
 | `values-xpu-pd.yaml` | Intel XPU with P/D disaggregation | Intel XPU with prefill/decode splitting |
 | `pvc/` | Persistent volume examples | Shows different storage options |
 
-## Intel XPU Examples
-
-For Intel XPU (Data Center GPU Max) deployments:
-
-```bash
-# Single-node XPU deployment
-helm install my-xpu-model llm-d-modelservice/llm-d-modelservice -f values-xpu.yaml
-```
-
 ## Usage Examples
 
 1. CPU-only
@@ -117,11 +108,60 @@ helm install my-xpu-model llm-d-modelservice/llm-d-modelservice -f values-xpu.ya
 
 3. Wide Expert Parallelism (EP/DP) with LeaderWorkerSet
 
-See https://github.com/tlrmchlsmth/llm-d-infra/blob/dev/quickstart/examples/wide-ep-lws/README.md
+    See https://github.com/tlrmchlsmth/llm-d-infra/blob/dev/quickstart/examples/wide-ep-lws/README.md
 
 4. Loading a model from a PVC
 
     See [this README](./pvc/README.md).
+
+5. Intel XPU Examples
+
+    For Intel XPU (Data Center GPU Max) deployments:
+
+    Deploy the intel-gpu-plugin daemonset.
+
+    ```
+    kubectl apply -k 'https://github.com/intel/intel-device-plugins-for-kubernetes/deployments/gpu_plugin?ref=v0.30.0'
+    ```
+
+    Single-node XPU deployment.
+
+    ```
+    helm install my-xpu-model llm-d-modelservice/llm-d-modelservice -f values-xpu.yaml
+    ```
+
+    Get the name of decode pod.
+
+    ```
+    kubectl get pods -n llm-d -l llm-d.ai/role=decode
+    ```
+
+    Port forward the decode pod.
+
+    ```
+    kubectl port-forward -n llm-d pod/$decode_pod_name 8080:8200 &
+    ```
+
+    Send a request,
+
+    ```
+    curl -X POST "http://localhost:8080/v1/chat/completions" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+            "messages": [
+            {"role": "user", "content": "Hello!"}
+            ],
+            "max_tokens": 50,
+            "temperature": 0.7
+        }'
+    ```
+
+    and expect the following response
+
+    ```
+    {"id":"chatcmpl-ebda7f789d434895afec746173e2a4ce","object":"chat.completion","created":1755679402,"model":"deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B","choices":[{"index":0,"message":{"role":"assistant","content":"Alright, the user said \"Hello!\" and I replied \"Hello! How can I assist you today?\" That's a friendly way to start, let them know I'm here to help.\n\nI should ask them how they're doing or what they need","refusal":null,"annotations":null,"audio":null,"function_call":null,"tool_calls":[],"reasoning_content":null},"logprobs":null,"finish_reason":"length","stop_reason":null}],"service_tier":null,"system_fingerprint":null,"usage":{"prompt_tokens":7,"total_tokens":57,"completion_tokens":50,"prompt_tokens_details":null},"prompt_logprobs":null,"kv_transfer_params":null}(base)
+    ```
 
 ## Troubleshooting:
 
