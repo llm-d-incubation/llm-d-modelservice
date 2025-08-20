@@ -16,11 +16,11 @@ Note: `alias k=kubectl`
 
 | Example | Description | Hardware Requirements |
 |---------|-------------|----------------------|
-| `values-cpu.yaml` | CPU-only inference example | Single node, no GPU required |
-| `values-pd.yaml` | Prefill/decode disaggregation example | Multi-GPU, demonstrates P/D splitting |
-| `values-xpu.yaml` | Intel XPU single-node example | Intel Data Center GPU Max |
-| `values-xpu-pd.yaml` | Intel XPU with P/D disaggregation | Intel XPU with prefill/decode splitting |
-| `pvc/` | Persistent volume examples | Shows different storage options |
+| [`values-cpu.yaml`](#1-cpu-only) | CPU-only inference example | Single node, no GPU required |
+| [`values-pd.yaml`](#2-pd-disaggregation) | Prefill/decode disaggregation example | Multi-GPU, demonstrates P/D splitting |
+| [`values-xpu.yaml`](#5-intel-xpu-examples) | Intel XPU single-node example | Intel Data Center GPU Max |
+| [`wide-ep-lws/`](#3-wide-expert-parallelism-epdp-with-leaderworkerset) | Wide Expert Parallelism with LeaderWorkerSet | Multi-node, multi-GPU cluster |
+| [`pvc/`](#4-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
 
 ## Usage Examples
 
