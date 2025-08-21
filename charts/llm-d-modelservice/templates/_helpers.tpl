@@ -143,7 +143,9 @@ Context is helm root context plus key "role" ("decode" or "prefill")
 {{/* Get accelerator resource name based on type */}}
 {{- define "llm-d-modelservice.acceleratorResource" -}}
 {{- $acceleratorType := .Values.accelerator.type | default "nvidia" -}}
-{{- if hasKey .Values.accelerator.resources $acceleratorType -}}
+{{- if eq $acceleratorType "cpu" -}}
+{{/* No resource name for CPU */}}
+{{- else if hasKey .Values.accelerator.resources $acceleratorType -}}
 {{- index .Values.accelerator.resources $acceleratorType -}}
 {{- else -}}
 nvidia.com/gpu
@@ -170,14 +172,14 @@ nvidia.com/gpu
 {{- if and .resources .resources.limits }}
 {{- $limits = deepCopy .resources.limits }}
 {{- end }}
-{{- if ge (int $tensorParallelism) 1 }}
+{{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") }}
 {{- $limits = mergeOverwrite $limits (dict $acceleratorResource $tensorParallelism) }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
 {{- $requests = deepCopy .resources.requests }}
 {{- end }}
-{{- if ge (int $tensorParallelism) 1 }}
+{{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") }}
 {{- $requests = mergeOverwrite $requests (dict $acceleratorResource $tensorParallelism) }}
 {{- end }}
 resources:
@@ -550,7 +552,4 @@ context is a dict with helm root context plus:
   value: {{ include "llm-d-modelservice.dataParallelism" .parallelism | quote }}
 - name: TP_SIZE
   value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
-{{- /* Add accelerator type for runtime detection */}}
-- name: ACCELERATOR_TYPE
-  value: {{ .Values.accelerator.type | default "nvidia" | quote }}
 {{- end }} {{- /* define "llm-d-modelservice.parallelismEnv" */}}

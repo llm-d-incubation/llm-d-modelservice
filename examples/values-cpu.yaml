@@ -5,6 +5,12 @@
 # When true, LeaderWorkerSet is used instead of Deployment
 multinode: false
 
+# CPU-only configuration - override accelerator settings
+accelerator:
+  type: cpu
+  resources: {}
+  env: {}
+
 modelArtifacts:
   # name is the value of the model parameter in OpenAI requests
   name: random/model
