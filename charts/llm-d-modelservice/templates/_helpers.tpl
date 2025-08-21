@@ -92,10 +92,9 @@ affinity:
             {{- end }}
 {{- end }}
 {{- end }}
-
 {{/* Create the init container for the routing proxy/sidecar for decode pods */}}
 {{- define "llm-d-modelservice.routingProxy" -}}
-{{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) }}
+{{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) -}}
 initContainers:
   - name: routing-proxy
     args:
@@ -157,7 +156,7 @@ nvidia.com/gpu
 {{/* Get accelerator environment variables based on type */}}
 {{- define "llm-d-modelservice.acceleratorEnv" -}}
 {{- $acceleratorType := .Values.accelerator.type | default "nvidia" -}}
-{{- if hasKey .Values.accelerator.env $acceleratorType -}}
+{{- if and (ne $acceleratorType "cpu") (hasKey .Values.accelerator.env $acceleratorType) -}}
 {{- $envVars := index .Values.accelerator.env $acceleratorType -}}
 {{- range $envVars }}
 - name: {{ .name }}
@@ -175,14 +174,14 @@ nvidia.com/gpu
 {{- $limits = deepCopy .resources.limits }}
 {{- end }}
 {{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") }}
-{{- $limits = mergeOverwrite $limits (dict $acceleratorResource $tensorParallelism) }}
+{{- $limits = mergeOverwrite $limits (dict $acceleratorResource (toString $tensorParallelism)) }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
 {{- $requests = deepCopy .resources.requests }}
 {{- end }}
 {{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") }}
-{{- $requests = mergeOverwrite $requests (dict $acceleratorResource $tensorParallelism) }}
+{{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $tensorParallelism)) }}
 {{- end }}
 resources:
   limits:

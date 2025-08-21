@@ -35,9 +35,6 @@ accelerator:
     google: "google.com/tpu"
   # Environment variables specific to accelerator types
   env:
-    nvidia:
-      - name: CUDA_VISIBLE_DEVICES
-        value: "0"
     intel:
       - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
         value: "1"
