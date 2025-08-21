@@ -24,7 +24,7 @@ spec:
     {{- if .Values.prefill.subGroupPolicy }}
     subGroupPolicy:
     {{- toYaml .Values.prefill.subGroupPolicy | nindent 6 }}
-    {{-  end }}
+    {{- end }}
 
     # no sidecar so no need to specify leader separately
 
@@ -32,13 +32,13 @@ spec:
       metadata:
         labels:
           {{- include "llm-d-modelservice.prefilllabels" . | nindent 10 }}
-        {{- if or .Values.prefill.subGroupExclusiveTopology .Values.prefill.annotations }}
+        {{- if or .Values.prefill.subGroupExclusiveTopology .Values.prefill.podAnnotations }}
         annotations:
         {{- if .Values.prefill.subGroupExclusiveTopology }}
           leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
         {{- end }}
-        {{- if .Values.prefill.annotations }}
-          {{ toYaml .Values.prefill.annotations | nindent 10 }}
+        {{- if .Values.prefill.podAnnotations }}
+          {{ toYaml .Values.prefill.podAnnotations | nindent 10 }}
           {{- end }}
         {{- end }}
       spec:

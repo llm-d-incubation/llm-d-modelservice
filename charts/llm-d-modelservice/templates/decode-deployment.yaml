@@ -18,9 +18,9 @@ spec:
     metadata:
       labels:
         {{- include "llm-d-modelservice.decodelabels" . | nindent 8 }}
-      {{- if .Values.decode.annotations }}
+      {{- if .Values.decode.podAnnotations }}
       annotations:
-        {{- toYaml .Values.decode.annotations | nindent 8 }}
+        {{- toYaml .Values.decode.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
       {{- with .Values.routing }}

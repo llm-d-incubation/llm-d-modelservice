@@ -130,6 +130,12 @@ routing:
         #   type: Exact
         #   value: facebook/opt-125m
 
+    # Allow people to opt out of timeouts by unsetting the default value.
+    # They are set to 0s which in most situations defaults to the providers max timeout.
+    timeouts:
+      backendRequest: 0s
+      request: 0s
+
   # Configuration of EPP (endpoint picker)
   # cf. https://github.com/llm-d/llm-d-inference-scheduler
   epp:
@@ -334,3 +340,15 @@ prefill:
       metricRelabelings: []
       # namespaceSelector -- Selector to select which namespaces the Endpoints objects are discovered from
       # namespaceSelector: {}
+
+
+# Extra objects to be deployed alongside the main application
+extraObjects: []
+# Example:
+# extraObjects:
+#   - apiVersion: v1
+#     kind: ConfigMap
+#     metadata:
+#       name: example-config
+#     data:
+#       key: value
