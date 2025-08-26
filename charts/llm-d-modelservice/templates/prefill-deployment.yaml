@@ -23,6 +23,9 @@ spec:
         {{- toYaml .Values.prefill.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if .Values.prefill.priorityClassName }}
+      priorityClassName: {{ .Values.prefill.priorityClassName }}
+      {{- end }}
       {{- if .Values.prefill.priority }}
       priority: {{ .Values.prefill.priority }}
       {{- end }}
