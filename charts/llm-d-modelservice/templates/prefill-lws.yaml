@@ -42,6 +42,12 @@ spec:
           {{- end }}
         {{- end }}
       spec:
+        {{- if .Values.prefill.priorityClassName }}
+        priorityClassName: {{ .Values.prefill.priorityClassName }}
+        {{- end }}
+        {{- if .Values.prefill.priority }}
+        priority: {{ .Values.prefill.priority }}
+        {{- end }}
         {{- if hasKey .Values.prefill "hostIPC" }}
         hostIPC: {{ .Values.prefill.hostIPC }}
         {{- end }}

@@ -23,6 +23,12 @@ spec:
         {{- toYaml .Values.decode.annotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if .Values.decode.priorityClassName }}
+      priorityClassName: {{ .Values.decode.priorityClassName }}
+      {{- end }}
+      {{- if .Values.decode.priority }}
+      priority: {{ .Values.decode.priority }}
+      {{- end }}
       {{- with .Values.routing }}
       {{- (include "llm-d-modelservice.routingProxy" .) | nindent 6 }}
       {{- end }}

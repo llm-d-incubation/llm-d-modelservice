@@ -23,6 +23,12 @@ spec:
         {{- toYaml .Values.prefill.annotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if .Values.prefill.priorityClassName }}
+      priorityClassName: {{ .Values.prefill.priorityClassName }}
+      {{- end }}
+      {{- if .Values.prefill.priority }}
+      priority: {{ .Values.prefill.priority }}
+      {{- end }}
       {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
       {{- with .Values.prefill.containers }}
       containers:
