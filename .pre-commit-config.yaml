@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/dadav/helm-schema
+    rev: "0.18.1"
+    hooks:
+      - id: helm-schema
+        args:
+          - --append-newline
+          - --chart-search-root=charts
+          - --add-schema-reference
+          - --helm-docs-compatibility-mode
+          - --skip-auto-generation=required
+          - --no-dependencies
+          - -o=values.schema.tmpl.json
+  - repo: local
+    hooks:
+      - id: jsonschema-dereference
+        name: jsonschema-dereference
+        entry: python .pre-commit/jsonschema-dereference.py
+        additional_dependencies: [jsonref]
+        language: python
+        files: values\.(schema(\.tmpl)?\.json|yaml)$
+        types_or: [yaml, json]
