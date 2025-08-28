@@ -1,0 +1,1081 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "accelerator": {
+      "additionalProperties": false,
+      "description": " Supported types: nvidia, intel, amd, google",
+      "properties": {
+        "env": {
+          "additionalProperties": false,
+          "description": "Environment variables specific to accelerator types",
+          "properties": {
+            "intel": {
+              "items": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "ZE_ENABLE_PCI_ID_DEVICE_ORDER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "SYCL_DEVICE_FILTER",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "gpu",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "ZE_AFFINITY_MASK",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "0",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "VLLM_USE_V1",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "1",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "default": "CCL_ZE_IPC_EXCHANGE",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "pidfd",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  }
+                ],
+                "required": []
+              },
+              "required": [],
+              "title": "intel",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "env",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Resource names for different accelerator types",
+          "properties": {
+            "amd": {
+              "default": "amd.com/gpu",
+              "required": [],
+              "title": "amd",
+              "type": "string"
+            },
+            "google": {
+              "default": "google.com/tpu",
+              "required": [],
+              "title": "google",
+              "type": "string"
+            },
+            "intel": {
+              "default": "gpu.intel.com/i915",
+              "required": [],
+              "title": "intel",
+              "type": "string"
+            },
+            "nvidia": {
+              "default": "nvidia.com/gpu",
+              "required": [],
+              "title": "nvidia",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "type": {
+          "default": "nvidia",
+          "description": "Type of accelerator to use",
+          "required": [],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "accelerator"
+    },
+    "common": {
+      "additionalProperties": true,
+      "description": "Common configuration values",
+      "required": [],
+      "title": "common"
+    },
+    "decode": {
+      "additionalProperties": false,
+      "description": "Decode pod configuration",
+      "properties": {
+        "acceleratorTypes": {
+          "additionalProperties": false,
+          "description": "Only an option for LWS (multinode) subGroupExclusiveToplogy: true XPU-specific node affinity",
+          "properties": {
+            "labelKey": {
+              "default": "",
+              "required": [],
+              "title": "labelKey",
+              "type": "string"
+            },
+            "labelValues": {
+              "description": " items:   type: string @schema",
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "labelValues"
+            }
+          },
+          "required": [],
+          "title": "acceleratorTypes"
+        },
+        "autoscaling": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "autoscaling",
+          "type": "object"
+        },
+        "containers": {
+          "description": "Name of the scheduler to use for scheduling decode pods (overrides global schedulerName) schedulerName: decode-scheduler",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "args": {
+                    "description": " items:   type: string @schema",
+                    "items": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "required": [],
+                    "title": "args"
+                  },
+                  "command": {
+                    "description": "Required when modelCommand is \"custom\"",
+                    "items": {
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "command",
+                    "type": "array"
+                  },
+                  "env": {
+                    "description": " items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar @schema",
+                    "items": {
+                      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar",
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "env"
+                  },
+                  "image": {
+                    "default": "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0",
+                    "required": [],
+                    "title": "image",
+                    "type": "string"
+                  },
+                  "imagePullPolicy": {
+                    "default": "",
+                    "required": [],
+                    "title": "imagePullPolicy",
+                    "type": "string"
+                  },
+                  "modelCommand": {
+                    "default": "imageDefault",
+                    "description": "   vllmServe - modelservice will add the command vllm serve to the container   imageDefault - no command will be added; the default command defined in the image will be used   custom - use user provided \"command\"",
+                    "required": [],
+                    "title": "modelCommand"
+                  },
+                  "mountModelVolume": {
+                    "default": true,
+                    "description": "when set, a volumeMount (and volume) is created for model storage",
+                    "required": [],
+                    "title": "mountModelVolume",
+                    "type": "boolean"
+                  },
+                  "name": {
+                    "default": "vllm",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "ports": {
+                    "description": " @schema items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort @schema",
+                    "items": {
+                      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort",
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "ports"
+                  },
+                  "resources": {
+                    "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements",
+                    "description": "     name: metrics     protocol: TCP @schema $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements @schema",
+                    "required": []
+                  },
+                  "volumeMounts": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "mountPath": {
+                              "default": "/.config",
+                              "required": [],
+                              "title": "mountPath",
+                              "type": "string"
+                            },
+                            "name": {
+                              "default": "metrics-volume",
+                              "required": [],
+                              "title": "name",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "type": "object"
+                        }
+                      ],
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "volumeMounts",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "containers"
+        },
+        "create": {
+          "default": true,
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "monitoring": {
+          "additionalProperties": false,
+          "description": "Monitoring configuration for decode pods",
+          "properties": {
+            "podmonitor": {
+              "additionalProperties": false,
+              "description": "PodMonitor configuration for Prometheus Operator",
+              "properties": {
+                "annotations": {
+                  "additionalProperties": false,
+                  "description": "Additional annotations to be added to the PodMonitor",
+                  "required": [],
+                  "title": "annotations"
+                },
+                "enabled": {
+                  "default": "false",
+                  "description": "Create PodMonitor resource for decode deployment",
+                  "required": [],
+                  "title": "enabled"
+                },
+                "interval": {
+                  "default": "30s",
+                  "description": "Interval at which metrics should be scraped",
+                  "required": [],
+                  "title": "interval"
+                },
+                "labels": {
+                  "additionalProperties": false,
+                  "description": "Timeout after which the scrape is ended scrapeTimeout: \"10s\" labels -- Additional labels to be added to the PodMonitor",
+                  "required": [],
+                  "title": "labels"
+                },
+                "metricRelabelings": {
+                  "description": "MetricRelabelConfigs to apply to samples before ingestion",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "metricRelabelings"
+                },
+                "path": {
+                  "default": "/metrics",
+                  "description": "HTTP path to scrape metrics from",
+                  "required": [],
+                  "title": "path"
+                },
+                "portName": {
+                  "default": "metrics",
+                  "description": "Port name to scrape metrics from (must match container port name)",
+                  "required": [],
+                  "title": "portName"
+                },
+                "relabelings": {
+                  "description": "RelabelConfigs to apply to samples before scraping",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "relabelings"
+                }
+              },
+              "required": [],
+              "title": "podmonitor",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "monitoring",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "volumes": {
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "emptyDir": {
+                    "additionalProperties": false,
+                    "required": [],
+                    "title": "emptyDir",
+                    "type": "object"
+                  },
+                  "name": {
+                    "default": "metrics-volume",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "volumes",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "decode",
+      "type": "object"
+    },
+    "extraObjects": {
+      "description": "Extra objects to be deployed alongside the main application",
+      "items": {
+        "required": [],
+        "type": "object"
+      },
+      "required": [],
+      "title": "extraObjects"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "modelArtifacts": {
+      "additionalProperties": false,
+      "description": "Name of the scheduler to use for scheduling model pods schedulerName: default-scheduler",
+      "properties": {
+        "mountPath": {
+          "default": "/model-cache",
+          "description": " authSecretName: location where model volume will be mounted (used when mountModelVolume: true)",
+          "required": [],
+          "title": "mountPath"
+        },
+        "name": {
+          "default": "random/model",
+          "description": " Required",
+          "required": [],
+          "title": "name"
+        },
+        "size": {
+          "default": "5Mi",
+          "description": "size of volume to create to hold the model",
+          "required": [],
+          "title": "size",
+          "type": "string"
+        },
+        "uri": {
+          "default": "hf://{{ .Values.modelArtifacts.name }}",
+          "description": "   hf://model/name - model as defined on Hugging Face   pvc://pvc_name/path/to/model - model on existing persistant storage volume   oci:// not yet supported",
+          "required": [],
+          "title": "uri"
+        }
+      },
+      "required": [],
+      "title": "modelArtifacts"
+    },
+    "multinode": {
+      "default": false,
+      "description": "When true, a LeaderWorkerSet is used instead of a Deployment",
+      "required": [],
+      "title": "multinode",
+      "type": "boolean"
+    },
+    "prefill": {
+      "additionalProperties": false,
+      "description": "Prefill pod configuation",
+      "properties": {
+        "acceleratorTypes": {
+          "additionalProperties": false,
+          "description": "Only an option for LWS (multinode) subGroupExclusiveToplogy: true XPU-specific node affinity",
+          "properties": {
+            "labelKey": {
+              "default": "",
+              "required": [],
+              "title": "labelKey",
+              "type": "string"
+            },
+            "labelValues": {
+              "description": " items:   type: string @schema",
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "labelValues"
+            }
+          },
+          "required": [],
+          "title": "acceleratorTypes"
+        },
+        "autoscaling": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "autoscaling",
+          "type": "object"
+        },
+        "containers": {
+          "description": "Name of the scheduler to use for scheduling prefill pods (overrides global schedulerName) schedulerName: prefill-scheduler",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "args": {
+                    "description": " items:   type: string @schema",
+                    "items": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "required": [],
+                    "title": "args"
+                  },
+                  "command": {
+                    "items": {
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "command",
+                    "type": "array"
+                  },
+                  "env": {
+                    "description": " items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar @schema",
+                    "items": {
+                      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar",
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "env"
+                  },
+                  "image": {
+                    "default": "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0",
+                    "required": [],
+                    "title": "image",
+                    "type": "string"
+                  },
+                  "imagePullPolicy": {
+                    "default": "",
+                    "required": [],
+                    "title": "imagePullPolicy",
+                    "type": "string"
+                  },
+                  "modelCommand": {
+                    "default": "imageDefault",
+                    "required": [],
+                    "title": "modelCommand",
+                    "type": "string"
+                  },
+                  "mountModelVolume": {
+                    "default": true,
+                    "required": [],
+                    "title": "mountModelVolume",
+                    "type": "boolean"
+                  },
+                  "name": {
+                    "default": "vllm",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "ports": {
+                    "description": " @schema items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort @schema",
+                    "items": {
+                      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort",
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "ports"
+                  },
+                  "resources": {
+                    "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements",
+                    "description": "     name: metrics     protocol: TCP @schema $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements @schema",
+                    "required": []
+                  },
+                  "volumeMounts": {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "mountPath": {
+                              "default": "/.config",
+                              "required": [],
+                              "title": "mountPath",
+                              "type": "string"
+                            },
+                            "name": {
+                              "default": "metrics-volume",
+                              "required": [],
+                              "title": "name",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "type": "object"
+                        }
+                      ],
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "volumeMounts",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "containers"
+        },
+        "create": {
+          "default": true,
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "monitoring": {
+          "additionalProperties": false,
+          "description": "Monitoring configuration for prefill pods",
+          "properties": {
+            "podmonitor": {
+              "additionalProperties": false,
+              "description": "PodMonitor configuration for Prometheus Operator",
+              "properties": {
+                "annotations": {
+                  "additionalProperties": false,
+                  "description": "Additional annotations to be added to the PodMonitor",
+                  "required": [],
+                  "title": "annotations"
+                },
+                "enabled": {
+                  "default": "false",
+                  "description": "Create PodMonitor resource for prefill deployment",
+                  "required": [],
+                  "title": "enabled"
+                },
+                "interval": {
+                  "default": "30s",
+                  "description": "Interval at which metrics should be scraped",
+                  "required": [],
+                  "title": "interval"
+                },
+                "labels": {
+                  "additionalProperties": false,
+                  "description": "Timeout after which the scrape is ended scrapeTimeout: \"10s\" labels -- Additional labels to be added to the PodMonitor",
+                  "required": [],
+                  "title": "labels"
+                },
+                "metricRelabelings": {
+                  "description": "MetricRelabelConfigs to apply to samples before ingestion",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "metricRelabelings"
+                },
+                "path": {
+                  "default": "/metrics",
+                  "description": "HTTP path to scrape metrics from",
+                  "required": [],
+                  "title": "path"
+                },
+                "portName": {
+                  "default": "metrics",
+                  "description": "Port name to scrape metrics from (must match container port name)",
+                  "required": [],
+                  "title": "portName"
+                },
+                "relabelings": {
+                  "description": "RelabelConfigs to apply to samples before scraping",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "relabelings"
+                }
+              },
+              "required": [],
+              "title": "podmonitor",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "monitoring",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 0,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "volumes": {
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "emptyDir": {
+                    "additionalProperties": false,
+                    "required": [],
+                    "title": "emptyDir",
+                    "type": "object"
+                  },
+                  "name": {
+                    "default": "metrics-volume",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "volumes",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "prefill",
+      "type": "object"
+    },
+    "routing": {
+      "additionalProperties": false,
+      "description": " also describes elements for Gateway API Inference Extension configuration",
+      "properties": {
+        "epp": {
+          "additionalProperties": false,
+          "description": " cf. https://github.com/llm-d/llm-d-inference-scheduler",
+          "properties": {
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "debugLevel": {
+              "default": 4,
+              "required": [],
+              "title": "debugLevel",
+              "type": "integer"
+            },
+            "disableLivenessProbe": {
+              "default": false,
+              "required": [],
+              "title": "disableLivenessProbe",
+              "type": "boolean"
+            },
+            "disableReadinessProbe": {
+              "default": false,
+              "required": [],
+              "title": "disableReadinessProbe",
+              "type": "boolean"
+            },
+            "env": {
+              "description": " pluginsCustomConfig:   custom-plugins.yaml: |     apiVersion: inference.networking.x-k8s.io/v1alpha1     kind: EndpointPickerConfig     plugins:     - type: custom-scorer       parameters:         custom-threshold: 64     - type: max-score-picker     - type: single-profile-handler     schedulingProfiles:     - name: default       plugins:       - pluginRef: custom-scorer         weight: 1       - pluginRef: max-score-picker         weight: 1 @schema items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar @schema",
+              "items": {
+                "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar",
+                "required": []
+              },
+              "required": [],
+              "title": "env"
+            },
+            "image": {
+              "default": "ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "pluginsConfigFile": {
+              "default": "default-config.yaml",
+              "description": " prefix-estimate-config.yaml, default-pd-config.yaml, or you may define a custom config below and select it with the pluginsConfigFile field.",
+              "required": [],
+              "title": "pluginsConfigFile"
+            },
+            "replicas": {
+              "default": 1,
+              "required": [],
+              "title": "replicas",
+              "type": "integer"
+            },
+            "service": {
+              "additionalProperties": false,
+              "properties": {
+                "appProtocol": {
+                  "default": "http2",
+                  "required": [],
+                  "title": "appProtocol",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 9002,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                },
+                "targetPort": {
+                  "default": 9002,
+                  "required": [],
+                  "title": "targetPort",
+                  "type": "integer"
+                },
+                "type": {
+                  "default": "ClusterIP",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "service",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "epp"
+        },
+        "httpRoute": {
+          "additionalProperties": false,
+          "description": " cf. https://gateway-api.sigs.k8s.io/api-types/httproute/",
+          "properties": {
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "matches": {
+              "description": " rules:   - backendRefs:       - group: inference.networking.x-k8s.io         kind: InferencePool         name: inference-pool-name         port: 8000         weight: 1     matches:       - path:           type: PathPrefix           value: / when specifiying matches and not rules, it will use the default backendRef block but overwrite just the matches section of a single rule",
+              "items": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "headers": {
+                        "description": " @schema items:   type: object @schema",
+                        "items": {
+                          "required": [],
+                          "type": "object"
+                        },
+                        "required": [],
+                        "title": "headers"
+                      },
+                      "path": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": {
+                            "default": "PathPrefix",
+                            "required": [],
+                            "title": "type",
+                            "type": "string"
+                          },
+                          "value": {
+                            "default": "/",
+                            "required": [],
+                            "title": "value",
+                            "type": "string"
+                          }
+                        },
+                        "required": [],
+                        "title": "path",
+                        "type": "object"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  }
+                ],
+                "required": []
+              },
+              "required": [],
+              "title": "matches"
+            },
+            "timeouts": {
+              "additionalProperties": false,
+              "description": " They are set to 0s which in most situations defaults to the providers max timeout.",
+              "properties": {
+                "backendRequest": {
+                  "default": "0s",
+                  "required": [],
+                  "title": "backendRequest",
+                  "type": "string"
+                },
+                "request": {
+                  "default": "0s",
+                  "required": [],
+                  "title": "request",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "timeouts"
+            }
+          },
+          "required": [],
+          "title": "httpRoute"
+        },
+        "inferenceModel": {
+          "additionalProperties": false,
+          "properties": {
+            "create": {
+              "default": false,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "criticality": {
+              "default": "Critical",
+              "description": "Criticality options: [\"Critical\", \"Standard\", \"Sheddable\"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84",
+              "required": [],
+              "title": "criticality",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "inferenceModel",
+          "type": "object"
+        },
+        "inferencePool": {
+          "additionalProperties": false,
+          "description": " cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool",
+          "properties": {
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "inferencePool"
+        },
+        "parentRefs": {
+          "description": " cf. https://gateway-api.sigs.k8s.io/api-types/gateway/",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "group": {
+                    "default": "gateway.networking.k8s.io",
+                    "required": [],
+                    "title": "group",
+                    "type": "string"
+                  },
+                  "kind": {
+                    "default": "Gateway",
+                    "required": [],
+                    "title": "kind",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "inference-gateway",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "namespace": {
+                    "default": "{{ .Release.Namespace }}",
+                    "required": [],
+                    "title": "namespace",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "parentRefs"
+        },
+        "proxy": {
+          "additionalProperties": false,
+          "description": " cf. https://github.com/llm-d/llm-d-routing-sidecar/",
+          "properties": {
+            "connector": {
+              "default": "nixlv2",
+              "description": "Specify a conenctor. For example, `nixl`, `nixlv2`",
+              "required": [],
+              "title": "connector",
+              "type": "string"
+            },
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "default": "ghcr.io/llm-d/llm-d-routing-sidecar:v0.2.0",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "secure": {
+              "default": false,
+              "description": "Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.",
+              "required": [],
+              "title": "secure",
+              "type": "boolean"
+            },
+            "targetPort": {
+              "default": 8200,
+              "description": "target port on which VLLM should listen",
+              "required": [],
+              "title": "targetPort",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "proxy"
+        },
+        "servicePort": {
+          "default": "8000",
+          "description": " modelName: random/modelId port the inference engine (VLLM) listens when a sidecar (proxy) is used it will listen on this port and forward to VLLM on proxy.targetPort",
+          "required": [],
+          "title": "servicePort"
+        }
+      },
+      "required": [],
+      "title": "routing"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
