@@ -1,0 +1,54 @@
+{{- if .Values.routing.epp.monitoring.servicemonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}-monitor
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+  {{- with .Values.routing.epp.monitoring.servicemonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.routing.epp.monitoring.servicemonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  endpoints:
+  - interval: {{ .Values.routing.epp.monitoring.servicemonitor.interval }}
+    port: {{ .Values.routing.epp.monitoring.servicemonitor.port }}
+    path: {{ .Values.routing.epp.monitoring.servicemonitor.path }}
+    authorization:
+      credentials:
+        key: token
+        name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}-token
+    {{- with .Values.routing.epp.monitoring.servicemonitor.scrapeTimeout }}
+    scrapeTimeout: {{ . }}
+    {{- end }}
+    {{- with .Values.routing.epp.monitoring.servicemonitor.relabelings }}
+    relabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.routing.epp.monitoring.servicemonitor.metricRelabelings }}
+    metricRelabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  jobLabel: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
+  namespaceSelector:
+    {{- if .Values.routing.epp.monitoring.servicemonitor.namespaceSelector.any }}
+    any: true
+    {{- else }}
+    matchNames:
+    - {{ .Release.Namespace }}
+    {{- if .Values.routing.epp.monitoring.servicemonitor.namespaceSelector.matchNames }}
+    {{- range .Values.routing.epp.monitoring.servicemonitor.namespaceSelector.matchNames }}
+    - {{ . }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+  selector:
+    matchLabels:
+      {{- include "llm-d-modelservice.eppLabels" . | nindent 6 }}
+      {{- with .Values.routing.epp.monitoring.servicemonitor.selector.matchLabels }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+{{- end }}

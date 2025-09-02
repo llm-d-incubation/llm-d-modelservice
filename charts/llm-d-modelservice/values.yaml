@@ -196,6 +196,29 @@ routing:
     # - name: ENABLE_KVCACHE_AWARE_SCORER
     #   value: "false"
 
+    # Monitoring configuration for EPP
+    monitoring:
+      # ServiceMonitor configuration for EPP metrics collection with Prometheus Operator
+      servicemonitor:
+        enabled: false
+        # port -- Port name to scrape metrics from (must match service port name)
+        port: "http-metrics"
+        path: "/metrics"
+        interval: "30s"
+        # scrapeTimeout -- Timeout after which the scrape is ended
+        # scrapeTimeout: "10s"
+        labels: {}
+        annotations: {}
+        # relabelings -- RelabelConfigs to apply to samples before scraping
+        relabelings: []
+        # metricRelabelings -- MetricRelabelConfigs to apply to samples before ingestion
+        metricRelabelings: []
+        namespaceSelector:
+          any: false
+          matchNames: []
+        selector:
+          # matchLabels in template match the EPP service by default
+          matchLabels: {}
 
 # Decode pod configuration
 decode:
