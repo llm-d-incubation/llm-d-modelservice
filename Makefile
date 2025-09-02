@@ -35,5 +35,19 @@ generate: tools ## Generate example output files from Helm chart templates
 ##@ Tools
 
 .PHONY: tools
-tools: ## Install all required tools (helm, ct)
+tools: ## Install all required tools (helm, ct, pre-commit)
 	hack/install-tools.sh
+
+##@ Pre-commit
+
+.PHONY: pre-commit-install
+pre-commit-install: tools ## Install pre-commit hooks
+	pre-commit install
+
+.PHONY: pre-commit-run
+pre-commit-run: tools ## Run pre-commit hooks on all files
+	pre-commit run --all-files
+
+.PHONY: pre-commit-update
+pre-commit-update: tools ## Update pre-commit hooks to latest versions
+	pre-commit autoupdate

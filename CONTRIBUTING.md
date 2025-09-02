@@ -25,14 +25,14 @@ Before submitting a pull request, please make sure you have the following tools 
 
 - [Helm](https://helm.sh/)
 - [Chart Testing](https://github.com/helm/chart-testing)
+- [pre-commit](https://pre-commit.com/)
 <!-- TODO: Once supported, also install:
-- [Helm docs](https://github.com/norwoodj/helm-docs)
-- [pre-commit](https://pre-commit.com/) -->
+- [Helm docs](https://github.com/norwoodj/helm-docs) -->
 
 You can install these tools by:
 
 ```bash
-# Install tools locall in PROJECT_DIR/bin directory
+# Install tools locally in PROJECT_DIR/bin directory
 make tools
 # Export PATH to use the locally installed tools directly
 export PATH="$(pwd)/bin:$PATH"
@@ -57,6 +57,24 @@ helm template cpu-sim charts/llm-d-modelservice -f examples/values-cpu.yaml
 
 Make sure that the repo you're templating against is your local chart (`charts/llm-d-modelservice`) and not an upstream chart (`llm-d-modelservice/llm-d-modelservice`).
 
+## Pre-commit
+
+Set up pre-commit hooks to automatically run checks before each commit:
+
+```bash
+# Install pre-commit hooks
+make pre-commit-install
+```
+
+This will install the pre-commit hooks defined in `.pre-commit-config.yaml`. The hooks will automatically run when you make commits and will help ensure code quality and consistency.
+
+You can also run pre-commit manually on all files:
+
+```bash
+# Run pre-commit on all files
+make pre-commit-run
+```
+
 ## Submitting a Pull Request
 
 For every Pull Request submitted, ensure the following steps have been done:
@@ -70,8 +88,9 @@ For every Pull Request submitted, ensure the following steps have been done:
    - `X` (major) is incremented for breaking changes,
    - `Y` (minor) is incremented when new features are added without breaking existing functionality,
    - `Z` (patch) is incremented for bug fixes, minor improvements, or non-breaking changes.
-<!-- TODO after the make verify for Chart Testing supported 5. Lint tests has been run for the Chart using the [Chart Testing](https://github.com/helm/chart-testing) tool and the `ct lint` command. -->
-<!-- TODO after the pre-commit supported 6. Make sure that [pre-commit](https://pre-commit.com/) hook has been run to generate/update the `README.md` documentation. To preview the content, use `helm-docs --dry-run`.  -->
+5. Run pre-commit hooks to ensure code quality and schema validation: `make pre-commit-run`
+6. Lint tests have been run for the Chart using the [Chart Testing](https://github.com/helm/chart-testing) tool and the `ct lint` command.
+<!-- TODO after the helm-docs supported: 7. Make sure that [helm-docs](https://github.com/norwoodj/helm-docs) has been run to generate/update the `README.md` documentation. To preview the content, use `helm-docs --dry-run`. -->
 
 ## FAQ and Troubleshooting
 
@@ -79,8 +98,6 @@ For every Pull Request submitted, ensure the following steps have been done:
 
 If `make verify` fails, review the error messages for details. If the failure is related to files under the `examples` directory being out of sync, you can run `make generate` to automatically update the generated code. After running `make generate`, re-run `make verify` to confirm the issue is resolved.
 
-<!-- TODO after the pre-commit supported
 #### PR check `Pre-commit / Pre-commit (pull_request)` is failing
 
-Please check the job logs for more information. This usually means you forgot to run `pre-commit run -a` before submitting your PR. Refer to the setup steps above. To avoid this in the future, ensure you have run `pre-commit install` to set up the pre-commit hooks.
--->
+Please check the job logs for more information. This usually means you forgot to run `make pre-commit-run` before submitting your PR. Refer to the setup steps above. To avoid this in the future, ensure you have run `make pre-commit-install` to set up the pre-commit hooks.

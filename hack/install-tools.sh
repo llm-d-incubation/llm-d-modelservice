@@ -12,6 +12,8 @@ HELM_VERSION="v3.18.5"
 YAMALE_VERSION="6.0.0"
 # https://pypi.org/project/yamllint/
 YAMLLINT_VERSION="1.37.1"
+# https://pypi.org/project/pre-commit/
+PRECOMMIT_VERSION="4.3.0"
 
 # Global variables
 FORCE_INSTALL="${FORCE_INSTALL:-false}"
@@ -92,6 +94,26 @@ install_helm() {
     "helm"
 }
 
+install_precommit() {
+  local install_path="$1"
+  local precommit_binary="$install_path/pre-commit"
+  
+  # Check if pre-commit should be skipped
+  if should_skip_install "pre-commit" "$precommit_binary"; then
+    return 0
+  fi
+  
+  pip3 install "pre-commit==$PRECOMMIT_VERSION"
+  
+  # Create a wrapper script in the bin directory
+  cat > "$precommit_binary" << 'EOF'
+#!/bin/bash
+# Wrapper script to use the system-installed pre-commit
+exec python3 -m pre_commit "$@"
+EOF
+  chmod +x "$precommit_binary"
+}
+
 
 # Main execution
 install_tool() {
@@ -108,6 +130,7 @@ TOOLS_PATH="${TOOLS_PATH:-$PROJECT_DIR/bin}"
 if [ $# -eq 0 ]; then
   install_tool "$TOOLS_PATH" "ct"
   install_tool "$TOOLS_PATH" "helm"
+  install_tool "$TOOLS_PATH" "precommit"
 else
   install_tool "$TOOLS_PATH" "${1}"
 fi
