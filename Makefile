@@ -16,7 +16,7 @@ pre-helm: tools ## Set up Helm dependency repositories
 
 .PHONY: lint
 lint: pre-helm ## Run lint checks using helm-lint
-	ct lint --check-version-increment=false --validate-maintainers=false --charts charts/llm-d-modelservice $(if $(TARGET_BRANCH),--target-branch $(TARGET_BRANCH))
+	$(PROJECT_DIR)/bin/ct lint --check-version-increment=false --validate-maintainers=false --charts charts/llm-d-modelservice $(if $(TARGET_BRANCH),--target-branch $(TARGET_BRANCH))
 
 # Paths that need verification during 'make verify'
 PATHS_TO_VERIFY := examples/
