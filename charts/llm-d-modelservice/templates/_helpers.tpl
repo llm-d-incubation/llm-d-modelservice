@@ -146,6 +146,8 @@ Context is helm root context plus key "role" ("decode" or "prefill")
 {{- $acceleratorType := .Values.accelerator.type | default "nvidia" -}}
 {{- if and .container .container.image (contains "llm-d-inference-sim" .container.image) -}}
 {{/* No resource name for llm-d-inference-sim */}}
+{{- else if eq $acceleratorType "cpu" -}}
+{{/* No resource name for CPU */}}
 {{- else if hasKey .Values.accelerator.resources $acceleratorType -}}
 {{- index .Values.accelerator.resources $acceleratorType -}}
 {{- else -}}
