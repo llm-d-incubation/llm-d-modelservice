@@ -47,6 +47,8 @@ accelerator:
         value: "1"
       - name: TORCH_LLM_ALLREDUCE
         value: "1"
+      - name: VLLM_WORKER_MULTIPROC_METHOD
+        value: "spawn"
 
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
