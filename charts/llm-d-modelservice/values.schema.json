@@ -171,7 +171,7 @@
             "title": "common"
         },
         "decode": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "Decode pod configuration",
             "properties": {
                 "acceleratorTypes": {
@@ -554,8 +554,8 @@
                     "type": "boolean"
                 },
                 "monitoring": {
-                    "additionalProperties": false,
-                    "description": "Monitoring configuration for decode pods",
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema Monitoring configuration for decode pods",
                     "properties": {
                         "podmonitor": {
                             "additionalProperties": false,
@@ -620,8 +620,7 @@
                         }
                     },
                     "required": [],
-                    "title": "monitoring",
-                    "type": "object"
+                    "title": "monitoring"
                 },
                 "replicas": {
                     "default": 1,
@@ -660,8 +659,7 @@
                 }
             },
             "required": [],
-            "title": "decode",
-            "type": "object"
+            "title": "decode"
         },
         "extraObjects": {
             "description": "Extra objects to be deployed alongside the main application",
@@ -682,17 +680,19 @@
             "additionalProperties": false,
             "description": "Name of the scheduler to use for scheduling model pods schedulerName: default-scheduler",
             "properties": {
+                "authSecretName": {
+                    "default": "",
+                    "description": "name of secret containing credentials for accessing the model (e.g., HF_TOKEN)",
+                    "required": [],
+                    "title": "authSecretName",
+                    "type": "string"
+                },
                 "mountPath": {
                     "default": "/model-cache",
-                    "description": "  location where model volume will be mounted (used when mountModelVolume: true)",
+                    "description": "location where model volume will be mounted (used when mountModelVolume: true)",
                     "required": [],
-                    "title": "mountPath"
-                },
-                 "authSecretName": {
-                    "default": null,
-                    "description": "  name of secret containing credentials for accessing the model (e.g., HF_TOKEN)",
-                    "required": [],
-                    "title": "authSecretName"
+                    "title": "mountPath",
+                    "type": "string"
                 },
                 "name": {
                     "default": "random/model",
@@ -725,8 +725,8 @@
             "type": "boolean"
         },
         "prefill": {
-            "additionalProperties": false,
-            "description": "Prefill pod configuation",
+            "additionalProperties": true,
+            "description": " additionalProperties: true @schema Prefill pod configuation",
             "properties": {
                 "acceleratorTypes": {
                     "additionalProperties": false,
@@ -1106,8 +1106,8 @@
                     "type": "boolean"
                 },
                 "monitoring": {
-                    "additionalProperties": false,
-                    "description": "Monitoring configuration for prefill pods",
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema Monitoring configuration for prefill pods",
                     "properties": {
                         "podmonitor": {
                             "additionalProperties": false,
@@ -1172,8 +1172,7 @@
                         }
                     },
                     "required": [],
-                    "title": "monitoring",
-                    "type": "object"
+                    "title": "monitoring"
                 },
                 "replicas": {
                     "default": 0,
@@ -1212,16 +1211,15 @@
                 }
             },
             "required": [],
-            "title": "prefill",
-            "type": "object"
+            "title": "prefill"
         },
         "routing": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": " also describes elements for Gateway API Inference Extension configuration",
             "properties": {
                 "epp": {
                     "additionalProperties": true,
-                    "description": " cf. https://github.com/llm-d/llm-d-inference-scheduler",
+                    "description": " additionalProperties: true @schema Configuration of EPP (endpoint picker) cf. https://github.com/llm-d/llm-d-inference-scheduler",
                     "properties": {
                         "create": {
                             "default": true,
@@ -1448,8 +1446,8 @@
                     "title": "epp"
                 },
                 "httpRoute": {
-                    "additionalProperties": false,
-                    "description": " cf. https://gateway-api.sigs.k8s.io/api-types/httproute/",
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema Configuration of HTTPRoute (mapping of requests through gateway to InferencePool) cf. https://gateway-api.sigs.k8s.io/api-types/httproute/",
                     "properties": {
                         "create": {
                             "default": true,
@@ -1550,7 +1548,7 @@
                 },
                 "inferencePool": {
                     "additionalProperties": true,
-                    "description": " cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool",
+                    "description": " additionalProperties: true @schema Configuration of InferencePool cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool",
                     "properties": {
                         "create": {
                             "default": true,
@@ -1567,7 +1565,7 @@
                     "items": {
                         "anyOf": [
                             {
-                                "additionalProperties": true,
+                                "additionalProperties": false,
                                 "properties": {
                                     "group": {
                                         "default": "gateway.networking.k8s.io",
@@ -1604,8 +1602,8 @@
                     "title": "parentRefs"
                 },
                 "proxy": {
-                    "additionalProperties": false,
-                    "description": " cf. https://github.com/llm-d/llm-d-routing-sidecar/",
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema Configuration of VLLM routing sidecar cf. https://github.com/llm-d/llm-d-routing-sidecar/",
                     "properties": {
                         "connector": {
                             "default": "nixlv2",
@@ -1646,7 +1644,7 @@
                 },
                 "servicePort": {
                     "default": "8000",
-                    "description": " modelName: random/modelId port the inference engine (VLLM) listens when a sidecar (proxy) is used it will listen on this port and forward to VLLM on proxy.targetPort",
+                    "description": " modelName: random/modelId port the inference engine (vLLM) listens when a sidecar (proxy) is used it will listen on this port and forward to VLLM on proxy.targetPort",
                     "required": [],
                     "title": "servicePort"
                 }

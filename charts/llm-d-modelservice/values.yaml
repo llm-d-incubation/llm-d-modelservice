@@ -22,7 +22,7 @@ modelArtifacts:
   # size of volume to create to hold the model
   size: 5Mi
   # name of secret containing credentials for accessing the model (e.g., HF_TOKEN)
-  # authSecretName: ""
+  authSecretName: ""
   # location where model volume will be mounted (used when mountModelVolume: true)
   mountPath: /model-cache
 
@@ -63,6 +63,9 @@ routing:
   # when a sidecar (proxy) is used it will listen on this port and forward to VLLM on proxy.targetPort
   servicePort: 8000
 
+  # @schema
+  # additionalProperties: true
+  # @schema
   # Configuration of VLLM routing sidecar
   # cf. https://github.com/llm-d/llm-d-routing-sidecar/
   proxy:
@@ -93,6 +96,9 @@ routing:
     name: inference-gateway
     namespace: "{{ .Release.Namespace }}"
 
+  # @schema
+  # additionalProperties: true
+  # @schema
   # Configuration of InferencePool
   # cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool
   inferencePool:
@@ -106,6 +112,9 @@ routing:
     # Criticality options: ["Critical", "Standard", "Sheddable"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84
     criticality: Critical
 
+  # @schema
+  # additionalProperties: true
+  # @schema
   # Configuration of HTTPRoute (mapping of requests through gateway to InferencePool)
   # cf. https://gateway-api.sigs.k8s.io/api-types/httproute/
   httpRoute:
@@ -143,6 +152,9 @@ routing:
       backendRequest: 0s
       request: 0s
 
+  # @schema
+  # additionalProperties: true
+  # @schema
   # Configuration of EPP (endpoint picker)
   # cf. https://github.com/llm-d/llm-d-inference-scheduler
   epp:
@@ -196,7 +208,10 @@ routing:
     #   value: "false"
 
 
-# Decode pod configuration
+# @schema
+# additionalProperties: true
+# @schema
+# -- Decode pod configuration
 decode:
   create: true
   autoscaling:
@@ -286,6 +301,9 @@ decode:
     # @schema
     labelValues: []
 
+  # @schema
+  # additionalProperties: true
+  # @schema
   # Monitoring configuration for decode pods
   monitoring:
     # PodMonitor configuration for Prometheus Operator
@@ -311,6 +329,9 @@ decode:
       # namespaceSelector -- Selector to select which namespaces the Endpoints objects are discovered from
       # namespaceSelector: {}
 
+# @schema
+# additionalProperties: true
+# @schema
 # Prefill pod configuation
 prefill:
   create: true
@@ -395,6 +416,9 @@ prefill:
     # @schema
     labelValues: []
 
+  # @schema
+  # additionalProperties: true
+  # @schema
   # Monitoring configuration for prefill pods
   monitoring:
     # PodMonitor configuration for Prometheus Operator
