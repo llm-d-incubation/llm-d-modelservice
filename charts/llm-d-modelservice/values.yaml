@@ -22,7 +22,7 @@ modelArtifacts:
   # size of volume to create to hold the model
   size: 5Mi
   # name of secret containing credentials for accessing the model (e.g., HF_TOKEN)
-  # authSecretName:
+  # authSecretName: ""
   # location where model volume will be mounted (used when mountModelVolume: true)
   mountPath: /model-cache
 
@@ -59,7 +59,7 @@ accelerator:
 routing:
   # Deprecated
   # modelName: random/modelId
-  # port the inference engine (VLLM) listens
+  # port the inference engine (vLLM) listens
   # when a sidecar (proxy) is used it will listen on this port and forward to VLLM on proxy.targetPort
   servicePort: 8000
 
@@ -84,7 +84,6 @@ routing:
 
     # Overwrite the verbosity of logging in the sidecar (defaults to 5)
     # debugLevel: 5
-
 
   # Reference to parent gateway
   # cf. https://gateway-api.sigs.k8s.io/api-types/gateway/

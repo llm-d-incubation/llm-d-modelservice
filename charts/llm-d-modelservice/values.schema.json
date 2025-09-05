@@ -684,9 +684,15 @@
             "properties": {
                 "mountPath": {
                     "default": "/model-cache",
-                    "description": " authSecretName: location where model volume will be mounted (used when mountModelVolume: true)",
+                    "description": "  location where model volume will be mounted (used when mountModelVolume: true)",
                     "required": [],
                     "title": "mountPath"
+                },
+                 "authSecretName": {
+                    "default": null,
+                    "description": "  name of secret containing credentials for accessing the model (e.g., HF_TOKEN)",
+                    "required": [],
+                    "title": "authSecretName"
                 },
                 "name": {
                     "default": "random/model",
@@ -1210,11 +1216,11 @@
             "type": "object"
         },
         "routing": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": " also describes elements for Gateway API Inference Extension configuration",
             "properties": {
                 "epp": {
-                    "additionalProperties": false,
+                    "additionalProperties": true,
                     "description": " cf. https://github.com/llm-d/llm-d-inference-scheduler",
                     "properties": {
                         "create": {
@@ -1543,7 +1549,7 @@
                     "type": "object"
                 },
                 "inferencePool": {
-                    "additionalProperties": false,
+                    "additionalProperties": true,
                     "description": " cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool",
                     "properties": {
                         "create": {
@@ -1561,7 +1567,7 @@
                     "items": {
                         "anyOf": [
                             {
-                                "additionalProperties": false,
+                                "additionalProperties": true,
                                 "properties": {
                                     "group": {
                                         "default": "gateway.networking.k8s.io",
