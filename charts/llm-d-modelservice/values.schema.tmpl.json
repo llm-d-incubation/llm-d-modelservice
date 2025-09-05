@@ -1047,6 +1047,12 @@
               "title": "image",
               "type": "string"
             },
+            "imagePullPolicy": {
+              "default": "Always",
+              "required": [],
+              "title": "imagePullPolicy",
+              "type": "string"
+            },
             "secure": {
               "default": false,
               "description": "Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.",

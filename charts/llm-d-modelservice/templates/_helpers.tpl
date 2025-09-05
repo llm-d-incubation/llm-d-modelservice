@@ -112,7 +112,7 @@ initContainers:
       - --cert-path={{ .proxy.certPath }}
       {{- end }}
     image: {{ required "routing.proxy.image must be specified" .proxy.image }}
-    imagePullPolicy: Always
+    imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
     ports:
       - containerPort: {{ default 8080 .servicePort }}
     resources: {}
