@@ -98,8 +98,19 @@ routing:
   # @schema
   # Configuration of InferencePool
   # cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool
+
+
+  # @schema
+  # additionalProperties: true
+  # @schema
   inferencePool:
     create: true
+    # which API group to use for the inference pool, options: ["inference.networking.x-k8s.io", "inference.networking.k8s.io"]. Defaults to: "inference.networking.x-k8s.io" until gateway provider support for new API
+    # @schema
+    # default: "inference.networking.x-k8s.io"
+    # enum: ["inference.networking.x-k8s.io","inference.networking.k8s.io"]
+    # @schema
+    apiGroup: "inference.networking.x-k8s.io"
     # name: OVERRIDE_NAME
     # to use a different epp service than the one created when routing.epp.create: true
     # extensionRef:

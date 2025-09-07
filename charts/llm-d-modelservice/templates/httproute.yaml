@@ -22,7 +22,7 @@ spec:
   {{- else }}
   rules:
     - backendRefs:
-      - group: inference.networking.x-k8s.io
+      - group: {{ .Values.routing.inferencePool.apiGroup }}
         kind: InferencePool
         name: {{ include "llm-d-modelservice.inferencePoolName" . }}
         port: {{ .Values.routing.servicePort  }}

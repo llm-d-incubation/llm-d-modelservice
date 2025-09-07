@@ -61,7 +61,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/* Create common shared by prefill and decode deployment/LWS */}}
 {{- define "llm-d-modelservice.pdlabels" -}}
 llm-d.ai/inferenceServing: "true"
-llm-d.ai/model: {{ (include "llm-d-modelservice.fullname" .) -}}
+llm-d.ai/model: {{ .Values.modelArtifacts.name }}
+app: llm-d.ai
 {{- end }}
 
 {{/* Create labels for the prefill deployment/LWS */}}
