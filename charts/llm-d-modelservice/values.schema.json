@@ -1548,7 +1548,7 @@
                 },
                 "inferencePool": {
                     "additionalProperties": true,
-                    "description": " cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool @schema additionalProperties: true @schema",
+                    "description": " additionalProperties: true @schema Configuration of InferencePool cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool @schema additionalProperties: true @schema",
                     "properties": {
                         "apiGroup": {
                             "default": "inference.networking.x-k8s.io",
