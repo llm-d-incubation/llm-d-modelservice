@@ -348,7 +348,7 @@ prefill:
   replicas: 0
   # schedulerName -- Name of the scheduler to use for scheduling prefill pods (overrides global schedulerName)
   # schedulerName: prefill-scheduler
-  
+
   # @schema
   # type: array
   # items:
