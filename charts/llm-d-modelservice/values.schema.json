@@ -17,63 +17,6 @@
                                         "additionalProperties": false,
                                         "properties": {
                                             "name": {
-                                                "default": "ZE_ENABLE_PCI_ID_DEVICE_ORDER",
-                                                "required": [],
-                                                "title": "name",
-                                                "type": "string"
-                                            },
-                                            "value": {
-                                                "default": "1",
-                                                "required": [],
-                                                "title": "value",
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [],
-                                        "type": "object"
-                                    },
-                                    {
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "name": {
-                                                "default": "SYCL_DEVICE_FILTER",
-                                                "required": [],
-                                                "title": "name",
-                                                "type": "string"
-                                            },
-                                            "value": {
-                                                "default": "gpu",
-                                                "required": [],
-                                                "title": "value",
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [],
-                                        "type": "object"
-                                    },
-                                    {
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "name": {
-                                                "default": "ZE_AFFINITY_MASK",
-                                                "required": [],
-                                                "title": "name",
-                                                "type": "string"
-                                            },
-                                            "value": {
-                                                "default": "0",
-                                                "required": [],
-                                                "title": "value",
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [],
-                                        "type": "object"
-                                    },
-                                    {
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "name": {
                                                 "default": "VLLM_USE_V1",
                                                 "required": [],
                                                 "title": "name",
@@ -93,13 +36,32 @@
                                         "additionalProperties": false,
                                         "properties": {
                                             "name": {
-                                                "default": "CCL_ZE_IPC_EXCHANGE",
+                                                "default": "TORCH_LLM_ALLREDUCE",
                                                 "required": [],
                                                 "title": "name",
                                                 "type": "string"
                                             },
                                             "value": {
-                                                "default": "pidfd",
+                                                "default": "1",
+                                                "required": [],
+                                                "title": "value",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [],
+                                        "type": "object"
+                                    },
+                                    {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "name": {
+                                                "default": "VLLM_WORKER_MULTIPROC_METHOD",
+                                                "required": [],
+                                                "title": "name",
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "default": "spawn",
                                                 "required": [],
                                                 "title": "value",
                                                 "type": "string"
@@ -212,340 +174,15 @@
                     "type": "object"
                 },
                 "containers": {
-                    "description": "Name of the scheduler to use for scheduling decode pods (overrides global schedulerName) schedulerName: decode-scheduler",
+                    "description": " type: array items:   type: object   additionalProperties: true @schema",
                     "items": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "args": {
-                                        "description": " items:   type: string @schema",
-                                        "items": {
-                                            "required": [],
-                                            "type": "string"
-                                        },
-                                        "required": [],
-                                        "title": "args"
-                                    },
-                                    "command": {
-                                        "description": "Required when modelCommand is \"custom\"",
-                                        "items": {
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "command",
-                                        "type": "array"
-                                    },
-                                    "env": {
-                                        "description": " items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar @schema",
-                                        "items": {
-                                            "description": "EnvVar represents an environment variable present in a Container.",
-                                            "properties": {
-                                                "name": {
-                                                    "description": "Name of the environment variable. May consist of any printable ASCII characters except '='.",
-                                                    "type": "string"
-                                                },
-                                                "value": {
-                                                    "description": "Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \"$$(VAR_NAME)\" will produce the string literal \"$(VAR_NAME)\". Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to \"\".",
-                                                    "type": "string"
-                                                },
-                                                "valueFrom": {
-                                                    "description": "EnvVarSource represents a source for the value of an EnvVar.",
-                                                    "properties": {
-                                                        "configMapKeyRef": {
-                                                            "description": "Selects a key from a ConfigMap.",
-                                                            "properties": {
-                                                                "key": {
-                                                                    "description": "The key to select.",
-                                                                    "type": "string"
-                                                                },
-                                                                "name": {
-                                                                    "description": "Name of the referent. This field is effectively required, but due to backwards compatibility is allowed to be empty. Instances of this type with an empty value here are almost certainly wrong. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
-                                                                    "type": "string"
-                                                                },
-                                                                "optional": {
-                                                                    "description": "Specify whether the ConfigMap or its key must be defined",
-                                                                    "type": "boolean"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "key"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        },
-                                                        "fieldRef": {
-                                                            "description": "ObjectFieldSelector selects an APIVersioned field of an object.",
-                                                            "properties": {
-                                                                "apiVersion": {
-                                                                    "description": "Version of the schema the FieldPath is written in terms of, defaults to \"v1\".",
-                                                                    "type": "string"
-                                                                },
-                                                                "fieldPath": {
-                                                                    "description": "Path of the field to select in the specified API version.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "fieldPath"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        },
-                                                        "fileKeyRef": {
-                                                            "description": "FileKeySelector selects a key of the env file.",
-                                                            "properties": {
-                                                                "key": {
-                                                                    "description": "The key within the env file. An invalid key will prevent the pod from starting. The keys defined within a source may consist of any printable ASCII characters except '='. During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.",
-                                                                    "type": "string"
-                                                                },
-                                                                "optional": {
-                                                                    "description": "Specify whether the file or its key must be defined. If the file or key does not exist, then the env var is not published. If optional is set to true and the specified key does not exist, the environment variable will not be set in the Pod's containers.\n\nIf optional is set to false and the specified key does not exist, an error will be returned during Pod creation.",
-                                                                    "type": "boolean"
-                                                                },
-                                                                "path": {
-                                                                    "description": "The path within the volume from which to select the file. Must be relative and may not contain the '..' path or start with '..'.",
-                                                                    "type": "string"
-                                                                },
-                                                                "volumeName": {
-                                                                    "description": "The name of the volume mount containing the env file.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "volumeName",
-                                                                "path",
-                                                                "key"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        },
-                                                        "resourceFieldRef": {
-                                                            "description": "ResourceFieldSelector represents container resources (cpu, memory) and their output format",
-                                                            "properties": {
-                                                                "containerName": {
-                                                                    "description": "Container name: required for volumes, optional for env vars",
-                                                                    "type": "string"
-                                                                },
-                                                                "divisor": {
-                                                                    "oneOf": [
-                                                                        {
-                                                                            "type": "string"
-                                                                        },
-                                                                        {
-                                                                            "type": "number"
-                                                                        }
-                                                                    ]
-                                                                },
-                                                                "resource": {
-                                                                    "description": "Required: resource to select",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "resource"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        },
-                                                        "secretKeyRef": {
-                                                            "description": "SecretKeySelector selects a key of a Secret.",
-                                                            "properties": {
-                                                                "key": {
-                                                                    "description": "The key of the secret to select from.  Must be a valid secret key.",
-                                                                    "type": "string"
-                                                                },
-                                                                "name": {
-                                                                    "description": "Name of the referent. This field is effectively required, but due to backwards compatibility is allowed to be empty. Instances of this type with an empty value here are almost certainly wrong. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
-                                                                    "type": "string"
-                                                                },
-                                                                "optional": {
-                                                                    "description": "Specify whether the Secret or its key must be defined",
-                                                                    "type": "boolean"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "key"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "required": [
-                                                "name"
-                                            ],
-                                            "type": "object"
-                                        },
-                                        "required": [],
-                                        "title": "env"
-                                    },
-                                    "image": {
-                                        "default": "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0",
-                                        "required": [],
-                                        "title": "image",
-                                        "type": "string"
-                                    },
-                                    "imagePullPolicy": {
-                                        "default": "",
-                                        "required": [],
-                                        "title": "imagePullPolicy",
-                                        "type": "string"
-                                    },
-                                    "modelCommand": {
-                                        "default": "imageDefault",
-                                        "description": "   vllmServe - modelservice will add the command vllm serve to the container   imageDefault - no command will be added; the default command defined in the image will be used   custom - use user provided \"command\"",
-                                        "required": [],
-                                        "title": "modelCommand"
-                                    },
-                                    "mountModelVolume": {
-                                        "default": true,
-                                        "description": "when set, a volumeMount (and volume) is created for model storage",
-                                        "required": [],
-                                        "title": "mountModelVolume",
-                                        "type": "boolean"
-                                    },
-                                    "name": {
-                                        "default": "vllm",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    },
-                                    "ports": {
-                                        "description": " @schema items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort @schema",
-                                        "items": {
-                                            "description": "ContainerPort represents a network port in a single container.",
-                                            "properties": {
-                                                "containerPort": {
-                                                    "description": "Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536.",
-                                                    "format": "int32",
-                                                    "type": "integer"
-                                                },
-                                                "hostIP": {
-                                                    "description": "What host IP to bind the external port to.",
-                                                    "type": "string"
-                                                },
-                                                "hostPort": {
-                                                    "description": "Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this.",
-                                                    "format": "int32",
-                                                    "type": "integer"
-                                                },
-                                                "name": {
-                                                    "description": "If specified, this must be an IANA_SVC_NAME and unique within the pod. Each named port in a pod must have a unique name. Name for the port that can be referred to by services.",
-                                                    "type": "string"
-                                                },
-                                                "protocol": {
-                                                    "description": "Protocol for port. Must be UDP, TCP, or SCTP. Defaults to \"TCP\".",
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "containerPort"
-                                            ],
-                                            "type": "object"
-                                        },
-                                        "required": [],
-                                        "title": "ports"
-                                    },
-                                    "resources": {
-                                        "description": "ResourceRequirements describes the compute resource requirements.",
-                                        "properties": {
-                                            "claims": {
-                                                "description": "Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.\n\nThis field depends on the DynamicResourceAllocation feature gate.\n\nThis field is immutable. It can only be set for containers.",
-                                                "items": {
-                                                    "description": "ResourceClaim references one entry in PodSpec.ResourceClaims.",
-                                                    "properties": {
-                                                        "name": {
-                                                            "description": "Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.",
-                                                            "type": "string"
-                                                        },
-                                                        "request": {
-                                                            "description": "Request is the name chosen for a request in the referenced claim. If empty, everything from the claim is made available, otherwise only the result of this request.",
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "name"
-                                                    ],
-                                                    "type": "object"
-                                                },
-                                                "type": "array",
-                                                "x-kubernetes-list-map-keys": [
-                                                    "name"
-                                                ],
-                                                "x-kubernetes-list-type": "map"
-                                            },
-                                            "limits": {
-                                                "additionalProperties": {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "type": "number"
-                                                        }
-                                                    ]
-                                                },
-                                                "description": "Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
-                                                "type": "object"
-                                            },
-                                            "requests": {
-                                                "additionalProperties": {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "type": "number"
-                                                        }
-                                                    ]
-                                                },
-                                                "description": "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "volumeMounts": {
-                                        "items": {
-                                            "anyOf": [
-                                                {
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "mountPath": {
-                                                            "default": "/.config",
-                                                            "required": [],
-                                                            "title": "mountPath",
-                                                            "type": "string"
-                                                        },
-                                                        "name": {
-                                                            "default": "metrics-volume",
-                                                            "required": [],
-                                                            "title": "name",
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [],
-                                                    "type": "object"
-                                                }
-                                            ],
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "volumeMounts",
-                                        "type": "array"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            }
-                        ],
-                        "required": []
+                        "additionalProperties": true,
+                        "required": [],
+                        "type": "object"
                     },
                     "required": [],
-                    "title": "containers"
+                    "title": "containers",
+                    "type": "array"
                 },
                 "create": {
                     "default": true,
@@ -670,6 +307,12 @@
             "required": [],
             "title": "extraObjects"
         },
+        "fullnameOverride": {
+            "default": "",
+            "description": "String to fully override common.names.fullname",
+            "required": [],
+            "title": "fullnameOverride"
+        },
         "global": {
             "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
             "required": [],
@@ -766,338 +409,15 @@
                     "type": "object"
                 },
                 "containers": {
-                    "description": "Name of the scheduler to use for scheduling prefill pods (overrides global schedulerName) schedulerName: prefill-scheduler",
+                    "description": " type: array items:   type: object   additionalProperties: true @schema",
                     "items": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "args": {
-                                        "description": " items:   type: string @schema",
-                                        "items": {
-                                            "required": [],
-                                            "type": "string"
-                                        },
-                                        "required": [],
-                                        "title": "args"
-                                    },
-                                    "command": {
-                                        "items": {
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "command",
-                                        "type": "array"
-                                    },
-                                    "env": {
-                                        "description": " items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar @schema",
-                                        "items": {
-                                            "description": "EnvVar represents an environment variable present in a Container.",
-                                            "properties": {
-                                                "name": {
-                                                    "description": "Name of the environment variable. May consist of any printable ASCII characters except '='.",
-                                                    "type": "string"
-                                                },
-                                                "value": {
-                                                    "description": "Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \"$$(VAR_NAME)\" will produce the string literal \"$(VAR_NAME)\". Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to \"\".",
-                                                    "type": "string"
-                                                },
-                                                "valueFrom": {
-                                                    "description": "EnvVarSource represents a source for the value of an EnvVar.",
-                                                    "properties": {
-                                                        "configMapKeyRef": {
-                                                            "description": "Selects a key from a ConfigMap.",
-                                                            "properties": {
-                                                                "key": {
-                                                                    "description": "The key to select.",
-                                                                    "type": "string"
-                                                                },
-                                                                "name": {
-                                                                    "description": "Name of the referent. This field is effectively required, but due to backwards compatibility is allowed to be empty. Instances of this type with an empty value here are almost certainly wrong. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
-                                                                    "type": "string"
-                                                                },
-                                                                "optional": {
-                                                                    "description": "Specify whether the ConfigMap or its key must be defined",
-                                                                    "type": "boolean"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "key"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        },
-                                                        "fieldRef": {
-                                                            "description": "ObjectFieldSelector selects an APIVersioned field of an object.",
-                                                            "properties": {
-                                                                "apiVersion": {
-                                                                    "description": "Version of the schema the FieldPath is written in terms of, defaults to \"v1\".",
-                                                                    "type": "string"
-                                                                },
-                                                                "fieldPath": {
-                                                                    "description": "Path of the field to select in the specified API version.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "fieldPath"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        },
-                                                        "fileKeyRef": {
-                                                            "description": "FileKeySelector selects a key of the env file.",
-                                                            "properties": {
-                                                                "key": {
-                                                                    "description": "The key within the env file. An invalid key will prevent the pod from starting. The keys defined within a source may consist of any printable ASCII characters except '='. During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.",
-                                                                    "type": "string"
-                                                                },
-                                                                "optional": {
-                                                                    "description": "Specify whether the file or its key must be defined. If the file or key does not exist, then the env var is not published. If optional is set to true and the specified key does not exist, the environment variable will not be set in the Pod's containers.\n\nIf optional is set to false and the specified key does not exist, an error will be returned during Pod creation.",
-                                                                    "type": "boolean"
-                                                                },
-                                                                "path": {
-                                                                    "description": "The path within the volume from which to select the file. Must be relative and may not contain the '..' path or start with '..'.",
-                                                                    "type": "string"
-                                                                },
-                                                                "volumeName": {
-                                                                    "description": "The name of the volume mount containing the env file.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "volumeName",
-                                                                "path",
-                                                                "key"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        },
-                                                        "resourceFieldRef": {
-                                                            "description": "ResourceFieldSelector represents container resources (cpu, memory) and their output format",
-                                                            "properties": {
-                                                                "containerName": {
-                                                                    "description": "Container name: required for volumes, optional for env vars",
-                                                                    "type": "string"
-                                                                },
-                                                                "divisor": {
-                                                                    "oneOf": [
-                                                                        {
-                                                                            "type": "string"
-                                                                        },
-                                                                        {
-                                                                            "type": "number"
-                                                                        }
-                                                                    ]
-                                                                },
-                                                                "resource": {
-                                                                    "description": "Required: resource to select",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "resource"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        },
-                                                        "secretKeyRef": {
-                                                            "description": "SecretKeySelector selects a key of a Secret.",
-                                                            "properties": {
-                                                                "key": {
-                                                                    "description": "The key of the secret to select from.  Must be a valid secret key.",
-                                                                    "type": "string"
-                                                                },
-                                                                "name": {
-                                                                    "description": "Name of the referent. This field is effectively required, but due to backwards compatibility is allowed to be empty. Instances of this type with an empty value here are almost certainly wrong. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
-                                                                    "type": "string"
-                                                                },
-                                                                "optional": {
-                                                                    "description": "Specify whether the Secret or its key must be defined",
-                                                                    "type": "boolean"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "key"
-                                                            ],
-                                                            "type": "object",
-                                                            "x-kubernetes-map-type": "atomic"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "required": [
-                                                "name"
-                                            ],
-                                            "type": "object"
-                                        },
-                                        "required": [],
-                                        "title": "env"
-                                    },
-                                    "image": {
-                                        "default": "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0",
-                                        "required": [],
-                                        "title": "image",
-                                        "type": "string"
-                                    },
-                                    "imagePullPolicy": {
-                                        "default": "",
-                                        "required": [],
-                                        "title": "imagePullPolicy",
-                                        "type": "string"
-                                    },
-                                    "modelCommand": {
-                                        "default": "imageDefault",
-                                        "required": [],
-                                        "title": "modelCommand",
-                                        "type": "string"
-                                    },
-                                    "mountModelVolume": {
-                                        "default": true,
-                                        "required": [],
-                                        "title": "mountModelVolume",
-                                        "type": "boolean"
-                                    },
-                                    "name": {
-                                        "default": "vllm",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    },
-                                    "ports": {
-                                        "description": " @schema items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort @schema",
-                                        "items": {
-                                            "description": "ContainerPort represents a network port in a single container.",
-                                            "properties": {
-                                                "containerPort": {
-                                                    "description": "Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536.",
-                                                    "format": "int32",
-                                                    "type": "integer"
-                                                },
-                                                "hostIP": {
-                                                    "description": "What host IP to bind the external port to.",
-                                                    "type": "string"
-                                                },
-                                                "hostPort": {
-                                                    "description": "Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this.",
-                                                    "format": "int32",
-                                                    "type": "integer"
-                                                },
-                                                "name": {
-                                                    "description": "If specified, this must be an IANA_SVC_NAME and unique within the pod. Each named port in a pod must have a unique name. Name for the port that can be referred to by services.",
-                                                    "type": "string"
-                                                },
-                                                "protocol": {
-                                                    "description": "Protocol for port. Must be UDP, TCP, or SCTP. Defaults to \"TCP\".",
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "containerPort"
-                                            ],
-                                            "type": "object"
-                                        },
-                                        "required": [],
-                                        "title": "ports"
-                                    },
-                                    "resources": {
-                                        "description": "ResourceRequirements describes the compute resource requirements.",
-                                        "properties": {
-                                            "claims": {
-                                                "description": "Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.\n\nThis field depends on the DynamicResourceAllocation feature gate.\n\nThis field is immutable. It can only be set for containers.",
-                                                "items": {
-                                                    "description": "ResourceClaim references one entry in PodSpec.ResourceClaims.",
-                                                    "properties": {
-                                                        "name": {
-                                                            "description": "Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.",
-                                                            "type": "string"
-                                                        },
-                                                        "request": {
-                                                            "description": "Request is the name chosen for a request in the referenced claim. If empty, everything from the claim is made available, otherwise only the result of this request.",
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "name"
-                                                    ],
-                                                    "type": "object"
-                                                },
-                                                "type": "array",
-                                                "x-kubernetes-list-map-keys": [
-                                                    "name"
-                                                ],
-                                                "x-kubernetes-list-type": "map"
-                                            },
-                                            "limits": {
-                                                "additionalProperties": {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "type": "number"
-                                                        }
-                                                    ]
-                                                },
-                                                "description": "Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
-                                                "type": "object"
-                                            },
-                                            "requests": {
-                                                "additionalProperties": {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "type": "number"
-                                                        }
-                                                    ]
-                                                },
-                                                "description": "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "volumeMounts": {
-                                        "items": {
-                                            "anyOf": [
-                                                {
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "mountPath": {
-                                                            "default": "/.config",
-                                                            "required": [],
-                                                            "title": "mountPath",
-                                                            "type": "string"
-                                                        },
-                                                        "name": {
-                                                            "default": "metrics-volume",
-                                                            "required": [],
-                                                            "title": "name",
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [],
-                                                    "type": "object"
-                                                }
-                                            ],
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "volumeMounts",
-                                        "type": "array"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            }
-                        ],
-                        "required": []
+                        "additionalProperties": true,
+                        "required": [],
+                        "type": "object"
                     },
                     "required": [],
-                    "title": "containers"
+                    "title": "containers",
+                    "type": "array"
                 },
                 "create": {
                     "default": true,
