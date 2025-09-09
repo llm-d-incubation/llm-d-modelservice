@@ -25,7 +25,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cpu-sim-llm-d-modelservice-epp
-  namespace: llm-d-wide-ep
+  namespace: default
 data:
   default-config.yaml: |
     apiVersion: inference.networking.x-k8s.io/v1alpha1
@@ -292,7 +292,7 @@ metadata:
   name: cpu-sim-llm-d-modelservice-epp
   labels:
     llm-d.ai/epp: cpu-sim-llm-d-modelservice-epp
-  namespace: llm-d-wide-ep
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -311,7 +311,7 @@ spec:
         - --poolName
         - cpu-sim-llm-d-modelservice
         - --poolNamespace
-        - llm-d-wide-ep
+        - default
         - -v
         - "6"
         - --zap-encoder
@@ -413,7 +413,7 @@ apiVersion: inference.networking.x-k8s.io/v1alpha2
 kind: InferencePool
 metadata:
   name: cpu-sim-llm-d-modelservice
-  namespace: llm-d-wide-ep
+  namespace: default
 spec:
   extensionRef:
     failureMode: FailClose
@@ -430,7 +430,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: cpu-sim-llm-d-modelservice
-  namespace: llm-d-wide-ep
+  namespace: default
   labels:
     helm.sh/chart: llm-d-modelservice-v0.2.8
     app.kubernetes.io/version: "v0.2.0"
@@ -442,7 +442,7 @@ spec:
   - group: gateway.networking.k8s.io
     kind: Gateway
     name: inference-gateway
-    namespace: 'llm-d-wide-ep'
+    namespace: 'default'
   rules:
     - backendRefs:
       - group: inference.networking.x-k8s.io
