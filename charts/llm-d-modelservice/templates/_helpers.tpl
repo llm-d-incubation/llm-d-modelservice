@@ -58,10 +58,31 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- $name -}}
 {{- end }}
 
+{{/*
+  Defines a k8s safe label with the model repo name
+*/}}
+{{- define "llm-d-modelservice.modelRepoLabel" -}}
+{{- $in := default "" . -}}
+{{- /* strip everything up to and including the last "/" */ -}}
+{{- $repo := regexReplaceAll "^.*/" $in "" -}}
+{{- /* keep only [A-Za-z0-9._-], replace others with "-" */ -}}
+{{- $repo = regexReplaceAll "[^A-Za-z0-9._-]" "-" $repo -}}
+{{- /* must start/end with alphanumeric */ -}}
+{{- $repo = regexReplaceAll "^[^A-Za-z0-9]+" "" $repo -}}
+{{- $repo = regexReplaceAll "[^A-Za-z0-9]+$" "" $repo -}}
+{{- if eq $repo "" }}{{- $repo = "model" -}}{{- end -}}
+{{- if gt (len $repo) 63 -}}
+  {{- $repo = trunc 63 $repo -}}
+  {{- $repo = regexReplaceAll "[^A-Za-z0-9]+$" "" $repo -}}
+  {{- if eq $repo "" }}{{- $repo = "model" -}}{{- end -}}
+{{- end -}}
+{{- $repo -}}
+{{- end -}}
+
 {{/* Create common shared by prefill and decode deployment/LWS */}}
 {{- define "llm-d-modelservice.pdlabels" -}}
 llm-d.ai/inferenceServing: "true"
-llm-d.ai/model: {{ (include "llm-d-modelservice.fullname" .) -}}
+llm-d.ai/model-repo: {{ (include "llm-d-modelservice.modelRepoLabel" .Values.modelArtifacts.name ) -}}
 {{- end }}
 
 {{/* Create labels for the prefill deployment/LWS */}}
