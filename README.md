@@ -9,7 +9,7 @@ TL;DR:
 Active scenarios supported:
 - P/D disaggregation
 - Multi-node inference, utilizing data parallelism
-- One pod per node (see [`llm-d-infra`](https://github.com/llm-d-incubation/llm-d-infra/tree/main/quickstart/examples/wide-ep-lws) for the ModelService [values](https://github.com/llm-d-incubation/llm-d-infra/tree/main/quickstart/examples/wide-ep-lws/ms-wide-ep/values.yaml) file)
+- One pod per node (see [`llm-d-infra`](https://github.com/llm-d/llm-d/tree/dev/guides/wide-ep-lws) for the ModelService [values](https://github.com/llm-d/llm-d/blob/dev/guides/wide-ep-lws/ms-wide-ep/values.yaml) file)
 - One pod per DP rank
 
 Integration with `llm-d` components:
@@ -28,7 +28,7 @@ helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-models
 helm repo update
 ```
 
-ModelService operates under the assumption that `llm-d-infra` has been installed in a Kubernetes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d-infra` Quickstart](https://github.com/llm-d-incubation/llm-d-infra/tree/main/quickstart) for more information.
+ModelService operates under the assumption that `llm-d-infra` has been installed in a Kubernetes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d` Guides](https://github.com/llm-d/llm-d/blob/dev/guides/README.md) for more information.
 
 Note that in order to create HTTPRoute objects last, Helm hooks are used. As a consequence, these objects are not deleted when `helm delete` is executed. They should be manually deleted to avoid unexpected routing problems.
 
