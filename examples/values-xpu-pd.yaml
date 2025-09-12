@@ -23,7 +23,7 @@ routing:
     kind: Gateway
     name: inference-gateway
     namespace: "{{ .Release.Namespace }}"
-  
+
   httpRoute:
     create: true
     matches:

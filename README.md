@@ -102,4 +102,3 @@ Please open a ticket if you see a gap in your use case as we continue to evolve 
 
 ## Contact
 Get involved or ask questions in the `#sig-model-service` channel in the `llm-d` Slack workspace! Details on how to join the workspace can be found [here](https://llm-d.ai/docs/community).
-

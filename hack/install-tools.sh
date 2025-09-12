@@ -37,7 +37,7 @@ is_tool_installed() {
 should_skip_install() {
   local tool_name="$1"
   local tool_binary="$2"
-  
+
   if [[ "$FORCE_INSTALL" != "true" ]] && is_tool_installed "$tool_binary"; then
     echo "$tool_name is already installed. Skipping installation."
     echo "Set FORCE_INSTALL=true to reinstall."
@@ -82,12 +82,12 @@ install_ct() {
 install_helm() {
   local install_path="$1"
   local helm_binary="$install_path/helm"
-  
+
   # Check if helm should be skipped
   if should_skip_install "helm" "$helm_binary"; then
     return 0
   fi
-  
+
   install_tar_binary "$install_path" \
     "https://get.helm.sh/helm-$HELM_VERSION-$OS-$ARCH.tar.gz" \
     "$OS-$ARCH/helm" \
@@ -97,14 +97,14 @@ install_helm() {
 install_precommit() {
   local install_path="$1"
   local precommit_binary="$install_path/pre-commit"
-  
+
   # Check if pre-commit should be skipped
   if should_skip_install "pre-commit" "$precommit_binary"; then
     return 0
   fi
-  
+
   pip3 install "pre-commit==$PRECOMMIT_VERSION"
-  
+
   # Create a wrapper script in the bin directory
   cat > "$precommit_binary" << 'EOF'
 #!/bin/bash
