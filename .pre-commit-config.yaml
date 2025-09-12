@@ -11,6 +11,19 @@ repos:
           - --skip-auto-generation=required
           - --no-dependencies
           - -o=values.schema.tmpl.json
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        exclude: (^.vale/)|(values.schema.json$)
+      - id: check-merge-conflict
+      - id: check-json
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        exclude: (^.vale/)|(values.schema.json$)
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+        exclude: examples/output-.*
   - repo: local
     hooks:
       - id: jsonschema-dereference
