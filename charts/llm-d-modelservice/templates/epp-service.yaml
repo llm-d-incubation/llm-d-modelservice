@@ -5,6 +5,7 @@ metadata:
   name: {{ include "llm-d-modelservice.eppServiceName" . }}
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    {{- include "llm-d-modelservice.eppLabels" . | nindent 4 }}
 spec:
   type: {{ .Values.routing.epp.service.type }}
   ports:
@@ -13,9 +14,15 @@ spec:
       targetPort: {{ .Values.routing.epp.service.targetPort }}
       protocol: TCP
       appProtocol: {{ .Values.routing.epp.service.appProtocol }}
+    {{- if .Values.routing.epp.monitoring.servicemonitor.enabled }}
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+    {{- end }}
     {{- with .Values.routing.epp.service.extraPorts }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
   selector:
-    llm-d.ai/epp: {{ include "llm-d-modelservice.eppName" . }}
+    {{- include "llm-d-modelservice.eppLabels" . | nindent 4 }}
 {{- end }}

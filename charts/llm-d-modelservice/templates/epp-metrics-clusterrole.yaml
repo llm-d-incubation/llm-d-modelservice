@@ -1,0 +1,33 @@
+{{- if .Values.routing.epp.monitoring.servicemonitor.enabled }}
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "llm-d-modelservice.eppName" . }}-metrics
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+- nonResourceURLs:
+  - {{ .Values.routing.epp.monitoring.servicemonitor.path }}
+  verbs:
+  - get
+{{- end }}
