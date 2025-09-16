@@ -28,7 +28,6 @@ Note: `alias k=kubectl`
 
 Make sure there is a gateway (Kgateway or Istio) deployed in the cluster. Follow [these instructions](https://gateway-api-inference-extension.sigs.k8s.io/guides/#__tabbed_3_2) on how to set up a gateway. Once done, update `routing.parentRefs[*].name` in this [values file](values-cpu.yaml#L18) to use the name for the Gateway (`llm-d-inference-gateway-istio`) in the cluster or override with the `--set "routing.parentRefs[0].name=MYGATEWAY"` flag.
 
-
 Dry run:
 
 ```
@@ -65,7 +64,6 @@ Expect to see a response like the following.
 {"id":"chatcmpl-05cfe79c-234d-4898-b781-3fa59ba7be49","created":1750969231,"model":"random","choices":[{"index":0,"finish_reason":"stop","text":"Alas, poor Yorick! I knew him, Horatio: A fellow of infinite jest"}]}
 ```
 
-
 ### 2. P/D disaggregation
 
 Dry-run:
@@ -76,11 +74,9 @@ helm template pd llm-d-modelservice/llm-d-modelservice -f https://raw.githubuser
 
 or install in a cluster
 
-
 ```
 helm install pd llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml
 ```
-
 
 Port forward the inference gateway service.
 
@@ -106,7 +102,6 @@ and expect the following response
 {"choices":[{"finish_reason":"length","index":0,"logprobs":null,"prompt_logprobs":null,"stop_reason":null,"text":" That is my dad. He was a wautdig with a shooting blade on"}],"created":1751031325,"id":"cmpl-aca48bc2-fe95-4c3b-843d-1dbcf94c40c7","kv_transfer_params":null,"model":"facebook/opt-125m","object":"text_completion","usage":{"completion_tokens":16,"prompt_tokens":4,"prompt_tokens_details":null,"total_tokens":20}}
 ```
 
-
 ### 3. Wide Expert Parallelism (EP/DP) with LeaderWorkerSet
 
 See https://github.com/llm-d/llm-d/blob/dev/guides/wide-ep-lws/README.md
@@ -114,7 +109,6 @@ See https://github.com/llm-d/llm-d/blob/dev/guides/wide-ep-lws/README.md
 ### 4. Loading a model from a PVC
 
 See [this README](./pvc/README.md).
-
 
 ### 5. Intel XPU Examples
 
@@ -129,7 +123,7 @@ kubectl apply -k 'https://github.com/intel/intel-device-plugins-for-kubernetes/d
 Single-node XPU deployment.
 
 ```
-helm install llm-xpu ../charts/llm-d-modelservice -f values-xpu.yaml --namespace llm-d --create-namespace
+helm install llm-xpu llm-d-modelservice/llm-d-modelservice -f values-xpu.yaml --namespace llm-d --create-namespace
 
 ```
 
@@ -166,10 +160,9 @@ and expect the following response
 {"id":"chatcmpl-ebda7f789d434895afec746173e2a4ce","object":"chat.completion","created":1755679402,"model":"deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B","choices":[{"index":0,"message":{"role":"assistant","content":"Alright, the user said \"Hello!\" and I replied \"Hello! How can I assist you today?\" That's a friendly way to start, let them know I'm here to help.\n\nI should ask them how they're doing or what they need","refusal":null,"annotations":null,"audio":null,"function_call":null,"tool_calls":[],"reasoning_content":null},"logprobs":null,"finish_reason":"length","stop_reason":null}],"service_tier":null,"system_fingerprint":null,"usage":{"prompt_tokens":7,"total_tokens":57,"completion_tokens":50,"prompt_tokens_details":null},"prompt_logprobs":null,"kv_transfer_params":null}(base)
 ```
 
-
 ## Troubleshooting:
 
 Differences between your environment and that in which the above examples were tested may mean the need to modify the input values files. Some common examples we are seen are:
 
-- Is the inference gateway listed  in `routing.parentRefs` correct?
+- Is the inference gateway listed in `routing.parentRefs` correct?
 - Do the labels/values in `acceleratorTypes` match those assigned to nodes in your cluster?
