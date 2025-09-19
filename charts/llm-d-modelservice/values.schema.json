@@ -266,29 +266,11 @@
                     "type": "integer"
                 },
                 "volumes": {
+                    "description": " type: array items:   type: object   additionalProperties: true @schema",
                     "items": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "emptyDir": {
-                                        "additionalProperties": false,
-                                        "required": [],
-                                        "title": "emptyDir",
-                                        "type": "object"
-                                    },
-                                    "name": {
-                                        "default": "metrics-volume",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            }
-                        ],
-                        "required": []
+                        "additionalProperties": true,
+                        "required": [],
+                        "type": "object"
                     },
                     "required": [],
                     "title": "volumes",
@@ -501,29 +483,11 @@
                     "type": "integer"
                 },
                 "volumes": {
+                    "description": " type: array items:   type: object   additionalProperties: true @schema",
                     "items": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "emptyDir": {
-                                        "additionalProperties": false,
-                                        "required": [],
-                                        "title": "emptyDir",
-                                        "type": "object"
-                                    },
-                                    "name": {
-                                        "default": "metrics-volume",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            }
-                        ],
-                        "required": []
+                        "additionalProperties": true,
+                        "required": [],
+                        "type": "object"
                     },
                     "required": [],
                     "title": "volumes",
