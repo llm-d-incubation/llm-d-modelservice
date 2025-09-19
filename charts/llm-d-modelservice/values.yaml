@@ -282,9 +282,21 @@ decode:
       requests: {}
     # when set, a volumeMount (and volume) is created for model storage
     mountModelVolume: true
+    # @schema
+    # type: array
+    # items:
+    #   type: object
+    #   additionalProperties: true
+    # @schema
     volumeMounts:
     - name: metrics-volume
       mountPath: /.config
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  #   additionalProperties: true
+  # @schema
   volumes:
   - name: metrics-volume
     emptyDir: {}
@@ -404,9 +416,21 @@ prefill:
       # additionalProperties: true
       # @schema
       requests: {}
+    # @schema
+    # type: array
+    # items:
+    #   type: object
+    #   additionalProperties: true
+    # @schema
     volumeMounts:
     - name: metrics-volume
       mountPath: /.config
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  #   additionalProperties: true
+  # @schema
   volumes:
   - name: metrics-volume
     emptyDir: {}
