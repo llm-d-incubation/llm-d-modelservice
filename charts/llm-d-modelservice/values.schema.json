@@ -6,6 +6,10 @@
             "additionalProperties": false,
             "description": " Supported types: nvidia, intel, amd, google",
             "properties": {
+                "enabled": {
+                    "description": "Usually used when using llm-d-modelservice as a subchart.",
+                    "type": "boolean"
+                },
                 "env": {
                     "additionalProperties": false,
                     "description": "Environment variables specific to accelerator types",
