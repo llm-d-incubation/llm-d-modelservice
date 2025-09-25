@@ -810,7 +810,8 @@
                     "title": "httpRoute"
                 },
                 "inferenceModel": {
-                    "additionalProperties": false,
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema",
                     "properties": {
                         "create": {
                             "default": false,
@@ -827,8 +828,7 @@
                         }
                     },
                     "required": [],
-                    "title": "inferenceModel",
-                    "type": "object"
+                    "title": "inferenceModel"
                 },
                 "inferencePool": {
                     "additionalProperties": true,

@@ -118,10 +118,15 @@ routing:
     # to use a different epp service than the one created when routing.epp.create: true
     # extensionRef:
 
+  # @schema
+  # additionalProperties: true
+  # @schema
   inferenceModel:
     create: false
     # Criticality options: ["Critical", "Standard", "Sheddable"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84
     criticality: Critical
+    # Name override for the inference
+    # name: "some-override"
 
   # @schema
   # additionalProperties: true
