@@ -7,7 +7,7 @@ modelArtifacts:
   size: 10Gi
 
 accelerator:
-  type: "intel"
+  type: "intel-xe"
 
 # Routing configuration
 routing:
@@ -50,11 +50,11 @@ decode:
       limits:
         memory: 24Gi
         cpu: "8"
-        gpu.intel.com/i915: "1"
+        gpu.intel.com/xe: "1"
       requests:
         cpu: "4"
         memory: 12Gi
-        gpu.intel.com/i915: "1"
+        gpu.intel.com/xe: "1"
 
     mountModelVolume: true
 

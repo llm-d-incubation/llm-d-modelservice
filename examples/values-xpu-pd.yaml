@@ -10,6 +10,9 @@ modelArtifacts:
   uri: "hf://microsoft/DialoGPT-large"
   size: 10Gi
 
+accelerator:
+  type: "intel-i915"
+
 routing:
   servicePort: 8000
   proxy:
