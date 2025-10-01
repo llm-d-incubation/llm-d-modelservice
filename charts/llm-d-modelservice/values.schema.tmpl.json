@@ -4,13 +4,13 @@
   "properties": {
     "accelerator": {
       "additionalProperties": false,
-      "description": " Supported types: nvidia, intel, amd, google",
+      "description": " Supported types: nvidia, intel-i915, intel-xe, amd, google",
       "properties": {
         "env": {
           "additionalProperties": false,
           "description": "Environment variables specific to accelerator types",
           "properties": {
-            "intel": {
+            "intel-i915": {
               "items": {
                 "anyOf": [
                   {
@@ -74,7 +74,7 @@
                 "required": []
               },
               "required": [],
-              "title": "intel",
+              "title": "intel-i915",
               "type": "array"
             }
           },
@@ -98,10 +98,16 @@
               "title": "google",
               "type": "string"
             },
-            "intel": {
+            "intel-i915": {
               "default": "gpu.intel.com/i915",
               "required": [],
-              "title": "intel",
+              "title": "intel-i915",
+              "type": "string"
+            },
+            "intel-xe": {
+              "default": "gpu.intel.com/xe",
+              "required": [],
+              "title": "intel-xe",
               "type": "string"
             },
             "nvidia": {

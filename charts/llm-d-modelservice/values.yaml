@@ -33,19 +33,20 @@ modelArtifacts:
 multinode: false
 
 # Global accelerator configuration
-# Supported types: nvidia, intel, amd, google
+# Supported types: nvidia, intel-i915, intel-xe, amd, google
 accelerator:
   # Type of accelerator to use
   type: nvidia
   # Resource names for different accelerator types
   resources:
     nvidia: "nvidia.com/gpu"
-    intel: "gpu.intel.com/i915"
+    intel-i915: "gpu.intel.com/i915"
+    intel-xe: "gpu.intel.com/xe"
     amd: "amd.com/gpu"
     google: "google.com/tpu"
   # Environment variables specific to accelerator types
   env:
-    intel:
+    intel-i915:
       - name: VLLM_USE_V1
         value: "1"
       - name: TORCH_LLM_ALLREDUCE
