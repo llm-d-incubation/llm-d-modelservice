@@ -456,6 +456,11 @@ args:
   - --tensor-parallel-size
   - "$TP_SIZE"
   {{- end }}
+  {{- $dataParallelism := int (include "llm-d-modelservice.dataParallelism" .container.parallelism) -}}
+  {{- if gt (int $dataParallelism) 1 }}
+  - --data-parallel-size
+  - "$DP_SIZE"
+  {{- end }}
   - --served-model-name
   - {{ .Values.modelArtifacts.name | quote }}
 {{- with .container.args }}
@@ -473,6 +478,11 @@ args:
   {{- if gt (int $tensorParallelism) 1 }}
   - --tensor-parallel-size
   - "$TP_SIZE"
+  {{- end }}
+  {{- $dataParallelism := int (include "llm-d-modelservice.dataParallelism" .container.parallelism) -}}
+  {{- if gt (int $dataParallelism) 1 }}
+  - --data-parallel-size
+  - "$DP_SIZE"
   {{- end }}
   - --served-model-name
   - {{ .Values.modelArtifacts.name | quote }}
