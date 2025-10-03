@@ -104,7 +104,7 @@ and expect the following response
 
 ### 3. Wide Expert Parallelism (EP/DP) with LeaderWorkerSet
 
-See https://github.com/llm-d/llm-d/blob/dev/guides/wide-ep-lws/README.md
+See https://github.com/llm-d/llm-d/blob/main/guides/wide-ep-lws/README.md
 
 ### 4. Loading a model from a PVC
 

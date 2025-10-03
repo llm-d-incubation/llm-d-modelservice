@@ -15,7 +15,7 @@ There are several ways you can contribute to llm-d-modelservice:
 
 ## Code of Conduct
 
-This project adheres to the llm-d [Code of Conduct](https://github.com/llm-d/llm-d/blob/dev/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+This project adheres to the llm-d [Code of Conduct](https://github.com/llm-d/llm-d/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ## Local Development Setup
 
