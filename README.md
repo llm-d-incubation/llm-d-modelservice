@@ -9,7 +9,6 @@ TL;DR:
 Active scenarios supported:
 - P/D disaggregation
 - Multi-node inference, utilizing data parallelism
-- One pod per node (see [`llm-d`](https://github.com/llm-d/llm-d/tree/main/guides/wide-ep-lws) for the ModelService [values](https://github.com/llm-d/llm-d/blob/main/guides/wide-ep-lws/inferencepool.values.yaml) file)
 - One pod per DP rank
 
 Integration with `llm-d` components:
