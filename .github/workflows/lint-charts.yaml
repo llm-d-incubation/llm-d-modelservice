@@ -58,8 +58,8 @@ jobs:
           kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
 
           # Install Kubernetes Gateway API Inference Extension CRDs
-          VERSION=v0.3.0
-          kubectl apply -f https://github.com/kubernetes-sigs/gateway-api-inference-extension/releases/download/$VERSION/manifests.yaml
+          GATEWAY_API_INFERENCE_EXTENSION_CRD_REVISION=v1.0.1
+          kubectl apply -f https://github.com/kubernetes-sigs/gateway-api-inference-extension/releases/download/$GATEWAY_API_INFERENCE_EXTENSION_CRD_REVISION/manifests.yaml
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
