@@ -58,7 +58,6 @@ Below are the values you can set.
 | `routing.proxy.parentRefs[*].name`     | The name of the inference gateway                                                                                 | string       | N/A                                         |
 | `routing.inferencePool.create`         | If true, creates an InferencePool object                                                                          | bool         | `true`                                      |
 | `routing.inferencePool.extensionRef`   | Name of of an epp service to use instead of the default one created by this chart.                                | string       | N/A                                         |
-| `routing.inferenceModel.create`        | If true, creates an InferenceModel object                                                                         | bool         | `false`                                     |
 | `routing.httpRoute.create`             | If true, creates an HTTPRoute object                                                                              | bool         | `true`                                      |
 | `routing.httpRoute.backendRefs`        | Override for HTTPRoute.backendRefs                                                                                | List         | []                                          |
 | `routing.httpRoute.matches`            | Override for HTTPRoute.backendRefs[*].matches where backendRefs are created by this chart.                        | Dict         | {}                                          |

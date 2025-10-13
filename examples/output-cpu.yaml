@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: cpu-sim-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.15
+    helm.sh/chart: llm-d-modelservice-v0.2.16
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: ServiceAccount
 metadata:
   name: cpu-sim-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.15
+    helm.sh/chart: llm-d-modelservice-v0.2.16
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -132,10 +132,18 @@ metadata:
   name: cpu-sim-llm-d-modelservice-epp
 rules:
 - apiGroups:
+  - inference.networking.k8s.io
+  resources:
+  - inferencepools
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
   - inference.networking.x-k8s.io
   resources:
-  - inferencemodels
   - inferencepools
+  - inferenceobjectives
   verbs:
   - get
   - watch
@@ -188,7 +196,7 @@ kind: Service
 metadata:
   name: cpu-sim-llm-d-modelservice-epp
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.15
+    helm.sh/chart: llm-d-modelservice-v0.2.16
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -208,7 +216,7 @@ kind: Deployment
 metadata:
   name: cpu-sim-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.15
+    helm.sh/chart: llm-d-modelservice-v0.2.16
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -306,21 +314,21 @@ spec:
       containers:
       - name: epp
         imagePullPolicy: Always
-        image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1
+        image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.3.2
         args:
-        - --poolName
+        - --pool-name
         - cpu-sim-llm-d-modelservice
-        - --poolNamespace
+        - --pool-namespace
         - default
         - -v
         - "6"
         - --zap-encoder
         - json
-        - --grpcPort
+        - --grpc-port
         - "9002"
-        - --grpcHealthPort
+        - --grpc-health-port
         - "9003"
-        - "-configFile"
+        - "-config-file"
         - "config/default-config.yaml"
         ports:
         - containerPort: 9002
@@ -348,7 +356,7 @@ kind: Deployment
 metadata:
   name: cpu-sim-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.15
+    helm.sh/chart: llm-d-modelservice-v0.2.16
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -432,7 +440,7 @@ metadata:
   name: cpu-sim-llm-d-modelservice
   namespace: default
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.15
+    helm.sh/chart: llm-d-modelservice-v0.2.16
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
   annotations:

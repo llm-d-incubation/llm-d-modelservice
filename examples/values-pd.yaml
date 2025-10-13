@@ -27,11 +27,6 @@ routing:
   inferencePool:
     create: true
 
-  # required for certain gateways (e.g. Kgateway) but not others (Istio)
-  # creating this so that it works for all gateways
-  inferenceModel:
-    create: true
-
   httpRoute:
     create: true
     matches:
