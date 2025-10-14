@@ -1,0 +1,30 @@
+name: Pre-commit
+
+on:
+  pull_request:
+
+jobs:
+  pre-commit:
+    name: Pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5.3.0
+        with:
+          python-version: '3.x'
+          check-latest: true
+
+      - run: python -m pip install pre-commit
+        shell: bash
+      - run: python -m pip install jsonref # for jsonschema-dereference.py
+        shell: bash
+      - run: python -m pip freeze --local
+        shell: bash
+
+      - name: Run pre-commit
+        run: make pre-commit-run
+        shell: bash

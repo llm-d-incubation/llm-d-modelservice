@@ -7,6 +7,9 @@
 # -- Common configuration values
 common: {}
 
+# -- Usually used when using llm-d-modelservice as a subchart
+enabled: true
+
 # -- String to fully override common.names.fullname
 fullnameOverride: ""
 
