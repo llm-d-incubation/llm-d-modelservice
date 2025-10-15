@@ -4,7 +4,7 @@
     "properties": {
         "accelerator": {
             "additionalProperties": false,
-            "description": " Supported types: nvidia, intel-i915, intel-xe, amd, google",
+            "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google",
             "properties": {
                 "env": {
                     "additionalProperties": false,
@@ -108,6 +108,12 @@
                             "default": "gpu.intel.com/xe",
                             "required": [],
                             "title": "intel-xe",
+                            "type": "string"
+                        },
+                        "intel-gaudi": {
+                            "default": "habana.ai/gaudi",
+                            "required": [],
+                            "title": "intel-gaudi",
                             "type": "string"
                         },
                         "nvidia": {
