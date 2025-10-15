@@ -83,7 +83,15 @@ data:
         maxPrefixBlocksToMatch: 256
         lruCapacityPerServer: 31250
     - type: prefill-filter
+      parameters:
+        selector:
+          matchLabels:
+            llm-d.ai/role: prefill
     - type: decode-filter
+      parameters:
+        selector:
+          matchLabels:
+            llm-d.ai/role: decode
     - type: max-score-picker
     - type: pd-profile-handler
       parameters:

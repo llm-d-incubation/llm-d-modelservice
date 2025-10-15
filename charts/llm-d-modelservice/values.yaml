@@ -169,9 +169,9 @@ routing:
 
     # Allow people to opt out of timeouts by unsetting the default value.
     # They are set to 0s which in most situations defaults to the providers max timeout.
-    timeouts:
-      backendRequest: 0s
-      request: 0s
+    #timeouts:
+    #  backendRequest: 0s
+    #  request: 0s
 
   # @schema
   # additionalProperties: true

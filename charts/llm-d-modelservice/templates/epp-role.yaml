@@ -7,7 +7,7 @@ rules:
 - apiGroups:
   - inference.networking.x-k8s.io
   resources:
-  - inferencemodels
+  - inferenceobjectives
   - inferencepools
   verbs:
   - get
