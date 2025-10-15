@@ -26,22 +26,25 @@ routing:
 
   inferencePool:
     create: true
+    apiGroup: "inference.networking.x-k8s.io"
 
   # required for certain gateways (e.g. Kgateway) but not others (Istio)
   # creating this so that it works for all gateways
   inferenceModel:
-    create: true
+    create: false
 
   httpRoute:
     create: true
-    matches:
-    - headers:
-      - name: x-model-name
-        type: Exact
-        value: "{{ .Values.modelArtifacts.name }}"
+    #matches:
+    #- headers:
+    #  - name: x-model-name
+    #    type: Exact
+    #    value: "{{ .Values.modelArtifacts.name }}"
 
   epp:
     create: true
+    pluginsConfigFile: default-pd-config.yaml
+    image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.3.1
     # Inherit all from base chart values.yaml
     # env:
 
@@ -51,7 +54,7 @@ decode:
   replicas: 1
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d:v0.2.0"
+    image: "vllm/vllm-openai:latest"
     modelCommand: vllmServe
     args:
       - "--enforce-eager"
@@ -67,21 +70,23 @@ decode:
           fieldRef:
             fieldPath: status.podIP
       - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-        value: "5557"
+        value: "5600"
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
     ports:
       - containerPort: 8200  # from routing.proxy.targetPort
         protocol: TCP
-      - containerPort: 5557  # NIXL side channel
+      - containerPort: 5557  # NIXL channel
+        protocol: TCP
+      - containerPort: 5600  # NIXL side channel
         protocol: TCP
     resources:
       limits:
         memory: 16Gi
-        cpu: "16"
+        cpu: "6"
         nvidia.com/gpu: "1"
       requests:
-        cpu: "16"
+        cpu: "6"
         memory: 16Gi
         nvidia.com/gpu: "1"
     mountModelVolume: true
@@ -92,7 +97,7 @@ prefill:
   replicas: 1
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d:v0.2.0"
+    image: "vllm/vllm-openai:latest"
     modelCommand: vllmServe
     args:
       - "--enforce-eager"
@@ -104,7 +109,7 @@ prefill:
       - name: UCX_TLS
         value: "cuda_ipc,cuda_copy,tcp"
       - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-        value: "5557"
+        value: "5600"
       - name: VLLM_NIXL_SIDE_CHANNEL_HOST
         valueFrom:
           fieldRef:
@@ -114,15 +119,17 @@ prefill:
     ports:
       - containerPort: 8000  # from routing.servicePort
         protocol: TCP
-      - containerPort: 5557  # NIXL side channel
+      - containerPort: 5557  # NIXL channel
+        protocol: TCP
+      - containerPort: 5600  # NIXL side channel
         protocol: TCP
     resources:
       limits:
         memory: 16Gi
-        cpu: "16"
+        cpu: "6"
         nvidia.com/gpu: "1"
       requests:
-        cpu: "16"
+        cpu: "6"
         memory: 16Gi
         nvidia.com/gpu: "1"
     mountModelVolume: true
