@@ -114,7 +114,13 @@
                             "title": "intel-xe",
                             "type": "string"
                         },
-                        "nvidia": {
+                        "intel-hpu": {
+                            "default": "habana.ai/gaudi",
+                            "required": [],
+                            "title": "intel-hpu",
+                            "type": "string"
+                        },
+			"nvidia": {
                             "default": "nvidia.com/gpu",
                             "required": [],
                             "title": "nvidia",

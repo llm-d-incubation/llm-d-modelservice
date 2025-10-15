@@ -42,6 +42,7 @@ accelerator:
     nvidia: "nvidia.com/gpu"
     intel-i915: "gpu.intel.com/i915"
     intel-xe: "gpu.intel.com/xe"
+    intel-hpu: "habana.ai/gaudi"
     amd: "amd.com/gpu"
     google: "google.com/tpu"
   # Environment variables specific to accelerator types
