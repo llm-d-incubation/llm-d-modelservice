@@ -1,0 +1,57 @@
+# This example demonstrates the folowing capabilities
+# 1. Use of Dynamic Resource Allocation (DRA)
+# 2. Via DRA, select two Gaudi3 devices for the decode pod
+# 3. For clarity, all other features are disabled, only Deployment and ResourceClaimTemplate are created
+
+modelArtifacts:
+  name: meta-llama/Llama-3.3-70B-Instruc
+  uri: "pvc+hf://model-pvc/meta-llama/Llama-3.3-70B-Instruc"
+  size: 50Gi
+  authSecretName: "llm-d-hf-token"
+
+dra:
+  enabled: true
+  type: "intel-gaudi3-x2"
+  claimTemplates:
+  - name: intel-gaudi3-x2
+    class: gaudi.intel.com
+    match: "exactly"
+    count: 2
+    selectors:
+    - cel:
+        expression: device.attributes["gaudi.intel.com"].model == 'Gaudi3'
+
+# Routing configuration
+routing:
+  proxy:
+    enabled: false
+  inferencePool:
+    create: false
+  httpRoute:
+    create: false
+  epp:
+    create: false
+decode:
+  create: true
+  parallelism:
+    tensor: "2"
+  containers:
+  - name: vllm
+    image: opea/vllm-gaudi:1.22.0
+    modelCommand: "imageDefault"
+    args:
+    - --max-num-seqs=64
+    - --max-seq-len-to-capture=2048
+    - --max-model-len=2048
+    - --max-num-batched-token=16000
+    env:
+    - name: OMPI_MCA_btl_vader_single_copy_mechanism
+      value: none
+    - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+      value: "true"
+    - name: VLLM_SKIP_WARMUP
+      value: "true"
+
+prefill:
+  create: false
+multinode: false
