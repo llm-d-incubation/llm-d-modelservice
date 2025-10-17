@@ -451,7 +451,7 @@ args:
 {{- (include "llm-d-modelservice.argsByProtocol" .) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
-  {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .container.parallelism) -}}
+  {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .parallelism) -}}
   {{- if gt (int $tensorParallelism) 1 }}
   - --tensor-parallel-size
   - "$TP_SIZE"
