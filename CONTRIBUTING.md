@@ -88,8 +88,10 @@ For every Pull Request submitted, ensure the following steps have been done:
    - `X` (major) is incremented for breaking changes,
    - `Y` (minor) is incremented when new features are added without breaking existing functionality,
    - `Z` (patch) is incremented for bug fixes, minor improvements, or non-breaking changes.
+
+   If you modify the chart, please bump the chart version. You can run `make bump-chart-version-patch` to automatically increment the patch version. After updating the chart, run `make lint` to validate your changes.
 5. Run pre-commit hooks to ensure code quality and schema validation: `make pre-commit-run`
-6. Lint tests have been run for the Chart using the [Chart Testing](https://github.com/helm/chart-testing) tool and the `ct lint` command.
+6. Lint tests have been run for the Chart using the [Chart Testing](https://github.com/helm/chart-testing) tool and the `make lint` command.
 <!-- TODO after the helm-docs supported: 7. Make sure that [helm-docs](https://github.com/norwoodj/helm-docs) has been run to generate/update the `README.md` documentation. To preview the content, use `helm-docs --dry-run`. -->
 
 ## FAQ and Troubleshooting
