@@ -185,6 +185,8 @@ routing:
       targetPort: 9002
       appProtocol: http2
     image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1
+    imagePullPolicy: Always
+    imagePullSecrets: []
     replicas: 1
     debugLevel: 4
     disableReadinessProbe: false
