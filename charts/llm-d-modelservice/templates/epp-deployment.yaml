@@ -18,7 +18,11 @@ spec:
     spec:
       containers:
       - name: epp
-        imagePullPolicy: Always
+        imagePullPolicy: {{ default "Always" .Values.routing.epp.imagePullPolicy }}
+        imagePullSecrets:
+          {{- range .Values.routing.epp.imagePullSecrets }}
+          - name: {{ . }}
+          {{- end }}
         image: {{ required "routing.epp.image must be specified" .Values.routing.epp.image }}
         args:
         - --poolName
