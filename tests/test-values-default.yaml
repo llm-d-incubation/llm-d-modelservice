@@ -1,0 +1,14 @@
+# Test values for default accelerator resource behavior.
+# The chart should automatically set the GPU count to match tensor parallelism.
+decode:
+  parallelism:
+    tensor: 4
+  containers:
+  - name: "vllm"
+    image: "gpu-enabled-image:latest"
+    modelCommand: vllmServe
+    resources:
+      limits:
+        cpu: "1"
+      requests:
+        cpu: "1"

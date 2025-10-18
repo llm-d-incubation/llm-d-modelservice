@@ -175,14 +175,14 @@ nvidia.com/gpu
 {{- if and .resources .resources.limits }}
 {{- $limits = deepCopy .resources.limits }}
 {{- end }}
-{{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") }}
+{{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") (not (hasKey $limits $acceleratorResource)) }}
 {{- $limits = mergeOverwrite $limits (dict $acceleratorResource (toString $tensorParallelism)) }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
 {{- $requests = deepCopy .resources.requests }}
 {{- end }}
-{{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") }}
+{{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") (not (hasKey $requests $acceleratorResource)) }}
 {{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $tensorParallelism)) }}
 {{- end }}
 resources:
