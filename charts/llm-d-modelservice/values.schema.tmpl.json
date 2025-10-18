@@ -530,13 +530,13 @@
               "type": "integer"
             },
             "disableLivenessProbe": {
-              "default": false,
+              "default": true,
               "required": [],
               "title": "disableLivenessProbe",
               "type": "boolean"
             },
             "disableReadinessProbe": {
-              "default": false,
+              "default": true,
               "required": [],
               "title": "disableReadinessProbe",
               "type": "boolean"
@@ -551,7 +551,7 @@
               "title": "env"
             },
             "image": {
-              "default": "ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1",
+              "default": "ghcr.io/llm-d/llm-d-inference-scheduler:v0.3.2",
               "required": [],
               "title": "image",
               "type": "string"
@@ -683,27 +683,6 @@
           },
           "required": [],
           "title": "httpRoute"
-        },
-        "inferenceModel": {
-          "additionalProperties": true,
-          "description": " additionalProperties: true @schema",
-          "properties": {
-            "create": {
-              "default": false,
-              "required": [],
-              "title": "create",
-              "type": "boolean"
-            },
-            "criticality": {
-              "default": "Critical",
-              "description": "Criticality options: [\"Critical\", \"Standard\", \"Sheddable\"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84",
-              "required": [],
-              "title": "criticality",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "inferenceModel"
         },
         "inferencePool": {
           "additionalProperties": true,
