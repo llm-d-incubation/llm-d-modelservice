@@ -1,0 +1,15 @@
+# Test values for user-override of accelerator resources.
+# The chart should respect the user-defined GPU count.
+decode:
+  parallelism:
+    tensor: 2
+    data: 4
+  containers:
+  - name: "vllm"
+    image: "gpu-enabled-image:latest"
+    modelCommand: vllmServe
+    resources:
+      limits:
+        nvidia.com/gpu: "8" # User-defined value
+      requests:
+        nvidia.com/gpu: "8" # User-defined value
