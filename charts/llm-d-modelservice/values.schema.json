@@ -98,6 +98,12 @@
                             "title": "google",
                             "type": "string"
                         },
+                        "intel-gaudi": {
+                            "default": "habana.ai/gaudi",
+                            "required": [],
+                            "title": "intel-gaudi",
+                            "type": "string"
+                        },
                         "intel-i915": {
                             "default": "gpu.intel.com/i915",
                             "required": [],
@@ -108,12 +114,6 @@
                             "default": "gpu.intel.com/xe",
                             "required": [],
                             "title": "intel-xe",
-                            "type": "string"
-                        },
-                        "intel-gaudi": {
-                            "default": "habana.ai/gaudi",
-                            "required": [],
-                            "title": "intel-gaudi",
                             "type": "string"
                         },
                         "nvidia": {
