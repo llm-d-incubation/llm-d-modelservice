@@ -35,11 +35,11 @@ routing:
 
   httpRoute:
     create: true
-    #matches:
-    #- headers:
-    #  - name: x-model-name
-    #    type: Exact
-    #    value: "{{ .Values.modelArtifacts.name }}"
+    # matches:
+    # - headers:
+    #   - name: x-model-name
+    #     type: Exact
+    #     value: "{{ .Values.modelArtifacts.name }}"
 
   epp:
     create: true
@@ -54,7 +54,7 @@ decode:
   replicas: 1
   containers:
   - name: "vllm"
-    image: "vllm/vllm-openai:latest"
+    image: "ghcr.io/llm-d/llm-d-cuda:v0.3.0"
     modelCommand: vllmServe
     args:
       - "--enforce-eager"
@@ -97,7 +97,7 @@ prefill:
   replicas: 1
   containers:
   - name: "vllm"
-    image: "vllm/vllm-openai:latest"
+    image: "ghcr.io/llm-d/llm-d-cuda:v0.3.0"
     modelCommand: vllmServe
     args:
       - "--enforce-eager"

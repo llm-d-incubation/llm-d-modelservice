@@ -262,7 +262,7 @@ spec:
             readOnly: true
       containers:
         - name: vllm
-          image: vllm/vllm-openai:latest
+          image: ghcr.io/llm-d/llm-d-cuda:v0.3.0
           
           command: ["vllm", "serve"]
           args:
@@ -427,7 +427,7 @@ spec:
             readOnly: true
       containers:
         - name: vllm
-          image: vllm/vllm-openai:latest
+          image: ghcr.io/llm-d/llm-d-cuda:v0.3.0
           
           command: ["vllm", "serve"]
           args:
