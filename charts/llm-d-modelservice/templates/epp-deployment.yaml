@@ -21,20 +21,22 @@ spec:
         imagePullPolicy: Always
         image: {{ required "routing.epp.image must be specified" .Values.routing.epp.image }}
         args:
-        - --poolName
+        - --pool-name
         - {{ include "llm-d-modelservice.inferencePoolName" . }}
-        - --poolNamespace
+        - --pool-namespace
         - {{ .Release.Namespace }}
-        - -v
-        - "{{ default 4 .Values.routing.epp.debugLevel }}"
+        - "--pool-group"
+        - "inference.networking.x-k8s.io"
+        - --v
+        - "4"
         - --zap-encoder
-        - json
-        - --grpcPort
+        - "json"
+        - --grpc-port
         - "9002"
-        - --grpcHealthPort
+        - --grpc-health-port
         - "9003"
         {{- if .Values.routing.epp.pluginsConfigFile }}
-        - "-configFile"
+        - "--config-file"
         - "config/{{ .Values.routing.epp.pluginsConfigFile }}"
         {{- end}}
         {{- with .Values.routing.epp.env }}

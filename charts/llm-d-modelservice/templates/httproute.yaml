@@ -25,7 +25,6 @@ spec:
       - group: {{ .Values.routing.inferencePool.apiGroup }}
         kind: InferencePool
         name: {{ include "llm-d-modelservice.inferencePoolName" . }}
-        port: {{ .Values.routing.servicePort  }}
         weight: 1
       {{- if .Values.routing.httpRoute.timeouts}}
       timeouts:
