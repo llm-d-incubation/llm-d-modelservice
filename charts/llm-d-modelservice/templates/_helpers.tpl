@@ -60,8 +60,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 {{/* Create common shared by prefill and decode deployment/LWS */}}
 {{- define "llm-d-modelservice.pdlabels" -}}
-llm-d.ai/inferenceServing: "true"
-llm-d.ai/model: {{ (include "llm-d-modelservice.fullname" .) -}}
+{{ .Values.modelArtifacts.labels | toYaml }}
 {{- end }}
 
 {{/* Create labels for the prefill deployment/LWS */}}
@@ -209,54 +208,6 @@ resources:
 
 {{/* P/D service account name */}}
 {{- define "llm-d-modelservice.pdServiceAccountName" -}}
-{{ include "llm-d-modelservice.fullname" . }}
-{{- end }}
-
-{{/* EPP service account name */}}
-{{- define "llm-d-modelservice.eppServiceAccountName" -}}
-{{ include "llm-d-modelservice.eppName" . }}
-{{- end }}
-
-{{/* EPP service name */}}
-{{- define "llm-d-modelservice.eppServiceName" -}}
-{{ include "llm-d-modelservice.eppName" . }}
-{{- end }}
-
-{{/* EPP role name */}}
-{{- define "llm-d-modelservice.eppRoleName" -}}
-{{ include "llm-d-modelservice.eppName" . }}
-{{- end }}
-
-{{/* EPP rolebinding name */}}
-{{- define "llm-d-modelservice.eppRoleBindingName" -}}
-{{ include "llm-d-modelservice.eppName" . }}
-{{- end }}
-
-{{/* EPP Config name */}}
-{{- define "llm-d-modelservice.eppConfigName" -}}
-{{ include "llm-d-modelservice.eppName" . }}
-{{- end }}
-
-{{/* default inference pool name */}}
-{{- define "llm-d-modelservice.inferencePoolName" -}}
-{{- if .Values.routing.inferencePool.name -}}
-{{- .Values.routing.inferencePool.name }}
-{{- else -}}
-{{ include "llm-d-modelservice.fullname" . }}
-{{- end }}
-{{- end }}
-
-{{/* default inference model name */}}
-{{- define "llm-d-modelservice.inferenceModelName" -}}
-{{- if .Values.routing.inferenceModel.name -}}
-{{- .Values.routing.inferenceModel.name }}
-{{- else -}}
-{{ include "llm-d-modelservice.fullname" . }}
-{{- end -}}
-{{- end }}
-
-{{/* default http route name */}}
-{{- define "llm-d-modelservice.httpRouteName" -}}
 {{ include "llm-d-modelservice.fullname" . }}
 {{- end }}
 

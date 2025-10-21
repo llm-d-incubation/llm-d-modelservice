@@ -29,7 +29,20 @@ helm repo update
 
 ModelService operates under the assumption that `llm-d-infra` has been installed in a Kubernetes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d` Guides](https://github.com/llm-d/llm-d/blob/main/guides/README.md) for more information.
 
-Note that in order to create HTTPRoute objects last, Helm hooks are used. As a consequence, these objects are not deleted when `helm delete` is executed. They should be manually deleted to avoid unexpected routing problems.
+## Routing
+
+Once a model is deployed, inference requests must be routed to it. To do this, the Kubernetes Gateway API Inference Extension (GAIE) Helm charts can be used. These charts are defined [here](https://github.com/kubernetes-sigs/gateway-api-inference-extension/tree/main/config/charts/). For example, to create an InferencePool, use the chart oci://registry.k8s.io/gateway-api-inference-extension/charts/inferencepool.
+
+### Relationships
+
+Note that when using the GAIE InferencePool chart together with the Modelservice chart the following relationships will exist:
+
+- The modelservice field `modelArtifact.routing.servicePort` should match the GAIE field `inferencePool.targetPortNumber` or be an entry in the list `inferencePool.targets` (depending on the apiVersion of InferencePool).
+- The modelservice field `modelArtifact.labels` should match the GAIE field, `inferencePool.modelServers.matchLabels`.
+
+### HTTPRoute
+
+In addition to deploying the GAIE chart, an `HTTPRoute` is typically required to connect the `Gateway` to the `InferencePool`. Creating an HTTPRoute is not part of either chart. Some examples are provided [here](https://github.com/llm-d-incubation/llm-d-modelservice/blob/main/examples/README.md#httproute)
 
 ## Examples
 
@@ -56,24 +69,6 @@ Below are the values you can set.
 | `routing.proxy.targetPort`             | The port the vLLM decode container listens on. <br>If proxy is present, it will forward request to this port.     | string       | N/A                                         |
 | `routing.proxy.debugLevel`             | Debug level of the routing proxy                                                                                  | int          | 5                                           |
 | `routing.proxy.parentRefs[*].name`     | The name of the inference gateway                                                                                 | string       | N/A                                         |
-| `routing.inferencePool.create`         | If true, creates an InferencePool object                                                                          | bool         | `true`                                      |
-| `routing.inferencePool.extensionRef`   | Name of of an epp service to use instead of the default one created by this chart.                                | string       | N/A                                         |
-| `routing.inferenceModel.create`        | If true, creates an InferenceModel object                                                                         | bool         | `false`                                     |
-| `routing.httpRoute.create`             | If true, creates an HTTPRoute object                                                                              | bool         | `true`                                      |
-| `routing.httpRoute.backendRefs`        | Override for HTTPRoute.backendRefs                                                                                | List         | []                                          |
-| `routing.httpRoute.matches`            | Override for HTTPRoute.backendRefs[*].matches where backendRefs are created by this chart.                        | Dict         | {}                                          |
-| `routing.epp.create`                   | If true, creates EPP objects                                                                                      | bool         | `true`                                      |
-| `routing.epp.service.permissions`      | Role to be bound to the epp service account in place of the default created by this chart.                        | string       | N/A                                         |
-| `routing.epp.service.type`             | Type of Service created for the Inference Scheduler (Endpoint Picker) deployment                                  | string       | ClusterIP                                   |
-| `routing.epp.service.port`             | The port the Inference Scheduler listens on                                                                       | int          | 9002                                        |
-| `routing.epp.service.targetPort`       | The target port the Inference Scheduler listens on                                                                | int          | 9002                                        |
-| `routing.epp.service.appProtocol`      | The app protocol the Inference Scheduler uses                                                                     | int          | 9002                                        |
-| `routing.epp.image`                    | Image to be used for the epp container                                                                            | string       | ghcr.io/llm-d/llm-d-inference-scheduler:0.0.4` |
-| `routing.epp.replicas`                 | Number of replicas for the Inference Scheduler pod                                                                | int          | 1                                           |
-| `routing.epp.debugLevel`               | Debug level used to start the Inference Scheduler pod                                                             | int          | 4                                           |
-| `routing.epp.disableReadinessProbe`    | Disable readiness probe creation for the Inference Scheduler pod. <br>Set this to `true` if you want to debug on Kind. | bool         | `false`                                     |
-| `routing.epp.disableLivenessProbe`     | Disable liveness probe creation for the Inference Scheduler pod. <br>Set this to `true` if you want to debug on Kind.  | bool         | `false`                                     |
-| `routing.epp.env`                      | List of environment variables                                                                                          | List         | []                                     |
 | `decode.create`                        | If true, creates decode Deployment or LeaderWorkerSet                                                             | List         | `true`                                      |
 | `decode.annotations`                   | Annotations that should be added to the Deployment or LeaderWorkerSet                                             | Dict         | {}                                          |
 | `decode.tolerations`                   | Tolerations that should be added to the Deployment or LeaderWorkerSet                                             | List         | []                                          |

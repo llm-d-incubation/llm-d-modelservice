@@ -21,6 +21,8 @@ Note: `alias k=kubectl`
 | [`values-xpu.yaml`](#5-intel-xpu-examples) | Intel XPU single-node example | Intel Data Center GPU Max |
 | [`pvc/`](#4-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
 
+All the examples assume a `Gateway` and GAIE configuration have been deployed.  See the [llm-d guides](https://github.com/llm-d/llm-d/tree/main/guides) for examples.  Further, an `HTTPRoute` must be deployed. Some examples of `HTTPRoute` is provided [below](https://github.com/llm-d-incubation/llm-d-modelservice/blob/main/examples/README.md#httproute).
+
 ## Usage Examples
 
 ### 1. CPU-only
@@ -39,30 +41,6 @@ To install, use `helm install` instead of `helm template`:
 helm install cpu-sim llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-cpu.yaml
 ```
 
-Port forward the inference gateway service.
-
-```
-k port-forward svc/llm-d-inference-gateway-istio 8000:80
-```
-
-Send a request.
-
-```
-curl http://localhost:8000/v1/completions -vvv \
-    -H "Content-Type: application/json" \
-    -H "x-model-name: random/model" \
-    -d '{
-    "model": "random/model",
-    "prompt": "Hello, "
-}'
-```
-
-Expect to see a response like the following.
-
-```
-{"id":"chatcmpl-05cfe79c-234d-4898-b781-3fa59ba7be49","created":1750969231,"model":"random","choices":[{"index":0,"finish_reason":"stop","text":"Alas, poor Yorick! I knew him, Horatio: A fellow of infinite jest"}]}
-```
-
 ### 2. P/D disaggregation
 
 Dry-run:
@@ -77,39 +55,11 @@ or install in a cluster
 helm install pd llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml
 ```
 
-Port forward the inference gateway service.
-
-```
-k port-forward svc/llm-d-inference-gateway-istio 8000:80
-```
-
-Send a request,
-
-```
-curl http://localhost:8000/v1/completions -vvv \
-    -H "Content-Type: application/json" \
-    -H "x-model-name: facebook/opt-125m" \
-    -d '{
-    "model": "facebook/opt-125m",
-    "prompt": "Hello, "
-}'
-```
-
-and expect the following response
-
-```
-{"choices":[{"finish_reason":"length","index":0,"logprobs":null,"prompt_logprobs":null,"stop_reason":null,"text":" That is my dad. He was a wautdig with a shooting blade on"}],"created":1751031325,"id":"cmpl-aca48bc2-fe95-4c3b-843d-1dbcf94c40c7","kv_transfer_params":null,"model":"facebook/opt-125m","object":"text_completion","usage":{"completion_tokens":16,"prompt_tokens":4,"prompt_tokens_details":null,"total_tokens":20}}
-```
-
-### 3. Wide Expert Parallelism (EP/DP) with LeaderWorkerSet
-
-See https://github.com/llm-d/llm-d/blob/main/guides/wide-ep-lws/README.md
-
-### 4. Loading a model from a PVC
+### 3. Loading a model from a PVC
 
 See [this README](./pvc/README.md).
 
-### 5. Intel XPU Examples
+### 4. Intel XPU Examples
 
 For Intel XPU (Data Center GPU Max) deployments:
 
@@ -132,32 +82,68 @@ Get the name of decode pod.
 kubectl get pods -n llm-d -l llm-d.ai/role=decode
 ```
 
-Port forward the decode pod.
+## HTTPRoute Examples
 
-```
-kubectl port-forward -n llm-d pod/$decode_pod_name 8080:8200 &
+An `HTTPRoute` maps requests through a `Gateway` to an `InferencePool` which is, in turn, tied (via match labels) to a particular set of model servers.  Here are two examples.
+
+#### Example: Route all requests to the same model
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mymodel-httproute
+spec:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: mygateway
+  rules:
+  - backendRefs:
+    - group: inference.networking.x-k8s.io
+      kind: InferencePool
+      name: inferencepool-for-mymodel
+      port: 8000
+      weight: 1
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
 ```
 
-Send a request,
+For example, to call the completions API, use `mymodel/v1/completions`
 
-```
-curl -X POST "http://localhost:8080/v1/chat/completions" \
-    -H "Content-Type: application/json" \
-    -d '{
-        "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-        "messages": [
-        {"role": "user", "content": "Hello!"}
-        ],
-        "max_tokens": 50,
-        "temperature": 0.7
-    }'
-```
+#### Example: Route requests with modified path
 
-and expect the following response
-
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: myhttproute
+spec:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: mygateway
+  rules:
+  - backendRefs:
+    - group: inference.networking.x-k8s.io
+      kind: InferencePool
+      name: inferencepool-for-mymodel
+      port: 8000
+      weight: 1
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          replacePrefixMatch: /
+          type: ReplacePrefixMatch
+    matches:
+    - path:
+        type: PathPrefix
+        value: /mymodel/
 ```
-{"id":"chatcmpl-ebda7f789d434895afec746173e2a4ce","object":"chat.completion","created":1755679402,"model":"deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B","choices":[{"index":0,"message":{"role":"assistant","content":"Alright, the user said \"Hello!\" and I replied \"Hello! How can I assist you today?\" That's a friendly way to start, let them know I'm here to help.\n\nI should ask them how they're doing or what they need","refusal":null,"annotations":null,"audio":null,"function_call":null,"tool_calls":[],"reasoning_content":null},"logprobs":null,"finish_reason":"length","stop_reason":null}],"service_tier":null,"system_fingerprint":null,"usage":{"prompt_tokens":7,"total_tokens":57,"completion_tokens":50,"prompt_tokens_details":null},"prompt_logprobs":null,"kv_transfer_params":null}(base)
-```
+This route supports requests with prefix `mymodel/`; for example, to call the completions API, use `mymodel/v1/completions`
 
 ## Troubleshooting:
 
