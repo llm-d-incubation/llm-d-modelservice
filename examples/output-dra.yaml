@@ -1,0 +1,103 @@
+---
+# Source: llm-d-modelservice/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gaudi-llm-d-modelservice
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.2.16
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: llm-d-modelservice/templates/decode-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gaudi-llm-d-modelservice-decode
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.2.16
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      llm-d.ai/inferenceServing: "true"
+      llm-d.ai/model: gaudi-llm-d-modelservice
+      llm-d.ai/role: decode
+  template:
+    metadata:
+      labels:
+        llm-d.ai/inferenceServing: "true"
+        llm-d.ai/model: gaudi-llm-d-modelservice
+        llm-d.ai/role: decode
+    spec:
+      
+    
+      serviceAccountName: gaudi-llm-d-modelservice
+      
+      volumes:
+        - emptyDir: {}
+          name: metrics-volume
+        - name: model-storage
+          persistentVolumeClaim:
+            claimName: model-pvc
+            readOnly: true
+      resourceClaims:
+      - name: intel-gaudi3-x2-resource-claim
+        resourceClaimTemplateName: intel-gaudi3-x2-resource-claim-template
+      containers:
+        - name: vllm
+          image: opea/vllm-gaudi:1.22.0
+          
+          args:
+            - --model
+            - meta-llama/Llama-3.3-70B-Instruc
+            - --port
+            - "8200"
+            - --tensor-parallel-size
+            - "$TP_SIZE"
+            - --served-model-name
+            - "meta-llama/Llama-3.3-70B-Instruc"
+            
+            - --max-num-seqs=64
+            - --max-seq-len-to-capture=2048
+            - --max-model-len=2048
+            - --max-num-batched-token=16000
+          env:
+          - name: OMPI_MCA_btl_vader_single_copy_mechanism
+            value: none
+          - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+            value: "true"
+          - name: VLLM_SKIP_WARMUP
+            value: "true"
+          - name: DP_SIZE
+            value: "1"
+          - name: TP_SIZE
+            value: "2"
+          
+          - name: HF_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: llm-d-hf-token
+                key: HF_TOKEN
+          resources:
+            claims:
+            - name: intel-gaudi3-x2-resource-claim
+---
+# Source: llm-d-modelservice/templates/resource-claim-template.yaml
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: intel-gaudi3-x2-resource-claim-template
+spec:
+  spec:
+    devices:
+      requests:
+      - name: intel-gaudi3-x2-dev-request-0
+        exactly:
+          deviceClassName: gaudi.intel.com
+          count: 2
+          selectors:
+          - cel:
+              expression: device.attributes["gaudi.intel.com"].model == 'Gaudi3'
