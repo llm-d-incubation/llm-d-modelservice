@@ -8,10 +8,6 @@ helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-models
 helm repo update
 ```
 
-Note: `alias k=kubectl`
-
-> If you only want to deploy model instances without routing support, append `--set inferencePool=false --set httpRoute=false` to the example commands.
-
 ## Available Examples
 
 | Example | Description | Hardware Requirements |
@@ -26,8 +22,6 @@ All the examples assume a `Gateway` and GAIE configuration have been deployed.  
 ## Usage Examples
 
 ### 1. CPU-only
-
-Make sure there is a gateway (Kgateway or Istio) deployed in the cluster. Follow [these instructions](https://gateway-api-inference-extension.sigs.k8s.io/guides/#__tabbed_3_2) on how to set up a gateway. Once done, update `routing.parentRefs[*].name` in this [values file](values-cpu.yaml#L18) to use the name for the Gateway (`llm-d-inference-gateway-istio`) in the cluster or override with the `--set "routing.parentRefs[0].name=MYGATEWAY"` flag.
 
 Dry run:
 
@@ -97,12 +91,12 @@ spec:
   parentRefs:
   - group: gateway.networking.k8s.io
     kind: Gateway
-    name: mygateway
+    name: INSERT_GATEWAY_NAME
   rules:
   - backendRefs:
     - group: inference.networking.x-k8s.io
       kind: InferencePool
-      name: inferencepool-for-mymodel
+      name: INSERT_INFERENCEPOOL_NAME
       port: 8000
       weight: 1
     matches:
@@ -111,7 +105,7 @@ spec:
         value: /
 ```
 
-For example, to call the completions API, use `mymodel/v1/completions`
+For example, to call the OpenAI completions API, use `mymodel/v1/completions`
 
 #### Example: Route requests with modified path
 
@@ -124,12 +118,12 @@ spec:
   parentRefs:
   - group: gateway.networking.k8s.io
     kind: Gateway
-    name: mygateway
+    name: INSERT_GATEWAY_NAME
   rules:
   - backendRefs:
     - group: inference.networking.x-k8s.io
       kind: InferencePool
-      name: inferencepool-for-mymodel
+      name: INSERT_INFERENCEPOOL_NAME
       port: 8000
       weight: 1
     filters:
@@ -143,7 +137,7 @@ spec:
         type: PathPrefix
         value: /mymodel/
 ```
-This route supports requests with prefix `mymodel/`; for example, to call the completions API, use `mymodel/v1/completions`
+This route supports requests with the prefix `mymodel/`; for example, to call the OpenAI completions API, requests would be sent to: `mymodel/v1/completions`. The HTTPRoute maps rewrites such requests to `v1/completions` for the target model server.
 
 ## Troubleshooting:
 

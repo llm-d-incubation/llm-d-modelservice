@@ -42,7 +42,7 @@ Note that when using the GAIE InferencePool chart together with the Modelservice
 
 ### HTTPRoute
 
-In addition to deploying the GAIE chart, an `HTTPRoute` is typically required to connect the `Gateway` to the `InferencePool`. Creating an HTTPRoute is not part of either chart. Some examples are provided [here](https://github.com/llm-d-incubation/llm-d-modelservice/blob/main/examples/README.md#httproute)
+In addition to deploying the GAIE chart, an `HTTPRoute` is typically required to connect the `Gateway` to the `InferencePool`. Creating an HTTPRoute is not part of either chart. Some examples are provided [here](https://github.com/llm-d-incubation/llm-d-modelservice/blob/main/examples/README.md#httproute).
 
 ## Examples
 
