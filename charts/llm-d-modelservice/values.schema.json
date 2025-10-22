@@ -329,7 +329,7 @@
                                         "additionalProperties": false,
                                         "required": [],
                                         "title": "selectors",
-                                        "type": "object"
+                                        "type": "array"
                                     }
                                 },
                                 "required": [],
@@ -366,7 +366,7 @@
                                         "additionalProperties": false,
                                         "required": [],
                                         "title": "selectors",
-                                        "type": "object"
+                                        "type": "array"
                                     }
                                 },
                                 "required": [],
@@ -403,7 +403,7 @@
                                         "additionalProperties": false,
                                         "required": [],
                                         "title": "selectors",
-                                        "type": "object"
+                                        "type": "array"
                                     }
                                 },
                                 "required": [],
@@ -437,10 +437,9 @@
                                         "type": "string"
                                     },
                                     "selectors": {
-                                        "additionalProperties": false,
                                         "required": [],
                                         "title": "selectors",
-                                        "type": "object"
+                                        "type": "array"
                                     }
                                 },
                                 "required": [],
