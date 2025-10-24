@@ -332,6 +332,7 @@
         },
         "labels": {
           "additionalProperties": false,
+          "description": " These should match the labels of any associated InferencePool In addition, the label llm-d.ai/role will be added with the value 'prefill' or 'decode' depending on the role of the pod.",
           "properties": {
             "llm-d.ai/inferenceServing": {
               "default": "true",
@@ -347,8 +348,7 @@
             }
           },
           "required": [],
-          "title": "labels",
-          "type": "object"
+          "title": "labels"
         },
         "mountPath": {
           "default": "/model-cache",
