@@ -1,8 +1,0 @@
-{{- if .Values.routing.epp.create -}}
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ include "llm-d-modelservice.eppServiceAccountName" . }}
-  labels:
-    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
-{{- end }}

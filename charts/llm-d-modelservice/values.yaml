@@ -20,6 +20,14 @@ modelArtifacts:
   # name is the value of the model parameter in OpenAI requests
   # Required
   name: random/model
+  # Labels that will be added to the pods serving the model.
+  # These should match the labels of any associated InferencePool
+  # In addition, the label llm-d.ai/role will be added with the value 'prefill'
+  # or 'decode' depending on the role of the pod.
+  labels:
+    llm-d.ai/inferenceServing: "true"
+    llm-d.ai/model: random_model
+
   # model URI. One of:
   #   hf://model/name - model as defined on Hugging Face
   #   pvc://pvc_name/path/to/model - model on existing persistant storage volume
@@ -92,142 +100,6 @@ routing:
 
     # Overwrite the verbosity of logging in the sidecar (defaults to 5)
     # debugLevel: 5
-
-  # Reference to parent gateway
-  # cf. https://gateway-api.sigs.k8s.io/api-types/gateway/
-  parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: inference-gateway
-    namespace: "{{ .Release.Namespace }}"
-
-  # @schema
-  # additionalProperties: true
-  # @schema
-  # Configuration of InferencePool
-  # cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool
-
-
-  # @schema
-  # additionalProperties: true
-  # @schema
-  inferencePool:
-    create: true
-    # which API group to use for the inference pool, options: ["inference.networking.x-k8s.io", "inference.networking.k8s.io"]. Defaults to: "inference.networking.x-k8s.io" until gateway provider support for new API
-    # @schema
-    # default: "inference.networking.x-k8s.io"
-    # enum: ["inference.networking.x-k8s.io","inference.networking.k8s.io"]
-    # @schema
-    apiGroup: "inference.networking.x-k8s.io"
-    # name: OVERRIDE_NAME
-    # to use a different epp service than the one created when routing.epp.create: true
-    # extensionRef:
-
-  # @schema
-  # additionalProperties: true
-  # @schema
-  inferenceModel:
-    create: false
-    # Criticality options: ["Critical", "Standard", "Sheddable"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84
-    criticality: Critical
-    # Name override for the inference
-    # name: "some-override"
-
-  # @schema
-  # additionalProperties: true
-  # @schema
-  # Configuration of HTTPRoute (mapping of requests through gateway to InferencePool)
-  # cf. https://gateway-api.sigs.k8s.io/api-types/httproute/
-  httpRoute:
-    create: true
-    # when specifiying rules it will overwrite the entire rules block (matches included)
-    # rules:
-    #   - backendRefs:
-    #       - group: inference.networking.x-k8s.io
-    #         kind: InferencePool
-    #         name: inference-pool-name
-    #         port: 8000
-    #         weight: 1
-    #     matches:
-    #       - path:
-    #           type: PathPrefix
-    #           value: /
-    # when specifiying matches and not rules, it will use the default backendRef block but overwrite just the matches section of a single rule
-    matches:
-      - path:
-          type: PathPrefix
-          value: /
-        # example over-riding matches
-        # @schema
-        # items:
-        #   type: object
-        # @schema
-        headers: []
-        # - name: x-model-name
-        #   type: Exact
-        #   value: facebook/opt-125m
-
-    # Allow people to opt out of timeouts by unsetting the default value.
-    # They are set to 0s which in most situations defaults to the providers max timeout.
-    timeouts:
-      backendRequest: 0s
-      request: 0s
-
-  # @schema
-  # additionalProperties: true
-  # @schema
-  # Configuration of EPP (endpoint picker)
-  # cf. https://github.com/llm-d/llm-d-inference-scheduler
-  epp:
-    create: true
-    service:
-      type: ClusterIP
-      port: 9002
-      targetPort: 9002
-      appProtocol: http2
-    image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1
-    replicas: 1
-    debugLevel: 4
-    disableReadinessProbe: false
-    disableLivenessProbe: false
-    # To override the name of the inferencepool
-    # inferencePool:
-    # -- Default environment variables for endpoint picker, use `defaultEnvVarsOverride` to override default behavior by defining the same variable again.
-    # Ref: https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/architecture.md#scorers--configuration
-
-    # The name of the plugin file to use. Some default files are provided to you: default-config.yaml, prefix-cache-tracking-config.yaml,
-    # prefix-estimate-config.yaml, default-pd-config.yaml, or you may define a custom config below and select it with the pluginsConfigFile field.
-    pluginsConfigFile: "default-config.yaml"
-
-    # Adding a custom plugin config via the pluginsCustomConfig field. Inside there should be an entry to a confimap of file containing the `EndpointPickerConfig`
-    # pluginsCustomConfig:
-    #   custom-plugins.yaml: |
-    #     apiVersion: inference.networking.x-k8s.io/v1alpha1
-    #     kind: EndpointPickerConfig
-    #     plugins:
-    #     - type: custom-scorer
-    #       parameters:
-    #         custom-threshold: 64
-    #     - type: max-score-picker
-    #     - type: single-profile-handler
-    #     schedulingProfiles:
-    #     - name: default
-    #       plugins:
-    #       - pluginRef: custom-scorer
-    #         weight: 1
-    #       - pluginRef: max-score-picker
-    #         weight: 1
-
-
-    # @schema
-    # items:
-    #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
-    # @schema
-    env: []
-      # Include any Environment variables to epp here, or configure scorers for a legacy epp image, ex:
-    # - name: ENABLE_KVCACHE_AWARE_SCORER
-    #   value: "false"
-
 
 # @schema
 # additionalProperties: true

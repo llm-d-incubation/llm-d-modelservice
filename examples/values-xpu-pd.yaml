@@ -7,6 +7,9 @@
 
 modelArtifacts:
   name: microsoft/DialoGPT-large
+  labels:
+    llm-d.ai/inferenceServing: "true"
+    llm-d.ai/model: microsoft-dialogpt-large
   uri: "hf://microsoft/DialoGPT-large"
   size: 10Gi
 
@@ -20,29 +23,6 @@ routing:
     targetPort: 8200
     # Use compatible connector for XPU
     connector: nixlv2
-
-  parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: inference-gateway
-    namespace: "{{ .Release.Namespace }}"
-
-  httpRoute:
-    create: true
-    matches:
-      - path:
-          type: PathPrefix
-          value: /
-        headers:
-        - name: x-model-name
-          type: Exact
-          value: "{{ .Values.modelArtifacts.name }}"
-
-  epp:
-    create: true
-    image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1
-    # Use XPU-compatible configuration
-    pluginsConfigFile: "default-config.yaml"
 
 # Decode pod configuration for Intel XPU
 decode:
