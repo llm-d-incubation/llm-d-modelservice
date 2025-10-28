@@ -34,7 +34,7 @@ resourceClaims:
 {{- end -}}
 {{- end -}}
 requests:
-- name: {{ $claim.name }}-dev-request-0
+- name: {{ $claim.name }}
   {{ $claim.match }}:
     deviceClassName: {{ $claim.class }}
     count: {{ $claim.count }}
