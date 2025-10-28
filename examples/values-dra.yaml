@@ -4,22 +4,14 @@
 # 3. For clarity, all other features are disabled, only Deployment and ResourceClaimTemplate are created
 
 modelArtifacts:
-  name: meta-llama/Llama-3.3-70B-Instruc
-  uri: "pvc+hf://model-pvc/meta-llama/Llama-3.3-70B-Instruc"
+  name: random/model
+  uri: "hf://{{ .Values.modelArtifacts.name }}"
   size: 50Gi
   authSecretName: "llm-d-hf-token"
 
 dra:
   enabled: true
-  type: "intel-gaudi3-x2"
-  claimTemplates:
-  - name: intel-gaudi3-x2
-    class: gaudi.intel.com
-    match: "exactly"
-    count: 2
-    selectors:
-    - cel:
-        expression: device.attributes["gaudi.intel.com"].model == 'Gaudi3'
+  type: "intel"
 
 # Routing configuration
 routing:
