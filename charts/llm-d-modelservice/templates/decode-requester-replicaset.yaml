@@ -1,0 +1,63 @@
+{{- if and .Values.requester.enable (and .Values.decode.create (not .Values.multinode)) }}
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: {{ include "llm-d-modelservice.decodeName" . }}
+spec:
+  replicas: {{ .Values.requester.replicas | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "llm-d-modelservice.requesterlabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "llm-d-modelservice.requesterlabels" . | nindent 8 }}
+      annotations:
+        dual-pod.llm-d.ai/admin-port: {{ .Values.requester.adminPort | default "8081" | quote }}
+        dual-pod.llm-d.ai/server-patch: |
+          metadata:
+            labels:
+              model-reg: {{ .Values.requester.serverPatch.modelReg | default "ibm-granite" | quote }}
+              model-repo: {{ .Values.requester.serverPatch.modelRepo | default "granite-3.3-2b-instruct" | quote }}
+              app: null
+          spec:
+            containers:
+            - name: inference-server
+              image: {{ .Values.requester.serverPatch.image | default "docker.io/vllm/vllm-openai:v0.10.2" }}
+              command:
+              {{- toYaml .Values.requester.serverPatch.command | nindent 14 }}
+              env:
+              {{- toYaml .Values.requester.serverPatch.env | nindent 14 }}
+              resources:
+                {{- toYaml .Values.requester.serverPatch.resources | nindent 16 }}
+              readinessProbe:
+                {{- toYaml .Values.requester.serverPatch.readinessProbe | nindent 16 }}
+      {{- if .Values.requester.podAnnotations }}
+        {{- toYaml .Values.requester.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: inference-server
+          image: {{ .Values.requester.image }}
+          imagePullPolicy: {{ .Values.requester.imagePullPolicy | default "Always" }}
+          command:
+          - /app/requester
+          env:
+          - name: PROBES_PORT
+            value: {{ .Values.requester.probesPort | default "8080" | quote }}
+          - name: SPI_PORT
+            value: {{ .Values.requester.spiPort | default "8081" | quote }}
+          ports:
+          - name: probes
+            containerPort: {{ .Values.requester.probesPort | default 8080 }}
+          - name: spi
+            containerPort: {{ .Values.requester.spiPort | default 8081 }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.requester.probesPort | default 8080 }}
+            initialDelaySeconds: {{ .Values.requester.readinessProbe.initialDelaySeconds | default 2 }}
+            periodSeconds: {{ .Values.requester.readinessProbe.periodSeconds | default 5 }}
+          resources:
+            {{- toYaml .Values.requester.resources | nindent 12 }}
+{{- end }}
