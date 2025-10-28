@@ -66,6 +66,13 @@ accelerator:
       - name: VLLM_WORKER_MULTIPROC_METHOD
         value: "spawn"
 
+# @schema
+# additionalProperties: true
+# @schema
+# -- Requester configuration part of the dual-pod solution for FMA
+requester:
+  enable: false
+
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:

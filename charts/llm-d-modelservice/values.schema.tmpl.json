@@ -387,6 +387,18 @@
       "title": "multinode",
       "type": "boolean"
     },
+    "requester": {
+      "additionalProperties": true,
+      "description": "Requester configuration",
+      "properties": {
+          "enable": {
+              "default": false,
+              "title": "enable",
+              "type": "boolean"
+          }
+      },
+      "title": "requester"
+    },
     "prefill": {
       "additionalProperties": true,
       "description": " additionalProperties: true @schema Prefill pod configuation",
