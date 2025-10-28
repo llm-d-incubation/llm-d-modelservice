@@ -40,3 +40,9 @@ dependencies:
     tags:
       - bitnami-common
     version: "2.27.0"
+  - name: dpctlr
+    condition: .Values.requester.enable
+    repository: https://github.com/llm-d-incubation/llm-d-fast-model-actuation
+    tags:
+      - dual-pod-controller
+    version: "0.1.0"
