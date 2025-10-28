@@ -16,7 +16,7 @@ pre-helm: tools ## Set up Helm dependency repositories
 
 .PHONY: lint
 lint: pre-helm ## Run lint checks using helm-lint
-	ct lint --check-version-increment=false --validate-maintainers=false --charts charts/llm-d-modelservice $(if $(TARGET_BRANCH),--target-branch $(TARGET_BRANCH))
+	ct lint --config ct.yaml $(if $(TARGET_BRANCH),--target-branch $(TARGET_BRANCH))
 
 # Paths that need verification during 'make verify'
 PATHS_TO_VERIFY := examples/
@@ -30,6 +30,13 @@ verify: generate ## Verify that generated files match current state
 
 .PHONY: generate
 generate: tools ## Generate example output files from Helm chart templates
+	hack/generate-example-output.sh
+
+.PHONY: bump-chart-version-%
+bump-chart-version-%: tools ## Bump chart version by type (patch, major, minor) e.g., make bump-chart-version-patch
+	@printf "\033[33;1m==== Running bump chart version ====\033[0m\n"
+	hack/increment-chart-version.sh $*
+	## Regenerate example output after version bump
 	hack/generate-example-output.sh
 
 ##@ Tools
