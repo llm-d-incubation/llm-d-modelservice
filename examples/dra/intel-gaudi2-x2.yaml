@@ -1,0 +1,38 @@
+# This example demonstrates the folowing capabilities
+# 1. Use of Dynamic Resource Allocation (DRA)
+# 2. Via DRA, select two Gaudi2 devices for the decode pod
+# 3. For clarity, all other features are disabled, only Deployment and ResourceClaimTemplate are created
+
+modelArtifacts:
+  name: random/model
+  uri: "hf://{{ .Values.modelArtifacts.name }}"
+  size: 50Gi
+  authSecretName: "llm-d-hf-token"
+
+dra:
+  enabled: true
+  type: "intel-gaudi2-x2"
+  claimTemplates:
+  - name: intel-gaudi2-x2
+    class: gaudi.intel.com
+    match: "exactly"
+    count: 2
+    selectors:
+    - cel:
+        expression: device.attributes["gaudi.intel.com"].model == 'Gaudi2'
+
+# Routing configuration
+routing:
+  proxy:
+    enabled: false
+  inferencePool:
+    create: false
+  httpRoute:
+    create: false
+  epp:
+    create: false
+decode:
+  create: true
+prefill:
+  create: false
+multinode: false
