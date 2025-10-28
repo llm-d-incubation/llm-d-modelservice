@@ -74,22 +74,22 @@ dra:
     class: gpu.nvidia.com
     match: "exactly"
     count: 1
-    selectors: {}
+    selectors: []
   - name: google
     class: tpu.google.com
     match: "exactly"
     count: 1
-    selectors: {}
+    selectors: []
   - name: intel
     class: gpu.intel.com
     match: "exactly"
     count: 1
-    selectors: {}
+    selectors: []
   - name: amd
     class: gpu.amd.com
     match: "exactly"
     count: 1
-    selectors: {}
+    selectors: []
 
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
