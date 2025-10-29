@@ -25,17 +25,19 @@ routing:
     create: false
 decode:
   create: true
-  parallelism:
-    tensor: "2"
   containers:
   - name: vllm
-    image: opea/vllm-gaudi:1.22.0
-    modelCommand: "imageDefault"
+    image: intel/vllm:0.10.0-xpu
+    modelCommand: "vllmServe"
     args:
+    - --dtype=float16
+    - --block-size=64
     - --max-num-seqs=64
-    - --max-seq-len-to-capture=2048
     - --max-model-len=2048
-    - --max-num-batched-token=16000
+    - --max-num-batched-token=4096
+    - --disable-sliding-window
+    - --gpu-memory-util=0.9
+    - --quantization=fp8
     env:
     - name: OMPI_MCA_btl_vader_single_copy_mechanism
       value: none
@@ -43,6 +45,7 @@ decode:
       value: "true"
     - name: VLLM_SKIP_WARMUP
       value: "true"
+    mountModelVolume: true
 
 prefill:
   create: false
