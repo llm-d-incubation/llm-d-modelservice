@@ -35,7 +35,7 @@ spec:
       containers:
         - name: inference-server
           image: {{ .Values.requester.image }}
-          imagePullPolicy: {{ .Values.requester.imagePullPolicy | default "Always" }}
+          imagePullPolicy: {{ .Values.requester.image | default "Always" }}
           command:
           - /app/requester
           env:
@@ -51,7 +51,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /ready
-              port: {{ .Values.requester.probesPort }}
+              port: {{ .Values.requester.port.probes }}
             initialDelaySeconds: {{ .Values.requester.readinessProbe.initialDelaySeconds | default 2 }}
             periodSeconds: {{ .Values.requester.readinessProbe.periodSeconds | default 5 }}
 {{- end }}
