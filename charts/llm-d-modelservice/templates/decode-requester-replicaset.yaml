@@ -47,15 +47,11 @@ spec:
           - name: probes
             containerPort: {{ .Values.requester.port.probes }}
           - name: spi
-            containerPort: {{ .Values.requester.port.probes }}
+            containerPort: {{ .Values.requester.port.spi }}
           readinessProbe:
             httpGet:
               path: /ready
               port: {{ .Values.requester.probesPort }}
             initialDelaySeconds: {{ .Values.requester.readinessProbe.initialDelaySeconds | default 2 }}
             periodSeconds: {{ .Values.requester.readinessProbe.periodSeconds | default 5 }}
-          {{- with .Values.decode.acceleratorTypes }}
-          {{ (include "llm-d-modelservice.resources" .) | nindent 6}}
-          {{- end }}
-
 {{- end }}
