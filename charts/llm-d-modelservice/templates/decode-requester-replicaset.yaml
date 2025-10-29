@@ -35,7 +35,7 @@ spec:
       containers:
         - name: inference-server
           image: {{ .Values.requester.image }}
-          imagePullPolicy: {{ .Values.requester.image | default "Always" }}
+          imagePullPolicy: Always
           command:
           - /app/requester
           env:
