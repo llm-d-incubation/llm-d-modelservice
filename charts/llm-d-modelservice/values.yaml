@@ -66,9 +66,12 @@ accelerator:
       - name: VLLM_WORKER_MULTIPROC_METHOD
         value: "spawn"
 
+# @schema
+# additionalProperties: true
+# @schema
 dra:
   enabled: false  # true: use this block instead of the `accelerator`
-  type: nvidia
+  type: nvidia    # which claimTemplates entry to use
   claimTemplates:
   - name: nvidia
     class: gpu.nvidia.com

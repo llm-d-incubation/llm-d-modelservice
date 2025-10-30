@@ -293,7 +293,8 @@
       "title": "decode"
     },
     "dra": {
-      "additionalProperties": false,
+      "additionalProperties": true,
+      "description": " additionalProperties: true @schema",
       "properties": {
         "claimTemplates": {
           "items": {
@@ -326,7 +327,9 @@
                     "type": "string"
                   },
                   "selectors": {
-                    "additionalProperties": false,
+                    "items": {
+                      "required": []
+                    },
                     "required": [],
                     "title": "selectors",
                     "type": "array"
@@ -363,7 +366,9 @@
                     "type": "string"
                   },
                   "selectors": {
-                    "additionalProperties": false,
+                    "items": {
+                      "required": []
+                    },
                     "required": [],
                     "title": "selectors",
                     "type": "array"
@@ -400,7 +405,9 @@
                     "type": "string"
                   },
                   "selectors": {
-                    "additionalProperties": false,
+                    "items": {
+                      "required": []
+                    },
                     "required": [],
                     "title": "selectors",
                     "type": "array"
@@ -437,6 +444,9 @@
                     "type": "string"
                   },
                   "selectors": {
+                    "items": {
+                      "required": []
+                    },
                     "required": [],
                     "title": "selectors",
                     "type": "array"
@@ -466,8 +476,7 @@
         }
       },
       "required": [],
-      "title": "dra",
-      "type": "object"
+      "title": "dra"
     },
     "enabled": {
       "default": "true",
