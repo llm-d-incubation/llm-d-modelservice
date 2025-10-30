@@ -1,4 +1,4 @@
-{{- if and .Values.decode.create (not .Values.multinode) }}
+{{- if and (not .Values.requester.enable) (and .Values.decode.create (not .Values.multinode)) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
