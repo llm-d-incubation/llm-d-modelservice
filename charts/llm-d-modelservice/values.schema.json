@@ -442,6 +442,33 @@
                     "required": [],
                     "title": "readinessProbe",
                     "type": "object"
+                },
+                "resources": {
+                    "type": "object",
+                    "description": "Resource limits and requests",
+                    "properties": {
+                        "limits": {
+                            "type": "object",
+                            "description": "Resource limits",
+                            "properties": {
+                                "gpus": {
+                                    "type": "integer",
+                                    "default": 1,
+                                    "description": "Number of GPUs"
+                                },
+                                "cpus": {
+                                    "type": "integer",
+                                    "default": 1,
+                                    "description": "Number of CPUs"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "default": "250Mi",
+                                    "description": "Memory limit"
+                                }
+                            }
+                        }
+                    }
                 }
             },
             "required": [],

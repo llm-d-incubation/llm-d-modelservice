@@ -54,4 +54,9 @@ spec:
               port: {{ .Values.requester.port.probes }}
             initialDelaySeconds: {{ .Values.requester.readinessProbe.initialDelaySeconds | default 2 }}
             periodSeconds: {{ .Values.requester.readinessProbe.periodSeconds | default 5 }}
+          resources:
+            limits:
+              nvidia.com/gpu: {{ .Values.requester.resources.limits.gpus }}
+              cpus: {{ .Values.requester.resources.limits.cpus }}
+              memory: {{ .Values.requester.resources.limits.memory }}
 {{- end }}
