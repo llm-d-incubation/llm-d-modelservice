@@ -16,8 +16,8 @@ This Helm Chart provides the following `dra` object which generates the pod's `r
 
 ```yaml
 dra:
-  enabled: false  # true: use this block instead of the `accelerator`
-  type: nvidia    # which claimTemplates entry to use
+  enabled: true  # true: use this block instead of the `accelerator`
+  type: intel    # which claimTemplates entry to use
   claimTemplates:
   - name: intel
     class: gpu.intel.com
