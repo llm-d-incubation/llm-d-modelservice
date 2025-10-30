@@ -57,6 +57,6 @@ spec:
           resources:
             limits:
               nvidia.com/gpu: {{ .Values.requester.resources.limits.gpus }}
-              cpus: {{ .Values.requester.resources.limits.cpus }}
+              cpu: {{ .Values.requester.resources.limits.cpus }}
               memory: {{ .Values.requester.resources.limits.memory }}
 {{- end }}
