@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: dra-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.16
+    helm.sh/chart: llm-d-modelservice-v0.2.17
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: dra-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.16
+    helm.sh/chart: llm-d-modelservice-v0.2.17
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -49,22 +49,24 @@ spec:
         resourceClaimTemplateName: intel-resource-claim-template
       containers:
         - name: vllm
-          image: opea/vllm-gaudi:1.22.0
+          image: intel/vllm:0.10.0-xpu
           
+          command: ["vllm", "serve"]
           args:
-            - --model
-            - meta-llama/Llama-3.3-70B-Instruct
+            - meta-llama/Llama-3.1-8B-Instruct
             - --port
             - "8200"
-            - --tensor-parallel-size
-            - "$TP_SIZE"
             - --served-model-name
             - "random/model"
             
+            - --dtype=float16
+            - --block-size=64
             - --max-num-seqs=64
-            - --max-seq-len-to-capture=2048
             - --max-model-len=2048
-            - --max-num-batched-token=16000
+            - --max-num-batched-token=4096
+            - --disable-sliding-window
+            - --gpu-memory-util=0.9
+            - --quantization=fp8
           env:
           - name: OMPI_MCA_btl_vader_single_copy_mechanism
             value: none
@@ -75,8 +77,10 @@ spec:
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
-            value: "2"
+            value: "1"
           
+          - name: HF_HUB_CACHE
+            value: /model-cache/
           - name: HF_TOKEN
             valueFrom:
               secretKeyRef:
@@ -85,6 +89,10 @@ spec:
           resources:
             claims:
             - name: intel-resource-claim
+          
+          volumeMounts:
+            - name: model-storage
+              mountPath: /model-cache
 ---
 # Source: llm-d-modelservice/templates/resource-claim-template.yaml
 apiVersion: resource.k8s.io/v1
