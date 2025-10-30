@@ -1,0 +1,25 @@
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+kubernetesVersion: v1.34.1
+networking:
+  podSubnet: "192.168.0.0/16" # for CNI
+# DRA specifics
+apiServer:
+  extraArgs:
+  - name: feature-gates
+    value: DRAExtendedResource=true,DRADeviceTaints=true,DRAAdminAccess=true,DRAPartitionableDevices=true,DRAResourceClaimDeviceStatus=true,ResourceHealthStatus=true,DRAPrioritizedList=true
+  - name: runtime-config
+    value: resource.k8s.io/v1beta1=true,resource.k8s.io/v1alpha3=true
+controllerManager:
+  extraArgs:
+  - name: feature-gates
+    value: DRADeviceTaints=true,DRAPrioritizedList=true
+scheduler:
+  extraArgs:
+  - name: feature-gates
+    value: DRADeviceTaints=true,DRAExtendedResource=true,DRAAdminAccess=true,DRAPartitionableDevices=true,DRAPrioritizedList=true
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+featureGates:
+  ResourceHealthStatus: true # bug in K8s 1.34.1, fix in .2

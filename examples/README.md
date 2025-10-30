@@ -20,6 +20,7 @@ Note: `alias k=kubectl`
 | [`values-pd.yaml`](#2-pd-disaggregation) | Prefill/decode disaggregation example | Multi-GPU, demonstrates P/D splitting |
 | [`values-xpu.yaml`](#5-intel-xpu-examples) | Intel XPU single-node example | Intel Data Center GPU Max |
 | [`pvc/`](#4-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
+| [`dra/`](#6-dynamic-resource-allocation) | Dynamic Resource Allocation (DRA) examples | Shows different DRA use cases |
 
 ## Usage Examples
 
@@ -158,6 +159,11 @@ and expect the following response
 ```
 {"id":"chatcmpl-ebda7f789d434895afec746173e2a4ce","object":"chat.completion","created":1755679402,"model":"deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B","choices":[{"index":0,"message":{"role":"assistant","content":"Alright, the user said \"Hello!\" and I replied \"Hello! How can I assist you today?\" That's a friendly way to start, let them know I'm here to help.\n\nI should ask them how they're doing or what they need","refusal":null,"annotations":null,"audio":null,"function_call":null,"tool_calls":[],"reasoning_content":null},"logprobs":null,"finish_reason":"length","stop_reason":null}],"service_tier":null,"system_fingerprint":null,"usage":{"prompt_tokens":7,"total_tokens":57,"completion_tokens":50,"prompt_tokens_details":null},"prompt_logprobs":null,"kv_transfer_params":null}(base)
 ```
+
+### 6. Dynamic Resource Allocation
+
+See [this README](./dra/README.md).
+
 
 ## Troubleshooting:
 
