@@ -7,28 +7,28 @@ spec:
   replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
   selector:
     matchLabels:
-      app: {{- include "llm-d-modelservice.decodelabels" . | nindent 6 }}
+      app: dp-app
   template:
     metadata:
       labels:
-        app: {{- include "llm-d-modelservice.decodelabels" . | nindent 8 }}
+        app: dp-app
       annotations:
         dual-pod.llm-d.ai/admin-port: {{ ternary .Values.requester.adminPort "8081" (hasKey .Values.requester "adminPort") }}
         dual-pod.llm-d.ai/server-patch: |
           metadata:
             labels: {
               {{- $modelParts := split "/" .Values.modelArtifacts.name -}}
-              "model-reg": {{ index $modelParts._1 | quote }}
-              "model-repo": {{ index $modelParts._0 | quote }}
+              "model-reg": {{ index $modelParts._1 | quote }},
+              "model-repo": {{ index $modelParts._0 | quote }},
               "app": null}
           spec:
             {{- with .Values.routing }}
-            {{- (include "llm-d-modelservice.routingProxy" .) | nindent 8 }}
+            {{- (include "llm-d-modelservice.routingProxy" .) | nindent 12 }}
             {{- end }}
             {{- with .Values.decode.containers }}
             containers:
               {{- range . }}
-              {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart)) | nindent 8 }}
+              {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart)) | nindent 14 }}
               {{- end }}
             {{- end }}
     spec:
