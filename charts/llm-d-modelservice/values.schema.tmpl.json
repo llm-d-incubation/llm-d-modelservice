@@ -592,31 +592,38 @@
           "type": "object"
         },
         "resources": {
-          "type": "object",
-          "description": "Resource limits and requests",
+          "additionalProperties": false,
           "properties": {
-              "limits": {
-                  "type": "object",
-                  "description": "Resource limits",
-                  "properties": {
-                      "gpus": {
-                          "type": "integer",
-                          "default": 1,
-                          "description": "Number of GPUs"
-                      },
-                      "cpus": {
-                          "type": "integer",
-                          "default": 1,
-                          "description": "Number of CPUs"
-                      },
-                      "memory": {
-                          "type": "string",
-                          "default": "250Mi",
-                          "description": "Memory limit"
-                      }
-                  }
-              }
-          }
+            "limits": {
+              "additionalProperties": false,
+              "properties": {
+                "cpus": {
+                  "default": 1,
+                  "required": [],
+                  "title": "cpus",
+                  "type": "integer"
+                },
+                "gpus": {
+                  "default": 1,
+                  "required": [],
+                  "title": "gpus",
+                  "type": "integer"
+                },
+                "memory": {
+                  "default": "250Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
         }
       },
       "required": [],

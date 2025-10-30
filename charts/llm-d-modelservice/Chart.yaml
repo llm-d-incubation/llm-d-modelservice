@@ -1,7 +1,6 @@
 apiVersion: v2
 name: llm-d-modelservice
 description: A Helm chart for ModelService in llm-d
-
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -11,7 +10,6 @@ description: A Helm chart for ModelService in llm-d
 # a dependency of application charts to inject those utilities and functions into the rendering
 # pipeline. Library charts do not define any templates and therefore cannot be deployed.
 type: application
-
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
@@ -22,7 +20,6 @@ version: "v0.3.0"
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "v0.2.0"
-
 maintainers:
   - name: "Jing Chen"
     email: "jing.chen2@ibm.com"
@@ -30,10 +27,8 @@ maintainers:
   - name: "Michael Kalantar"
     email: "kalantar@us.ibm.com"
     url: "https://github.com/kalantar"
-
 sources:
   - https://github.com/llm-d-incubation/llm-d-modelservice
-
 dependencies:
   - name: common
     repository: https://charts.bitnami.com/bitnami
