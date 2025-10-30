@@ -1,0 +1,1 @@
+import os, sys; __import__('pip_system_certs.bootstrap') and sys.modules['pip_system_certs.bootstrap'].bootstrap()
