@@ -8,6 +8,9 @@ multinode: false
 modelArtifacts:
 # This is the model name used to start vLLM.
   name: facebook/opt-125m
+  labels:
+    llm-d.ai/inferenceServing: "true"
+    llm-d.ai/model: facebook-opt-125m
   uri: hf://"{{ .Values.modelArtifacts.name }}"
   size: 20Gi
 
@@ -19,31 +22,6 @@ routing:
   # other fields are inherited from chart values.yaml
   proxy:
     secure: false
-
-  # to change name of inference-gateway
-  # parentRefs:
-  # - name: inference-gateway
-
-  inferencePool:
-    create: true
-
-  # required for certain gateways (e.g. Kgateway) but not others (Istio)
-  # creating this so that it works for all gateways
-  inferenceModel:
-    create: true
-
-  httpRoute:
-    create: true
-    matches:
-    - headers:
-      - name: x-model-name
-        type: Exact
-        value: "{{ .Values.modelArtifacts.name }}"
-
-  epp:
-    create: true
-    # Inherit all from base chart values.yaml
-    # env:
 
 # Decode pod configuation
 decode:

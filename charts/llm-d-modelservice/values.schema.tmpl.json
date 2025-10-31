@@ -330,6 +330,26 @@
           "title": "authSecretName",
           "type": "string"
         },
+        "labels": {
+          "additionalProperties": false,
+          "description": " These should match the labels of any associated InferencePool In addition, the label llm-d.ai/role will be added with the value 'prefill' or 'decode' depending on the role of the pod.",
+          "properties": {
+            "llm-d.ai/inferenceServing": {
+              "default": "true",
+              "required": [],
+              "title": "llm-d.ai/inferenceServing",
+              "type": "string"
+            },
+            "llm-d.ai/model": {
+              "default": "random_model",
+              "required": [],
+              "title": "llm-d.ai/model",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "labels"
+        },
         "mountPath": {
           "default": "/model-cache",
           "description": "location where model volume will be mounted (used when mountModelVolume: true)",
@@ -519,263 +539,6 @@
       "additionalProperties": false,
       "description": " also describes elements for Gateway API Inference Extension configuration",
       "properties": {
-        "epp": {
-          "additionalProperties": true,
-          "description": " additionalProperties: true @schema Configuration of EPP (endpoint picker) cf. https://github.com/llm-d/llm-d-inference-scheduler",
-          "properties": {
-            "create": {
-              "default": true,
-              "required": [],
-              "title": "create",
-              "type": "boolean"
-            },
-            "debugLevel": {
-              "default": 4,
-              "required": [],
-              "title": "debugLevel",
-              "type": "integer"
-            },
-            "disableLivenessProbe": {
-              "default": false,
-              "required": [],
-              "title": "disableLivenessProbe",
-              "type": "boolean"
-            },
-            "disableReadinessProbe": {
-              "default": false,
-              "required": [],
-              "title": "disableReadinessProbe",
-              "type": "boolean"
-            },
-            "env": {
-              "description": " pluginsCustomConfig:   custom-plugins.yaml: |     apiVersion: inference.networking.x-k8s.io/v1alpha1     kind: EndpointPickerConfig     plugins:     - type: custom-scorer       parameters:         custom-threshold: 64     - type: max-score-picker     - type: single-profile-handler     schedulingProfiles:     - name: default       plugins:       - pluginRef: custom-scorer         weight: 1       - pluginRef: max-score-picker         weight: 1 @schema items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar @schema",
-              "items": {
-                "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar",
-                "required": []
-              },
-              "required": [],
-              "title": "env"
-            },
-            "image": {
-              "default": "ghcr.io/llm-d/llm-d-inference-scheduler:v0.2.1",
-              "required": [],
-              "title": "image",
-              "type": "string"
-            },
-            "pluginsConfigFile": {
-              "default": "default-config.yaml",
-              "description": " prefix-estimate-config.yaml, default-pd-config.yaml, or you may define a custom config below and select it with the pluginsConfigFile field.",
-              "required": [],
-              "title": "pluginsConfigFile"
-            },
-            "replicas": {
-              "default": 1,
-              "required": [],
-              "title": "replicas",
-              "type": "integer"
-            },
-            "service": {
-              "additionalProperties": false,
-              "properties": {
-                "appProtocol": {
-                  "default": "http2",
-                  "required": [],
-                  "title": "appProtocol",
-                  "type": "string"
-                },
-                "port": {
-                  "default": 9002,
-                  "required": [],
-                  "title": "port",
-                  "type": "integer"
-                },
-                "targetPort": {
-                  "default": 9002,
-                  "required": [],
-                  "title": "targetPort",
-                  "type": "integer"
-                },
-                "type": {
-                  "default": "ClusterIP",
-                  "required": [],
-                  "title": "type",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "service",
-              "type": "object"
-            }
-          },
-          "required": [],
-          "title": "epp"
-        },
-        "httpRoute": {
-          "additionalProperties": true,
-          "description": " additionalProperties: true @schema Configuration of HTTPRoute (mapping of requests through gateway to InferencePool) cf. https://gateway-api.sigs.k8s.io/api-types/httproute/",
-          "properties": {
-            "create": {
-              "default": true,
-              "required": [],
-              "title": "create",
-              "type": "boolean"
-            },
-            "matches": {
-              "description": " rules:   - backendRefs:       - group: inference.networking.x-k8s.io         kind: InferencePool         name: inference-pool-name         port: 8000         weight: 1     matches:       - path:           type: PathPrefix           value: / when specifiying matches and not rules, it will use the default backendRef block but overwrite just the matches section of a single rule",
-              "items": {
-                "anyOf": [
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "headers": {
-                        "description": " @schema items:   type: object @schema",
-                        "items": {
-                          "required": [],
-                          "type": "object"
-                        },
-                        "required": [],
-                        "title": "headers"
-                      },
-                      "path": {
-                        "additionalProperties": false,
-                        "properties": {
-                          "type": {
-                            "default": "PathPrefix",
-                            "required": [],
-                            "title": "type",
-                            "type": "string"
-                          },
-                          "value": {
-                            "default": "/",
-                            "required": [],
-                            "title": "value",
-                            "type": "string"
-                          }
-                        },
-                        "required": [],
-                        "title": "path",
-                        "type": "object"
-                      }
-                    },
-                    "required": [],
-                    "type": "object"
-                  }
-                ],
-                "required": []
-              },
-              "required": [],
-              "title": "matches"
-            },
-            "timeouts": {
-              "additionalProperties": false,
-              "description": " They are set to 0s which in most situations defaults to the providers max timeout.",
-              "properties": {
-                "backendRequest": {
-                  "default": "0s",
-                  "required": [],
-                  "title": "backendRequest",
-                  "type": "string"
-                },
-                "request": {
-                  "default": "0s",
-                  "required": [],
-                  "title": "request",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "timeouts"
-            }
-          },
-          "required": [],
-          "title": "httpRoute"
-        },
-        "inferenceModel": {
-          "additionalProperties": true,
-          "description": " additionalProperties: true @schema",
-          "properties": {
-            "create": {
-              "default": false,
-              "required": [],
-              "title": "create",
-              "type": "boolean"
-            },
-            "criticality": {
-              "default": "Critical",
-              "description": "Criticality options: [\"Critical\", \"Standard\", \"Sheddable\"], see: https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/config/crd/bases/inference.networking.x-k8s.io_inferencemodels.yaml#L70-L84",
-              "required": [],
-              "title": "criticality",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "inferenceModel"
-        },
-        "inferencePool": {
-          "additionalProperties": true,
-          "description": " additionalProperties: true @schema Configuration of InferencePool cf. https://gateway-api-inference-extension.sigs.k8s.io/reference/spec/#inferencepool @schema additionalProperties: true @schema",
-          "properties": {
-            "apiGroup": {
-              "default": "inference.networking.x-k8s.io",
-              "description": " @schema default: \"inference.networking.x-k8s.io\" enum: [\"inference.networking.x-k8s.io\",\"inference.networking.k8s.io\"] @schema",
-              "enum": [
-                "inference.networking.x-k8s.io",
-                "inference.networking.k8s.io"
-              ],
-              "required": [],
-              "title": "apiGroup"
-            },
-            "create": {
-              "default": true,
-              "required": [],
-              "title": "create",
-              "type": "boolean"
-            }
-          },
-          "required": [],
-          "title": "inferencePool"
-        },
-        "parentRefs": {
-          "description": " cf. https://gateway-api.sigs.k8s.io/api-types/gateway/",
-          "items": {
-            "anyOf": [
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "group": {
-                    "default": "gateway.networking.k8s.io",
-                    "required": [],
-                    "title": "group",
-                    "type": "string"
-                  },
-                  "kind": {
-                    "default": "Gateway",
-                    "required": [],
-                    "title": "kind",
-                    "type": "string"
-                  },
-                  "name": {
-                    "default": "inference-gateway",
-                    "required": [],
-                    "title": "name",
-                    "type": "string"
-                  },
-                  "namespace": {
-                    "default": "{{ .Release.Namespace }}",
-                    "required": [],
-                    "title": "namespace",
-                    "type": "string"
-                  }
-                },
-                "required": [],
-                "type": "object"
-              }
-            ],
-            "required": []
-          },
-          "required": [],
-          "title": "parentRefs"
-        },
         "proxy": {
           "additionalProperties": true,
           "description": " additionalProperties: true @schema Configuration of VLLM routing sidecar cf. https://github.com/llm-d/llm-d-routing-sidecar/",
