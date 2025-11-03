@@ -85,7 +85,6 @@ requester:
       cpus: 1
       memory: 250Mi
 
-
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:
