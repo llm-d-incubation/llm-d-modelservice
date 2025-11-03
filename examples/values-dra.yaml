@@ -17,12 +17,7 @@ dra:
 routing:
   proxy:
     enabled: false
-  inferencePool:
-    create: false
-  httpRoute:
-    create: false
-  epp:
-    create: false
+
 decode:
   create: true
   containers:

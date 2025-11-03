@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: dra-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.17
+    helm.sh/chart: llm-d-modelservice-v0.3.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: dra-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.2.17
+    helm.sh/chart: llm-d-modelservice-v0.3.1
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -24,13 +24,13 @@ spec:
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: dra-llm-d-modelservice
+      llm-d.ai/model: random_model
       llm-d.ai/role: decode
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: dra-llm-d-modelservice
+        llm-d.ai/model: random_model
         llm-d.ai/role: decode
     spec:
       
