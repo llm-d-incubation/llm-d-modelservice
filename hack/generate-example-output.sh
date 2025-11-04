@@ -27,3 +27,6 @@ generate_output "pvc" "examples/values-pd.yaml" "examples/output-pvc.yaml" '--se
 
 # Generate output-pvc-hf.yaml (PVC HuggingFace model deployment)
 generate_output "pvc-hf" "examples/values-pd.yaml" "examples/output-pvc-hf.yaml" '--set modelArtifacts.uri=pvc+hf://pvc-name/path/to/hf_hub_cache/facebook/opt-125m'
+
+# Generate output-dra.yaml (Dynamic Resource Allocation deployment for Intel B50 GPU device)
+generate_output "dra" "examples/values-dra.yaml" "examples/output-dra.yaml" '--set modelArtifacts.uri=pvc+hf://model-pvc/meta-llama/Llama-3.1-8B-Instruct'

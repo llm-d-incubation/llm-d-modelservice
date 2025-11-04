@@ -85,6 +85,34 @@ requester:
       cpus: 1
       memory: 250Mi
 
+# @schema
+# additionalProperties: true
+# @schema
+dra:
+  enabled: false  # true: use this block instead of the `accelerator`
+  type: nvidia    # which claimTemplates entry to use
+  claimTemplates:
+  - name: nvidia
+    class: gpu.nvidia.com
+    match: "exactly"
+    count: 1
+    selectors: []
+  - name: google
+    class: tpu.google.com
+    match: "exactly"
+    count: 1
+    selectors: []
+  - name: intel
+    class: gpu.intel.com
+    match: "exactly"
+    count: 1
+    selectors: []
+  - name: amd
+    class: gpu.amd.com
+    match: "exactly"
+    count: 1
+    selectors: []
+
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:
@@ -140,58 +168,62 @@ decode:
   #   additionalProperties: true
   # @schema
   containers:
-    - name: "vllm"
-      image: "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0"
-      # type of command:
-      #   vllmServe - modelservice will add the command vllm serve to the container
-      #   imageDefault - no command will be added; the default command defined in the image will be used
-      #   custom - use user provided "command"
-      modelCommand: imageDefault
-      # Required when modelCommand is "custom"
-      command: []
+  - name: "vllm"
+    image: "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0"
+    # type of command:
+    #   vllmServe - modelservice will add the command vllm serve to the container
+    #   imageDefault - no command will be added; the default command defined in the image will be used
+    #   custom - use user provided "command"
+    modelCommand: imageDefault
+    # Required when modelCommand is "custom"
+    command: []
+    # @schema
+    # items:
+    #   type: string
+    # @schema
+    args: []
+    # @schema
+    # items:
+    #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
+    # @schema
+    env: []
+    imagePullPolicy: ""
+    # list of ports exposed by the container
+    # @schema
+    # items:
+    #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
+    # @schema
+    ports: []
+    #   - containerPort: 8200  # matches routing.proxy.targetPort, set for metrics scraping with  monitoring.podmonitor.enabled true
+    #     name: metrics
+    #     protocol: TCP
+    # @schema
+    # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
+    # @schema
+    resources:
       # @schema
-      # items:
-      #   type: string
+      # additionalProperties: true
       # @schema
-      args: []
+      limits: {}
       # @schema
-      # items:
-      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
+      # additionalProperties: true
       # @schema
-      env: []
-      imagePullPolicy: ""
-      # list of ports exposed by the container
+      requests: {}
       # @schema
-      # items:
-      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
+      # additionalProperties: true
       # @schema
-      ports: []
-      #   - containerPort: 8200  # matches routing.proxy.targetPort, set for metrics scraping with  monitoring.podmonitor.enabled true
-      #     name: metrics
-      #     protocol: TCP
-      # @schema
-      # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
-      # @schema
-      resources:
-        # @schema
-        # additionalProperties: true
-        # @schema
-        limits: {}
-        # @schema
-        # additionalProperties: true
-        # @schema
-        requests: {}
-      # when set, a volumeMount (and volume) is created for model storage
-      mountModelVolume: true
-      # @schema
-      # type: array
-      # items:
-      #   type: object
-      #   additionalProperties: true
-      # @schema
-      volumeMounts:
-        - name: metrics-volume
-          mountPath: /.config
+      claims: {}
+    # when set, a volumeMount (and volume) is created for model storage
+    mountModelVolume: true
+    # @schema
+    # type: array
+    # items:
+    #   type: object
+    #   additionalProperties: true
+    # @schema
+    volumeMounts:
+    - name: metrics-volume
+      mountPath: /.config
   # @schema
   # type: array
   # items:
