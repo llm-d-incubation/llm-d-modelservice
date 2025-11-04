@@ -1,0 +1,47 @@
+# This example demonstrates the folowing capabilities
+# 1. Use of Dynamic Resource Allocation (DRA)
+# 2. Via DRA, select two Gaudi3 devices for the decode pod
+# 3. For clarity, all other features are disabled, only Deployment and ResourceClaimTemplate are created
+
+modelArtifacts:
+  name: random/model
+  uri: "hf://{{ .Values.modelArtifacts.name }}"
+  size: 50Gi
+  authSecretName: "llm-d-hf-token"
+
+dra:
+  enabled: true
+  type: "intel"
+
+# Routing configuration
+routing:
+  proxy:
+    enabled: false
+
+decode:
+  create: true
+  containers:
+  - name: vllm
+    image: intel/vllm:0.10.0-xpu
+    modelCommand: "vllmServe"
+    args:
+    - --dtype=float16
+    - --block-size=64
+    - --max-num-seqs=64
+    - --max-model-len=2048
+    - --max-num-batched-token=4096
+    - --disable-sliding-window
+    - --gpu-memory-util=0.9
+    - --quantization=fp8
+    env:
+    - name: OMPI_MCA_btl_vader_single_copy_mechanism
+      value: none
+    - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+      value: "true"
+    - name: VLLM_SKIP_WARMUP
+      value: "true"
+    mountModelVolume: true
+
+prefill:
+  create: false
+multinode: false

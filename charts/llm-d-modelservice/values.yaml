@@ -66,6 +66,34 @@ accelerator:
       - name: VLLM_WORKER_MULTIPROC_METHOD
         value: "spawn"
 
+# @schema
+# additionalProperties: true
+# @schema
+dra:
+  enabled: false  # true: use this block instead of the `accelerator`
+  type: nvidia    # which claimTemplates entry to use
+  claimTemplates:
+  - name: nvidia
+    class: gpu.nvidia.com
+    match: "exactly"
+    count: 1
+    selectors: []
+  - name: google
+    class: tpu.google.com
+    match: "exactly"
+    count: 1
+    selectors: []
+  - name: intel
+    class: gpu.intel.com
+    match: "exactly"
+    count: 1
+    selectors: []
+  - name: amd
+    class: gpu.amd.com
+    match: "exactly"
+    count: 1
+    selectors: []
+
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:
@@ -162,6 +190,10 @@ decode:
       # additionalProperties: true
       # @schema
       requests: {}
+      # @schema
+      # additionalProperties: true
+      # @schema
+      claims: {}
     # when set, a volumeMount (and volume) is created for model storage
     mountModelVolume: true
     # @schema

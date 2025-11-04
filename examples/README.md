@@ -16,6 +16,7 @@ helm repo update
 | [`values-pd.yaml`](#2-pd-disaggregation) | Prefill/decode disaggregation example | Multi-GPU, demonstrates P/D splitting |
 | [`values-xpu.yaml`](#5-intel-xpu-examples) | Intel XPU single-node example | Intel Data Center GPU Max |
 | [`pvc/`](#4-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
+| [`dra/`](#6-dynamic-resource-allocation) | Dynamic Resource Allocation (DRA) examples | Shows different DRA use cases |
 
 All the examples assume a `Gateway` and GAIE configuration have been deployed.  See the [llm-d guides](https://github.com/llm-d/llm-d/tree/main/guides) for examples.  Further, an `HTTPRoute` must be deployed. Some examples of `HTTPRoute` is provided [below](https://github.com/llm-d-incubation/llm-d-modelservice/blob/main/examples/README.md#httproute).
 
@@ -138,6 +139,11 @@ spec:
         value: /mymodel/
 ```
 This route supports requests with the prefix `mymodel/`; for example, to call the OpenAI completions API, requests would be sent to: `mymodel/v1/completions`. The HTTPRoute maps rewrites such requests to `v1/completions` for the target model server.
+
+### 6. Dynamic Resource Allocation
+
+See [this README](./dra/README.md).
+
 
 ## Troubleshooting:
 
