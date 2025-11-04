@@ -22,6 +22,9 @@ generate_output "cpu-sim" "examples/values-cpu.yaml" "examples/output-cpu.yaml"
 # Generate output-pd.yaml (PD deployment)
 generate_output "pd" "examples/values-pd.yaml" "examples/output-pd.yaml"
 
+# Generate output-requester.yaml (Requester deployment)
+generate_output "requester" "examples/values-requester.yaml" "examples/output-requester.yaml"
+
 # Generate output-pvc.yaml (PVC model deployment)
 generate_output "pvc" "examples/values-pd.yaml" "examples/output-pvc.yaml" '--set modelArtifacts.uri=pvc://pvc-name/path/to/model'
 
