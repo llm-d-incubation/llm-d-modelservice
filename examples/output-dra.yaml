@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: dra-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.1
+    helm.sh/chart: llm-d-modelservice-v0.3.2
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: dra-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.1
+    helm.sh/chart: llm-d-modelservice-v0.3.2
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -55,7 +55,7 @@ spec:
           args:
             - meta-llama/Llama-3.1-8B-Instruct
             - --port
-            - "8200"
+            - "8000"
             - --served-model-name
             - "random/model"
             

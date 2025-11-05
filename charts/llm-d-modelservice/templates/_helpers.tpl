@@ -97,7 +97,7 @@ affinity:
 initContainers:
   - name: routing-proxy
     args:
-      - --port={{ default 8080 .servicePort }}
+      - --port={{ default 8000 .servicePort }}
       - --vllm-port={{ default 8200 .proxy.targetPort }}
       - --connector={{ .proxy.connector | default "nixlv2" }}
       - -v={{ default 5 .proxy.debugLevel }}
@@ -113,7 +113,7 @@ initContainers:
     image: {{ required "routing.proxy.image must be specified" .proxy.image }}
     imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
     ports:
-      - containerPort: {{ default 8080 .servicePort }}
+      - containerPort: {{ default 8000 .servicePort }}
     resources: {}
     restartPolicy: Always
     securityContext:
@@ -137,7 +137,11 @@ Port on which vllm container should listen.
 Context is helm root context plus key "role" ("decode" or "prefill")
 */}}
 {{- define "llm-d-modelservice.vllmPort" -}}
-{{- if eq .role "prefill" }}{{ .Values.routing.servicePort }}{{ else }}{{ .Values.routing.proxy.targetPort }}{{ end }}
+{{- if or (eq .role "prefill") (eq .Values.routing.proxy.enabled false) }}
+{{- .Values.routing.servicePort }}
+{{- else }}
+{{- .Values.routing.proxy.targetPort }}
+{{- end }}
 {{- end }}
 
 {{/* Get accelerator resource name based on type */}}
