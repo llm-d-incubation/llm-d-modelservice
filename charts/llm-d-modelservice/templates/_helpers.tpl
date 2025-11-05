@@ -434,7 +434,7 @@ args:
   {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .parallelism) -}}
   {{- if gt (int $tensorParallelism) 1 }}
   - --tensor-parallel-size
-  - "$TP_SIZE"
+  - {{ $tensorParallelism | quote }}
   {{- end }}
   - --served-model-name
   - {{ .Values.modelArtifacts.name | quote }}
