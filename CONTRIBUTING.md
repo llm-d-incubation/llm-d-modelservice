@@ -23,7 +23,7 @@ We welcome contributions to the llm-d-modelservice chart! If you have a bug fix,
 
 Before submitting a pull request, please make sure you have the following tools installed:
 
-- [Helm](https://helm.sh/)
+- [Helm](http://helm.sh/)
 - [Chart Testing](https://github.com/helm/chart-testing)
 - [pre-commit](https://pre-commit.com/)
 <!-- TODO: Once supported, also install:
