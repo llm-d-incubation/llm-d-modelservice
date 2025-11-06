@@ -33,7 +33,6 @@ spec:
         llm-d.ai/model: random_model
         llm-d.ai/role: decode
     spec:
-      
     
       serviceAccountName: dra-llm-d-modelservice
       

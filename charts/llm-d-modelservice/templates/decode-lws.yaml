@@ -47,8 +47,14 @@ spec:
         {{- if hasKey .Values.decode "hostPID" }}
         hostPID: {{ .Values.decode.hostPID }}
         {{- end }}
+      {{- if or (hasKey .Values.decode "initContainers") (not (hasKey .Values "routing")) (not (hasKey .Values.routing.proxy "enabled")) (ne .Values.routing.proxy.enabled false) }}
+        initContainers:
         {{- with .Values.routing }}
-        {{ (include "llm-d-modelservice.routingProxy" .) | nindent 8 }}
+        {{ (include "llm-d-modelservice.routingProxy" .) | nindent 10 }}
+        {{- end }}
+        {{- if hasKey .Values.decode "initContainers" }}
+        {{- toYaml .Values.decode.initContainers | nindent 10 }}
+        {{- end }}
         {{- end }}
         {{ (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.decode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
         {{- with .Values.decode.containers }}
