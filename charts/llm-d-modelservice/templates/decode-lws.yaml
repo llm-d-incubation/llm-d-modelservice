@@ -47,7 +47,7 @@ spec:
         {{- if hasKey .Values.decode "hostPID" }}
         hostPID: {{ .Values.decode.hostPID }}
         {{- end }}
-      {{- if or (hasKey .Values.decode "initContainers") (not (hasKey .Values "routing")) (not (hasKey .Values.routing.proxy "enabled")) (ne .Values.routing.proxy.enabled false) }}
+        {{- if or (hasKey .Values.decode "initContainers") (ne .Values.routing.proxy.enabled false) }}
         initContainers:
         {{- with .Values.routing }}
         {{ (include "llm-d-modelservice.routingProxy" .) | nindent 10 }}

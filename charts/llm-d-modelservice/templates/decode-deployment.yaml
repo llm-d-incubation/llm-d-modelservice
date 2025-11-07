@@ -23,7 +23,7 @@ spec:
         {{- toYaml .Values.decode.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
-      {{- if or (hasKey .Values.decode "initContainers") (not (hasKey .Values "routing")) (not (hasKey .Values.routing.proxy "enabled")) (ne .Values.routing.proxy.enabled false) }}
+      {{- if or (hasKey .Values.decode "initContainers") (ne .Values.routing.proxy.enabled false) }}
       initContainers:
       {{- with .Values.routing }}
       {{- (include "llm-d-modelservice.routingProxy" .) | nindent 8 }}
