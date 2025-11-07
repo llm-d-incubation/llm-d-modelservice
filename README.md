@@ -17,6 +17,7 @@ Integration with `llm-d` components:
 - Features `llm-d-routing-sidecar` in P/D disaggregation
 - Utilized in benchmarking experiments in `llm-d-benchmark`
 - Effortless use of `llm-d-inference-sim` for CPU-only workloads
+- Allows to use `llm-d-fast-model-actuation`. More information about the fast model loading techniques [here](https://github.com/llm-d-incubation/llm-d-fast-model-actuation)
 
 ## Getting started
 

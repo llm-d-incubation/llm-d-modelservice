@@ -13,7 +13,7 @@ spec:
       labels:
         app: dp-app
       annotations:
-        dual-pod.llm-d.ai/admin-port: {{ ternary .Values.requester.adminPort "8081" (hasKey .Values.requester "adminPort") }}
+        dual-pod.llm-d.ai/admin-port: "{{ .Values.requester.adminPort }}"
         dual-pod.llm-d.ai/server-patch: |
           metadata:
             labels: {
@@ -52,8 +52,8 @@ spec:
             httpGet:
               path: /ready
               port: {{ .Values.requester.port.probes }}
-            initialDelaySeconds: {{ .Values.requester.readinessProbe.initialDelaySeconds | default 2 }}
-            periodSeconds: {{ .Values.requester.readinessProbe.periodSeconds | default 5 }}
+            initialDelaySeconds: {{ .Values.requester.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.requester.readinessProbe.periodSeconds }}
           resources:
             limits:
               nvidia.com/gpu: {{ .Values.requester.resources.limits.gpus }}

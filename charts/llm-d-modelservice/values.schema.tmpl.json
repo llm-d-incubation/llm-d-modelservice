@@ -725,6 +725,12 @@
       "additionalProperties": true,
       "description": "Requester configuration part of the dual-pod solution for FMA",
       "properties": {
+        "adminPort": {
+          "default": 8081,
+          "required": [],
+          "title": "adminPort",
+          "type": "integer"
+        },
         "enable": {
           "default": false,
           "required": [],
