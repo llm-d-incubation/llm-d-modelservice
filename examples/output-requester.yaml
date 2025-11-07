@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: requester-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.2
+    helm.sh/chart: llm-d-modelservice-v0.3.3
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -25,7 +25,7 @@ spec:
       labels:
         app: dp-app
       annotations:
-        dual-pod.llm-d.ai/admin-port: 8081
+        dual-pod.llm-d.ai/admin-port: "8081"
         dual-pod.llm-d.ai/server-patch: |
           metadata:
             labels: {"model-reg": "opt-125m",
@@ -138,7 +138,7 @@ kind: Deployment
 metadata:
   name: requester-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.2
+    helm.sh/chart: llm-d-modelservice-v0.3.3
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
