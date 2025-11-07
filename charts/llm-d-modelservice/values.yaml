@@ -13,6 +13,9 @@ enabled: true
 # -- String to fully override common.names.fullname
 fullnameOverride: ""
 
+# -- Override to default pod serviceAccountName
+serviceAccountOverride: ""
+
 # schedulerName -- Name of the scheduler to use for scheduling model pods
 # schedulerName: default-scheduler
 
