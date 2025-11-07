@@ -195,11 +195,6 @@ resources:
     {{- toYaml $requests | nindent 4 }}
 {{- end }}
 
-{{/* EPP name */}}
-{{- define "llm-d-modelservice.eppName" -}}
-{{ include "llm-d-modelservice.fullname" . }}-epp
-{{- end }}
-
 {{/* prefill name */}}
 {{- define "llm-d-modelservice.prefillName" -}}
 {{ include "llm-d-modelservice.fullname" . }}-prefill
@@ -212,7 +207,11 @@ resources:
 
 {{/* P/D service account name */}}
 {{- define "llm-d-modelservice.pdServiceAccountName" -}}
+{{- if or .Values.serviceAccountOverride -}}
+{{ .Values.serviceAccountOverride }}
+{{- else -}}
 {{ include "llm-d-modelservice.fullname" . }}
+{{- end -}}
 {{- end }}
 
 {{/*
