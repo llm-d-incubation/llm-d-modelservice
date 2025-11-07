@@ -781,6 +781,12 @@
             },
             "required": [],
             "title": "routing"
+        },
+        "serviceAccountOverride": {
+            "default": "",
+            "description": "Override to default pod serviceAccountName",
+            "required": [],
+            "title": "serviceAccountOverride"
         }
     },
     "required": [],
