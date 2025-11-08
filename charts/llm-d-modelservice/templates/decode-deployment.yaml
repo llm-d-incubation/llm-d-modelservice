@@ -35,6 +35,11 @@ spec:
       {{- if hasKey .Values.decode "initContainers" }}
       {{- toYaml .Values.decode.initContainers | nindent 8 }}
       {{- end }}
+      {{- if hasKey .Values.decode "enableServiceLinks" }}
+      enableServiceLinks: {{ .Values.decode.enableServiceLinks }}
+      {{- end }}
+      {{- if hasKey .Values.decode "terminationGracePeriodSeconds" }}
+      terminationGracePeriodSeconds: {{ .Values.decode.terminationGracePeriodSeconds }}
       {{- end }}
       {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.decode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
       {{- with .Values.decode.containers }}
