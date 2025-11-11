@@ -721,6 +721,106 @@
       "required": [],
       "title": "prefill"
     },
+    "requester": {
+      "additionalProperties": true,
+      "description": "Requester configuration part of the dual-pod solution for FMA",
+      "properties": {
+        "adminPort": {
+          "default": 8081,
+          "required": [],
+          "title": "adminPort",
+          "type": "integer"
+        },
+        "enable": {
+          "default": false,
+          "required": [],
+          "title": "enable",
+          "type": "boolean"
+        },
+        "image": {
+          "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation-requester:latest",
+          "required": [],
+          "title": "image",
+          "type": "string"
+        },
+        "port": {
+          "additionalProperties": false,
+          "properties": {
+            "probes": {
+              "default": 8080,
+              "required": [],
+              "title": "probes",
+              "type": "integer"
+            },
+            "spi": {
+              "default": 8081,
+              "required": [],
+              "title": "spi",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "port",
+          "type": "object"
+        },
+        "readinessProbe": {
+          "additionalProperties": false,
+          "properties": {
+            "initialDelaySeconds": {
+              "default": 2,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "properties": {
+            "limits": {
+              "additionalProperties": false,
+              "properties": {
+                "cpus": {
+                  "default": 1,
+                  "required": [],
+                  "title": "cpus",
+                  "type": "integer"
+                },
+                "gpus": {
+                  "default": 1,
+                  "required": [],
+                  "title": "gpus",
+                  "type": "integer"
+                },
+                "memory": {
+                  "default": "250Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "requester"
+    },
     "routing": {
       "additionalProperties": false,
       "description": " also describes elements for Gateway API Inference Extension configuration",

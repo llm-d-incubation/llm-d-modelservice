@@ -1,0 +1,62 @@
+{{- if and .Values.requester.enable (and .Values.decode.create (not .Values.multinode)) }}
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: {{ include "llm-d-modelservice.decodeName" . }}
+spec:
+  replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
+  selector:
+    matchLabels:
+      app: dp-app
+  template:
+    metadata:
+      labels:
+        app: dp-app
+      annotations:
+        dual-pod.llm-d.ai/admin-port: "{{ .Values.requester.adminPort }}"
+        dual-pod.llm-d.ai/server-patch: |
+          metadata:
+            labels: {
+              {{- $modelParts := split "/" .Values.modelArtifacts.name -}}
+              "model-reg": {{ index $modelParts._1 | quote }},
+              "model-repo": {{ index $modelParts._0 | quote }},
+              "app": null}
+          spec:
+            {{- with .Values.routing }}
+            {{- (include "llm-d-modelservice.routingProxy" .) | nindent 12 }}
+            {{- end }}
+            {{- with .Values.decode.containers }}
+            containers:
+              {{- range . }}
+              {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart)) | nindent 14 }}
+              {{- end }}
+            {{- end }}
+    spec:
+      containers:
+        - name: inference-server
+          image: {{ .Values.requester.image }}
+          imagePullPolicy: Always
+          command:
+          - /app/requester
+          env:
+          - name: PROBES_PORT
+            value: {{ .Values.requester.port.probes | quote }}
+          - name: SPI_PORT
+            value: {{ .Values.requester.port.spi | quote }}
+          ports:
+          - name: probes
+            containerPort: {{ .Values.requester.port.probes }}
+          - name: spi
+            containerPort: {{ .Values.requester.port.spi }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.requester.port.probes }}
+            initialDelaySeconds: {{ .Values.requester.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.requester.readinessProbe.periodSeconds }}
+          resources:
+            limits:
+              nvidia.com/gpu: {{ .Values.requester.resources.limits.gpus }}
+              cpu: {{ .Values.requester.resources.limits.cpus }}
+              memory: {{ .Values.requester.resources.limits.memory }}
+{{- end }}
