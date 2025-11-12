@@ -24,7 +24,7 @@ spec:
       {{- end }}
     spec:
       {{- with .Values.routing }}
-      {{- (include "llm-d-modelservice.routingProxy" .) | nindent 6 }}
+      {{- (include "llm-d-modelservice.routingProxy" (merge . (dict "Values" $.Values))) | nindent 6 }}
       {{- end }}
       {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.decode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
       {{- with .Values.decode.containers }}

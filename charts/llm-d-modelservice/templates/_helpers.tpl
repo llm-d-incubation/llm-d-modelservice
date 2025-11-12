@@ -91,6 +91,31 @@ affinity:
             {{- end }}
 {{- end }}
 {{- end }}
+{{/*
+Replace image registry if global.imageRegistry is set
+Context: dict with "image" (string) and "Values" (root values)
+*/}}
+{{- define "llm-d-modelservice.image" -}}
+{{- $image := .image -}}
+{{- $registry := "" -}}
+{{- if hasKey .Values "global" -}}
+{{- if hasKey .Values.global "imageRegistry" -}}
+{{- $registry = .Values.global.imageRegistry -}}
+{{- end -}}
+{{- $parts := splitList "/" $image -}}
+{{- if eq (len $parts) 1 -}}
+{{- /* No registry in image, prepend the registry */}}
+{{- printf "%s/%s" $registry $image -}}
+{{- else -}}
+{{- /* Replace the first part (registry) */}}
+{{- $parts = without $parts (first $parts) -}}
+{{- printf "%s/%s" $registry (join "/" $parts) -}}
+{{- end -}}
+{{- else -}}
+{{- $image -}}
+{{- end -}}
+{{- end -}}
+
 {{/* Create the init container for the routing proxy/sidecar for decode pods */}}
 {{- define "llm-d-modelservice.routingProxy" -}}
 {{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) -}}
@@ -110,7 +135,7 @@ initContainers:
       {{- if hasKey .proxy "certPath" }}
       - --cert-path={{ .proxy.certPath }}
       {{- end }}
-    image: {{ required "routing.proxy.image must be specified" .proxy.image }}
+    image: {{ include "llm-d-modelservice.image" (dict "image" (required "routing.proxy.image must be specified" .proxy.image) "Values" .Values) }}
     imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
     ports:
       - containerPort: {{ default 8000 .servicePort }}
@@ -307,7 +332,7 @@ context is a dict with helm root context plus:
 */}}
 {{- define "llm-d-modelservice.container" -}}
 - name: {{ default "vllm" .container.name }}
-  image: {{ required "image of container is required" .container.image }}
+  image: {{ include "llm-d-modelservice.image" (dict "image" (required "image of container is required" .container.image) "Values" .Values) }}
   {{- with .container.extraConfig }}
     {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
