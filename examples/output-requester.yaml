@@ -32,6 +32,7 @@ spec:
               "model-repo": "facebook",
               "app": null}
           spec:
+            initContainers:
             - name: routing-proxy
               args:
                 - --port=8000
