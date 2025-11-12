@@ -500,10 +500,18 @@
             "title": "fullnameOverride"
         },
         "global": {
-            "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+            "additionalProperties": false,
+            "description": "Global configuration",
+            "properties": {
+                "imageRegistry": {
+                    "default": "ghcr.io",
+                    "description": "Global image registry override. If set, replaces the registry part of all images.",
+                    "required": [],
+                    "title": "imageRegistry"
+                }
+            },
             "required": [],
-            "title": "global",
-            "type": "object"
+            "title": "global"
         },
         "modelArtifacts": {
             "additionalProperties": false,

@@ -48,7 +48,7 @@ spec:
         resourceClaimTemplateName: intel-resource-claim-template
       containers:
         - name: vllm
-          image: intel/vllm:0.10.0-xpu
+          image: ghcr.io/vllm:0.10.0-xpu
           
           command: ["vllm", "serve"]
           args:
