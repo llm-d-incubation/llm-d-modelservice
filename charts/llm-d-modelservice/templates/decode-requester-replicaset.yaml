@@ -22,8 +22,14 @@ spec:
               "model-repo": {{ index $modelParts._0 | quote }},
               "app": null}
           spec:
+            {{- if or (hasKey .Values.decode "initContainers") (eq .Values.routing.proxy.enabled true) }}
+            initContainers:
             {{- with .Values.routing }}
             {{- (include "llm-d-modelservice.routingProxy" .) | nindent 12 }}
+            {{- end }}
+            {{- if hasKey .Values.decode "initContainers" }}
+            {{- toYaml .Values.decode.initContainers | nindent 12 }}
+            {{- end }}
             {{- end }}
             {{- with .Values.decode.containers }}
             containers:

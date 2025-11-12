@@ -50,6 +50,10 @@ spec:
         {{- if hasKey .Values.prefill "hostPID" }}
         hostPID: {{ .Values.prefill.hostPID }}
         {{- end }}
+        {{- if or (hasKey .Values.prefill "initContainers") }}
+        initContainers:
+        {{- toYaml .Values.prefill.initContainers | nindent 10 }}
+        {{- end }}
         {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
         {{- with .Values.prefill.containers }}
         containers:
