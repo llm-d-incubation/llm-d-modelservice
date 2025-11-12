@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: requester-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.4
+    helm.sh/chart: llm-d-modelservice-v0.3.5
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -32,23 +32,22 @@ spec:
               "model-repo": "facebook",
               "app": null}
           spec:
-            initContainers:
-              - name: routing-proxy
-                args:
-                  - --port=8000
-                  - --vllm-port=8200
-                  - --connector=nixlv2
-                  - -v=5
-                  - --secure-proxy=false
-                image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.2.0
-                imagePullPolicy: Always
-                ports:
-                  - containerPort: 8000
-                resources: {}
-                restartPolicy: Always
-                securityContext:
-                  allowPrivilegeEscalation: false
-                  runAsNonRoot: true
+            - name: routing-proxy
+              args:
+                - --port=8000
+                - --vllm-port=8200
+                - --connector=nixlv2
+                - -v=5
+                - --secure-proxy=false
+              image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.2.0
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 8000
+              resources: {}
+              restartPolicy: Always
+              securityContext:
+                allowPrivilegeEscalation: false
+                runAsNonRoot: true
             containers:
               - name: vllm
                 image: ghcr.io/llm-d/llm-d:v0.2.0
@@ -138,7 +137,7 @@ kind: Deployment
 metadata:
   name: requester-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.4
+    helm.sh/chart: llm-d-modelservice-v0.3.5
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
