@@ -12,11 +12,11 @@ help: ## Display this help.
 
 .PHONY: pre-helm
 pre-helm: tools ## Set up Helm dependency repositories
-	helm repo add bitnami https://charts.bitnami.com/bitnami
+	bin/helm repo add bitnami https://charts.bitnami.com/bitnami
 
 .PHONY: lint
 lint: pre-helm ## Run lint checks using helm-lint
-	ct lint --config ct.yaml $(if $(TARGET_BRANCH),--target-branch $(TARGET_BRANCH))
+	bin/ct lint --config ct.yaml $(if $(TARGET_BRANCH),--target-branch $(TARGET_BRANCH))
 
 # Paths that need verification during 'make verify'
 PATHS_TO_VERIFY := examples/
@@ -49,12 +49,12 @@ tools: ## Install all required tools (helm, ct, pre-commit)
 
 .PHONY: pre-commit-install
 pre-commit-install: tools ## Install pre-commit hooks
-	pre-commit install
+	bin/pre-commit install
 
 .PHONY: pre-commit-run
 pre-commit-run: tools ## Run pre-commit hooks on all files
-	pre-commit run --all-files
+	bin/pre-commit run --all-files
 
 .PHONY: pre-commit-update
 pre-commit-update: tools ## Update pre-commit hooks to latest versions
-	pre-commit autoupdate
+	bin/pre-commit autoupdate

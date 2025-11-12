@@ -73,7 +73,7 @@ install_ct() {
   fi
 
   echo "Installing Python dependencies..."
-  pip3 install "yamale==$YAMALE_VERSION" "yamllint==$YAMLLINT_VERSION"
+  pip3 install --break-system-packages "yamale==$YAMALE_VERSION" "yamllint==$YAMLLINT_VERSION"
   install_tar_binary "$install_path" \
     "https://github.com/helm/chart-testing/releases/download/$CT_VERSION/chart-testing_${CT_VERSION:1}_${OS}_${ARCH}.tar.gz" \
     "ct"
@@ -103,7 +103,7 @@ install_precommit() {
     return 0
   fi
 
-  pip3 install "pre-commit==$PRECOMMIT_VERSION"
+  pip3 install --break-system-packages "pre-commit==$PRECOMMIT_VERSION"
 
   # Create a wrapper script in the bin directory
   cat > "$precommit_binary" << 'EOF'
