@@ -81,6 +81,8 @@ spec:
                   value: "1"
                 - name: TP_SIZE
                   value: "1"
+                - name: DP_SIZE_LOCAL
+                  value: "1"
                 
                 - name: HF_HOME
                   value: /model-cache
@@ -196,6 +198,8 @@ spec:
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
+            value: "1"
+          - name: DP_SIZE_LOCAL
             value: "1"
           
           - name: HF_HOME

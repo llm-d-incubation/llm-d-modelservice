@@ -145,11 +145,9 @@ prefill:
       limits:
         memory: 32Gi
         cpu: "16"
-        gpu.intel.com/i915: "1"
       requests:
         cpu: "8"
         memory: 16Gi
-        gpu.intel.com/i915: "1"
     mountModelVolume: true
 
   acceleratorTypes:

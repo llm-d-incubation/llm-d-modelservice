@@ -57,11 +57,9 @@ decode:
       limits:
         memory: 16Gi
         cpu: "16"
-        nvidia.com/gpu: "1"
       requests:
         cpu: "16"
         memory: 16Gi
-        nvidia.com/gpu: "1"
     mountModelVolume: true
 
 # Prefill pod configuation
@@ -98,9 +96,7 @@ prefill:
       limits:
         memory: 16Gi
         cpu: "16"
-        nvidia.com/gpu: "1"
       requests:
         cpu: "16"
         memory: 16Gi
-        nvidia.com/gpu: "1"
     mountModelVolume: true
