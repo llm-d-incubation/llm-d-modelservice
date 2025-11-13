@@ -27,7 +27,7 @@ spec:
       {{- if .Values.prefill.nodeSelector }}
       nodeSelector:
         {{- toYaml .Values.prefill.nodeSelector | nindent 8 }}
-      {{- end }}      
+      {{- end }}
       {{- with .Values.prefill.containers }}
       containers:
         {{- range . }}
