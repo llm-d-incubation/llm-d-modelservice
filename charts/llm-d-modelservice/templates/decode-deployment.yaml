@@ -23,6 +23,10 @@ spec:
         {{- toYaml .Values.decode.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if .Values.decode.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.decode.nodeSelector | nindent 8 }}
+      {{- end }}            
       {{- with .Values.routing }}
       {{- (include "llm-d-modelservice.routingProxy" .) | nindent 6 }}
       {{- end }}
