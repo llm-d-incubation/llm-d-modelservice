@@ -20,6 +20,9 @@ routing:
   proxy:
     secure: false
 
+accelerator:
+  type: cpu
+
 # Decode pod configuation
 decode:
   replicas: 1
