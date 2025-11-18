@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: dra-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.5
+    helm.sh/chart: llm-d-modelservice-v0.3.6
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: dra-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.5
+    helm.sh/chart: llm-d-modelservice-v0.3.6
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -49,7 +49,7 @@ spec:
         resourceClaimTemplateName: intel-resource-claim-template
       containers:
         - name: vllm
-          image: intel/vllm:0.10.0-xpu
+          image: ghcr.io/vllm:0.10.0-xpu
           
           command: ["vllm", "serve"]
           args:

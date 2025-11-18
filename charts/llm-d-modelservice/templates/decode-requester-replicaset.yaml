@@ -23,7 +23,7 @@ spec:
               "app": null}
           spec:
             {{- with .Values.routing }}
-            {{- (include "llm-d-modelservice.routingProxy" .) | nindent 12 }}
+            {{- (include "llm-d-modelservice.routingProxy" (merge . (dict "Values" $.Values))) | nindent 12 }}
             {{- end }}
             {{- with .Values.decode.containers }}
             containers:
