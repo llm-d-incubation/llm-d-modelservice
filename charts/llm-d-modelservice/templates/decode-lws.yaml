@@ -20,7 +20,7 @@ spec:
   replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
   {{- end }}
   leaderWorkerTemplate:
-    size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.decode.parallelism) }}
+    size: {{ int (include "llm-d-modelservice.numWorkers" .Values.decode.parallelism) }}
     {{- if .Values.decode.subGroupPolicy }}
     subGroupPolicy:
     {{- toYaml .Values.decode.subGroupPolicy | nindent 6 }}

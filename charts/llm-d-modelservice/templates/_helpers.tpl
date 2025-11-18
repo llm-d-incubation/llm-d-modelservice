@@ -121,14 +121,87 @@ affinity:
 {{- end }}
 {{- end }}
 
-{{/* Desired P/D tensor parallelism -- user set or defaults to 1 */}}
+{{/* Desired tensor parallelism --
+- if tensor set, return it
+- else return 1
+*/}}
 {{- define "llm-d-modelservice.tensorParallelism" -}}
-{{- if and . .tensor }}{{ .tensor }}{{ else }}1{{ end }}
+{{- if and . .tensor -}}
+{{ .tensor }}
+{{- else -}}
+1
+{{- end -}}
 {{- end }}
 
-{{/* Desired P/D data parallelism -- user set or defaults to 1 */}}
+{{/*
+Desired data parallelism --
+- if data set, return it
+- else if dataLocal and workers set, return dataLocal * workers
+- else if dataLocal set, return dataLocal (w = 1)
+- else return 1 (dpl = 1, w = 1)
+*/}}
 {{- define "llm-d-modelservice.dataParallelism" -}}
-{{- if and . .data }}{{ .data }}{{ else }}1{{ end }}
+{{- if and . .data -}}
+{{ .data }}
+{{- else if and . .dataLocal .workers -}}
+{{ mul .dataLocal .workers }}
+{{- else if and . .dataLocal -}}
+{{ .dataLocal }}
+{{- else -}}
+1
+{{- end -}}
+{{- end }}
+
+{{/*
+Desired data local parallelism --
+- if dataLocal set, return it
+- else if data and workers set, return data / workers
+- else if data set, return data (w = 1)
+- else return 1 (dp = 1, w = 1)
+*/}}
+{{- define "llm-d-modelservice.dataLocalParallelism" -}}
+{{- if and . .dataLocal -}}
+{{ .dataLocal }}
+{{- else if and . .data .workers -}}
+{{ $result :=  div (int .data) (int .workers) }}
+{{- if ne (int .data) (mul $result .workers) -}}
+{{- fail "parallelism.data must be a multiple of parallelism.workers" -}}
+{{- else -}}
+{{ $result }}
+{{- end -}}
+{{- else if and . .data -}}
+{{ .data }}
+{{- else -}}
+1
+{{- end -}}
+{{- end }}
+
+{{/*
+Desired number of workers --
+- if workers set, return it
+- else if data and dataLocal set, return data / dataLocal
+- else return 1 (dp = 1, dpl = 1)
+*/}}
+{{- define "llm-d-modelservice.numWorkers" -}}
+{{- if and . .workers -}}
+{{ .workers }}
+{{- else if and . .data .dataLocal -}}
+{{ $result :=  div (int .data) (int .dataLocal) }}
+{{- if ne (int .data) (mul $result .dataLocal) -}}
+{{- fail "parallelism.data must be a multiple of parallelism.dataLocal" -}}
+{{- else -}}
+{{ $result }}
+{{- end -}}
+{{- else -}}
+1
+{{- end -}}
+{{- end }}
+
+{{/*
+Required number of GPU per worker -- dpl * tp
+*/}}
+{{- define "llm-d-modelservice.numGpuPerWorker" -}}
+{{ mul  (include "llm-d-modelservice.dataLocalParallelism" .) (include "llm-d-modelservice.tensorParallelism" .) }}
 {{- end }}
 
 {{/*
@@ -171,21 +244,21 @@ nvidia.com/gpu
 
 {{/* P/D deployment container resources */}}
 {{- define "llm-d-modelservice.resources" -}}
-{{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .parallelism) -}}
+{{- $numGpus := int (include "llm-d-modelservice.numGpuPerWorker" .parallelism) -}}
 {{- $acceleratorResource := include "llm-d-modelservice.acceleratorResource" . -}}
 {{- $limits := dict }}
 {{- if and .resources .resources.limits }}
 {{- $limits = deepCopy .resources.limits }}
 {{- end }}
-{{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") }}
-{{- $limits = mergeOverwrite $limits (dict $acceleratorResource (toString $tensorParallelism)) }}
+{{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
+{{- $limits = mergeOverwrite $limits (dict $acceleratorResource (toString $numGpus)) }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
 {{- $requests = deepCopy .resources.requests }}
 {{- end }}
-{{- if and (ge (int $tensorParallelism) 1) (ne $acceleratorResource "") }}
-{{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $tensorParallelism)) }}
+{{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
+{{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $numGpus)) }}
 {{- end }}
 resources:
   limits:
@@ -416,6 +489,16 @@ args:
   - --tensor-parallel-size
   - {{ $tensorParallelism | quote }}
   {{- end }}
+  {{- $dataParallelism := int (include "llm-d-modelservice.dataParallelism" .parallelism) -}}
+  {{- if gt (int $dataParallelism) 1 }}
+  - --data-parallel-size
+  - {{ $dataParallelism | quote }}
+  {{- end }}
+  {{- $dataLocalParallelism := int (include "llm-d-modelservice.dataLocalParallelism" .parallelism) -}}
+  {{- if gt (int $dataLocalParallelism) 1 }}
+  - --data-parallel-size-local
+  - {{ $dataLocalParallelism | quote }}
+  {{- end }}
   - --served-model-name
   - {{ .Values.modelArtifacts.name | quote }}
 {{- with .container.args }}
@@ -433,6 +516,16 @@ args:
   {{- if gt (int $tensorParallelism) 1 }}
   - --tensor-parallel-size
   - {{ $tensorParallelism | quote }}
+  {{- end }}
+  {{- $dataParallelism := int (include "llm-d-modelservice.dataParallelism" .parallelism) -}}
+  {{- if gt (int $dataParallelism) 1 }}
+  - --data-parallel-size
+  - {{ $dataParallelism | quote }}
+  {{- end }}
+  {{- $dataLocalParallelism := int (include "llm-d-modelservice.dataLocalParallelism" .parallelism) -}}
+  {{- if gt (int $dataLocalParallelism) 1 }}
+  - --data-parallel-size-local
+  - {{ $dataLocalParallelism | quote }}
   {{- end }}
   - --served-model-name
   - {{ .Values.modelArtifacts.name | quote }}
@@ -515,4 +608,6 @@ context is a dict with helm root context plus:
   value: {{ include "llm-d-modelservice.dataParallelism" .parallelism | quote }}
 - name: TP_SIZE
   value: {{ include "llm-d-modelservice.tensorParallelism" .parallelism | quote }}
+- name: DP_SIZE_LOCAL
+  value: {{ include "llm-d-modelservice.dataLocalParallelism" .parallelism | quote }}
 {{- end }} {{- /* define "llm-d-modelservice.parallelismEnv" */}}

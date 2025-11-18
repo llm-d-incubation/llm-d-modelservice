@@ -843,7 +843,7 @@
               "type": "boolean"
             },
             "image": {
-              "default": "ghcr.io/llm-d/llm-d-routing-sidecar:v0.2.0",
+              "default": "ghcr.io/llm-d/llm-d-routing-sidecar:v0.3.0",
               "required": [],
               "title": "image",
               "type": "string"

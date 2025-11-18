@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: dra-llm-d-modelservice
+  name: gaudi-llm-d-modelservice
   labels:
     helm.sh/chart: llm-d-modelservice-v0.3.5
     app.kubernetes.io/version: "v0.2.0"
@@ -14,7 +14,7 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dra-llm-d-modelservice-decode
+  name: gaudi-llm-d-modelservice-decode
   labels:
     helm.sh/chart: llm-d-modelservice-v0.3.5
     app.kubernetes.io/version: "v0.2.0"
@@ -34,7 +34,7 @@ spec:
         llm-d.ai/role: decode
     spec:
     
-      serviceAccountName: dra-llm-d-modelservice
+      serviceAccountName: gaudi-llm-d-modelservice
       
       volumes:
         - emptyDir: {}
@@ -43,36 +43,34 @@ spec:
           persistentVolumeClaim:
             claimName: model-pvc
             readOnly: true
-      resourceClaims:
-      - name: intel-resource-claim
-        resourceClaimTemplateName: intel-resource-claim-template
       containers:
         - name: vllm
-          image: intel/vllm:0.10.0-xpu
+          image: opea/vllm-gaudi:1.22.0
           
-          command: ["vllm", "serve"]
           args:
+            - --model
             - meta-llama/Llama-3.1-8B-Instruct
             - --port
             - "8000"
             - --served-model-name
-            - "random/model"
+            - "meta-llama/Llama-3.1-8B-Instruct"
             
-            - --dtype=float16
-            - --block-size=64
-            - --max-num-seqs=64
+            - --block-size=128
+            - --max-num-seqs=256
+            - --max-seq-len-to-capture=2048
             - --max-model-len=2048
-            - --max-num-batched-token=4096
-            - --disable-sliding-window
-            - --gpu-memory-util=0.9
-            - --quantization=fp8
+            - --max-num-batched-token=16000
           env:
           - name: OMPI_MCA_btl_vader_single_copy_mechanism
             value: none
-          - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
-            value: "true"
+          - name: HABANA_LOGS
+            value: /tmp/habana_logs
           - name: VLLM_SKIP_WARMUP
             value: "true"
+          - name: DO_NOT_TRACK
+            value: "1"
+          - name: VLLM_USE_V1
+            value: "1"
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
@@ -87,24 +85,16 @@ spec:
               secretKeyRef:
                 name: llm-d-hf-token
                 key: HF_TOKEN
+          ports:
+          - containerPort: 8200
+            protocol: TCP
+          
           resources:
-            claims:
-            - name: intel-resource-claim
+            limits:
+              habana.ai/gaudi: "1"
+            requests:
+              habana.ai/gaudi: "1"
           
           volumeMounts:
             - name: model-storage
               mountPath: /model-cache
----
-# Source: llm-d-modelservice/templates/resource-claim-template.yaml
-apiVersion: resource.k8s.io/v1
-kind: ResourceClaimTemplate
-metadata:
-  name: intel-resource-claim-template
-spec:
-  spec:
-    devices:
-      requests:
-      - name: intel
-        exactly:
-          deviceClassName: gpu.intel.com
-          count: 1
