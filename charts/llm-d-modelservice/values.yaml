@@ -162,6 +162,7 @@ decode:
     enabled: false
 
   replicas: 1
+  nodeSelector: {}
   # schedulerName -- Name of the scheduler to use for scheduling decode pods (overrides global schedulerName)
   # schedulerName: decode-scheduler
 
@@ -306,6 +307,7 @@ prefill:
     enabled: false
 
   replicas: 0
+  nodeSelector: {}
   # schedulerName -- Name of the scheduler to use for scheduling prefill pods (overrides global schedulerName)
   # schedulerName: prefill-scheduler
 
