@@ -23,8 +23,14 @@ spec:
         {{- toYaml .Values.decode.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if or (hasKey .Values.decode "initContainers") (eq .Values.routing.proxy.enabled true) }}
+      initContainers:
       {{- with .Values.routing }}
-      {{- (include "llm-d-modelservice.routingProxy" .) | nindent 6 }}
+      {{- (include "llm-d-modelservice.routingProxy" .) | nindent 8 }}
+      {{- end }}
+      {{- if hasKey .Values.decode "initContainers" }}
+      {{- toYaml .Values.decode.initContainers | nindent 8 }}
+      {{- end }}
       {{- end }}
       {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.decode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
       {{- with .Values.decode.containers }}

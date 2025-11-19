@@ -94,31 +94,30 @@ affinity:
 {{/* Create the init container for the routing proxy/sidecar for decode pods */}}
 {{- define "llm-d-modelservice.routingProxy" -}}
 {{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) -}}
-initContainers:
-  - name: routing-proxy
-    args:
-      - --port={{ default 8000 .servicePort }}
-      - --vllm-port={{ default 8200 .proxy.targetPort }}
-      - --connector={{ .proxy.connector | default "nixlv2" }}
-      - -v={{ default 5 .proxy.debugLevel }}
-      {{- if hasKey .proxy "secure" }}
-      - --secure-proxy={{ .proxy.secure }}
-      {{- end }}
-      {{- if hasKey .proxy "prefillerUseTLS" }}
-      - --prefiller-use-tls={{ .proxy.prefillerUseTLS }}
-      {{- end }}
-      {{- if hasKey .proxy "certPath" }}
-      - --cert-path={{ .proxy.certPath }}
-      {{- end }}
-    image: {{ required "routing.proxy.image must be specified" .proxy.image }}
-    imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
-    ports:
-      - containerPort: {{ default 8000 .servicePort }}
-    resources: {}
-    restartPolicy: Always
-    securityContext:
-      allowPrivilegeEscalation: false
-      runAsNonRoot: true
+- name: routing-proxy
+  args:
+    - --port={{ default 8000 .servicePort }}
+    - --vllm-port={{ default 8200 .proxy.targetPort }}
+    - --connector={{ .proxy.connector | default "nixlv2" }}
+    - -v={{ default 5 .proxy.debugLevel }}
+    {{- if hasKey .proxy "secure" }}
+    - --secure-proxy={{ .proxy.secure }}
+    {{- end }}
+    {{- if hasKey .proxy "prefillerUseTLS" }}
+    - --prefiller-use-tls={{ .proxy.prefillerUseTLS }}
+    {{- end }}
+    {{- if hasKey .proxy "certPath" }}
+    - --cert-path={{ .proxy.certPath }}
+    {{- end }}
+  image: {{ required "routing.proxy.image must be specified" .proxy.image }}
+  imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
+  ports:
+    - containerPort: {{ default 8000 .servicePort }}
+  resources: {}
+  restartPolicy: Always
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
 {{- end }}
 {{- end }}
 
