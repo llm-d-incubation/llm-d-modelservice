@@ -426,6 +426,45 @@
                 "additionalProperties": false,
                 "properties": {
                   "class": {
+                    "default": "gaudi.intel.com",
+                    "required": [],
+                    "title": "class",
+                    "type": "string"
+                  },
+                  "count": {
+                    "default": 1,
+                    "required": [],
+                    "title": "count",
+                    "type": "integer"
+                  },
+                  "match": {
+                    "default": "exactly",
+                    "required": [],
+                    "title": "match",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "intel-gaudi",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "selectors": {
+                    "items": {
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "selectors",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "class": {
                     "default": "gpu.amd.com",
                     "required": [],
                     "title": "class",
