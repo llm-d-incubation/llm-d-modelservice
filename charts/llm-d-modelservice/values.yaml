@@ -111,6 +111,11 @@ dra:
       match: "exactly"
       count: 1
       selectors: []
+    - name: intel-gaudi
+      class: gaudi.intel.com
+      match: "exactly"
+      count: 1
+      selectors: []
     - name: amd
       class: gpu.amd.com
       match: "exactly"

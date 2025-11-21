@@ -11,9 +11,9 @@ modelArtifacts:
 
 dra:
   enabled: true
-  type: "intel-gaudi2-x2"
+  type: intel-gaudi
   claimTemplates:
-  - name: intel-gaudi2-x2
+  - name: intel-gaudi
     class: gaudi.intel.com
     match: "exactly"
     count: 2
@@ -25,12 +25,7 @@ dra:
 routing:
   proxy:
     enabled: false
-  inferencePool:
-    create: false
-  httpRoute:
-    create: false
-  epp:
-    create: false
+
 decode:
   create: true
   replicas: 1
