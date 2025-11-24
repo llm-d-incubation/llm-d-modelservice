@@ -271,6 +271,12 @@
           "required": [],
           "title": "monitoring"
         },
+        "nodeSelector": {
+          "additionalProperties": false,
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
         "replicas": {
           "default": 1,
           "required": [],
@@ -699,6 +705,12 @@
           },
           "required": [],
           "title": "monitoring"
+        },
+        "nodeSelector": {
+          "additionalProperties": false,
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
         },
         "replicas": {
           "default": 0,

@@ -28,6 +28,10 @@ spec:
       {{- toYaml .Values.prefill.initContainers | nindent 8 }}
       {{- end }}
       {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
+      {{- if .Values.prefill.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.prefill.nodeSelector | nindent 8 }}
+      {{- end }}
       {{- with .Values.prefill.containers }}
       containers:
         {{- range . }}
