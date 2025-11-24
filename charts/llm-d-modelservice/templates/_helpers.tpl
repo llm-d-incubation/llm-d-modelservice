@@ -99,7 +99,7 @@ affinity:
     - --port={{ default 8000 .servicePort }}
     - --vllm-port={{ default 8200 .proxy.targetPort }}
     - --connector={{ .proxy.connector | default "nixlv2" }}
-    - -v={{ default 5 .proxy.debugLevel }}
+    - --zap-log-level={{ default 5 .proxy.debugLevel }}
     {{- if hasKey .proxy "secure" }}
     - --secure-proxy={{ .proxy.secure }}
     {{- end }}
