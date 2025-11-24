@@ -19,8 +19,20 @@ generate_output() {
 # Generate output-cpu.yaml (Simulated CPU deployment)
 generate_output "cpu-sim" "examples/values-cpu.yaml" "examples/output-cpu.yaml"
 
+# Generate output-dra.yaml (Dynamic Resource Allocation deployment for Intel B50 GPU device)
+generate_output "dra" "examples/values-dra.yaml" "examples/output-dra.yaml" '--set modelArtifacts.uri=pvc+hf://model-pvc/meta-llama/Llama-3.1-8B-Instruct'
+
+# Generate output-gaudi.yaml (Intel Gaudi)
+generate_output "gaudi" "examples/values-gaudi.yaml" "examples/output-gaudi.yaml"
+
 # Generate output-pd.yaml (PD deployment)
 generate_output "pd" "examples/values-pd.yaml" "examples/output-pd.yaml"
+
+# Generate output-xpu-pd.yaml (Intel i915)
+generate_output "xpu-pd" "examples/values-xpu-pd.yaml" "examples/output-xpu-pd.yaml"
+
+# Generate output-xpu.yaml (Intel Xe GPU and affinity)
+generate_output "xpu" "examples/values-xpu.yaml" "examples/output-xpu.yaml"
 
 # Generate output-requester.yaml (Requester deployment)
 generate_output "requester" "examples/values-requester.yaml" "examples/output-requester.yaml"
@@ -30,6 +42,3 @@ generate_output "pvc" "examples/values-pd.yaml" "examples/output-pvc.yaml" '--se
 
 # Generate output-pvc-hf.yaml (PVC HuggingFace model deployment)
 generate_output "pvc-hf" "examples/values-pd.yaml" "examples/output-pvc-hf.yaml" '--set modelArtifacts.uri=pvc+hf://pvc-name/path/to/hf_hub_cache/facebook/opt-125m'
-
-# Generate output-dra.yaml (Dynamic Resource Allocation deployment for Intel B50 GPU device)
-generate_output "dra" "examples/values-dra.yaml" "examples/output-dra.yaml" '--set modelArtifacts.uri=pvc+hf://model-pvc/meta-llama/Llama-3.1-8B-Instruct'

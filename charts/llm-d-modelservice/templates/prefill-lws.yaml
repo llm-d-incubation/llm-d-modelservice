@@ -20,7 +20,7 @@ spec:
   replicas: {{ ternary .Values.prefill.replicas 1 (hasKey .Values.prefill "replicas") }}
   {{- end }}
   leaderWorkerTemplate:
-    size: {{ int (include "llm-d-modelservice.dataParallelism" .Values.prefill.parallelism) }}
+    size: {{ int (include "llm-d-modelservice.numWorkers" .Values.prefill.parallelism) }}
     {{- if .Values.prefill.subGroupPolicy }}
     subGroupPolicy:
     {{- toYaml .Values.prefill.subGroupPolicy | nindent 6 }}
@@ -49,6 +49,10 @@ spec:
         {{- /* DEPRECATED; use extraConfig.hostPID instead */ -}}
         {{- if hasKey .Values.prefill "hostPID" }}
         hostPID: {{ .Values.prefill.hostPID }}
+        {{- end }}
+        {{- if or (hasKey .Values.prefill "initContainers") }}
+        initContainers:
+        {{- toYaml .Values.prefill.initContainers | nindent 10 }}
         {{- end }}
         {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
         {{- with .Values.prefill.containers }}

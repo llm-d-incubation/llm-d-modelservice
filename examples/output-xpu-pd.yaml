@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: pvc-hf-llm-d-modelservice
+  name: xpu-pd-llm-d-modelservice
   labels:
     helm.sh/chart: llm-d-modelservice-v0.3.6
     app.kubernetes.io/version: "v0.2.0"
@@ -14,7 +14,7 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pvc-hf-llm-d-modelservice-decode
+  name: xpu-pd-llm-d-modelservice-decode
   labels:
     helm.sh/chart: llm-d-modelservice-v0.3.6
     app.kubernetes.io/version: "v0.2.0"
@@ -24,13 +24,13 @@ spec:
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: facebook-opt-125m
+      llm-d.ai/model: microsoft-dialogpt-large
       llm-d.ai/role: decode
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: facebook-opt-125m
+        llm-d.ai/model: microsoft-dialogpt-large
         llm-d.ai/role: decode
     spec:
       initContainers:
@@ -51,35 +51,50 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
     
-      serviceAccountName: pvc-hf-llm-d-modelservice
+      serviceAccountName: xpu-pd-llm-d-modelservice
       
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: accelerator
+                  operator: In
+                  values:
+                    - intel-xpu
       volumes:
         - emptyDir: {}
           name: metrics-volume
         - name: model-storage
-          persistentVolumeClaim:
-            claimName: pvc-name
-            readOnly: true
+          emptyDir:
+            sizeLimit: 10Gi
+        
       containers:
         - name: vllm
-          image: ghcr.io/llm-d/llm-d:v0.2.0
+          image: ghcr.io/llm-d/llm-d-xpu:v0.2.0
+          imagePullPolicy: Never
           
-          command: ["vllm", "serve"]
+          command:
+            - python3
+            - -m
+            - vllm.entrypoints.openai.api_server
           args:
-            - facebook/opt-125m
+            - --model
+            - microsoft/DialoGPT-large
+            - --enforce-eager
+            - --tensor-parallel-size
+            - "1"
             - --port
             - "8200"
-            - --served-model-name
-            - "facebook/opt-125m"
-            
-            - --enforce-eager
+            - --host
+            - 0.0.0.0
             - --kv-transfer-config
-            - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
+            - '{"kv_connector":"NixlConnector", "kv_role":"kv_consumer"}'
           env:
-          - name: CUDA_VISIBLE_DEVICES
+          - name: ZE_AFFINITY_MASK
             value: "0"
-          - name: UCX_TLS
-            value: cuda_ipc,cuda_copy,tcp
+          - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
+            value: "1"
           - name: VLLM_NIXL_SIDE_CHANNEL_HOST
             valueFrom:
               fieldRef:
@@ -88,6 +103,16 @@ spec:
             value: "5557"
           - name: VLLM_LOGGING_LEVEL
             value: DEBUG
+          - name: TORCH_LLM_ALLREDUCE
+            value: "1"
+          - name: VLLM_USE_V1
+            value: "1"
+          - name: CCL_ZE_IPC_EXCHANGE
+            value: pidfd
+          - name: VLLM_ALLOW_LONG_MAX_MODEL_LEN
+            value: "1"
+          - name: VLLM_WORKER_MULTIPROC_METHOD
+            value: spawn
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
@@ -95,8 +120,15 @@ spec:
           - name: DP_SIZE_LOCAL
             value: "1"
           
-          - name: HF_HUB_CACHE
-            value: /model-cache/path/to/hf_hub_cache
+          - name: HF_HOME
+            value: /model-cache
+          
+          - name: VLLM_USE_V1
+            value: "1"
+          - name: TORCH_LLM_ALLREDUCE
+            value: "1"
+          - name: VLLM_WORKER_MULTIPROC_METHOD
+            value: "spawn"
           ports:
           - containerPort: 8200
             protocol: TCP
@@ -105,13 +137,13 @@ spec:
           
           resources:
             limits:
-              cpu: "16"
-              memory: 16Gi
-              nvidia.com/gpu: "1"
+              cpu: "8"
+              gpu.intel.com/i915: "1"
+              memory: 24Gi
             requests:
-              cpu: "16"
-              memory: 16Gi
-              nvidia.com/gpu: "1"
+              cpu: "4"
+              gpu.intel.com/i915: "1"
+              memory: 12Gi
           
           volumeMounts:
             - name: model-storage
@@ -121,7 +153,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pvc-hf-llm-d-modelservice-prefill
+  name: xpu-pd-llm-d-modelservice-prefill
   labels:
     helm.sh/chart: llm-d-modelservice-v0.3.6
     app.kubernetes.io/version: "v0.2.0"
@@ -131,45 +163,59 @@ spec:
   selector:
     matchLabels:
       llm-d.ai/inferenceServing: "true"
-      llm-d.ai/model: facebook-opt-125m
+      llm-d.ai/model: microsoft-dialogpt-large
       llm-d.ai/role: prefill
   template:
     metadata:
       labels:
         llm-d.ai/inferenceServing: "true"
-        llm-d.ai/model: facebook-opt-125m
+        llm-d.ai/model: microsoft-dialogpt-large
         llm-d.ai/role: prefill
     spec:
     
-      serviceAccountName: pvc-hf-llm-d-modelservice
+      serviceAccountName: xpu-pd-llm-d-modelservice
       
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: accelerator
+                  operator: In
+                  values:
+                    - intel-xpu
       volumes:
         - emptyDir: {}
           name: metrics-volume
         - name: model-storage
-          persistentVolumeClaim:
-            claimName: pvc-name
-            readOnly: true
+          emptyDir:
+            sizeLimit: 10Gi
+        
       containers:
         - name: vllm
-          image: ghcr.io/llm-d/llm-d:v0.2.0
+          image: ghcr.io/llm-d/llm-d-xpu:v0.2.0
           
-          command: ["vllm", "serve"]
+          command:
+            - python3
+            - -m
+            - vllm.entrypoints.openai.api_server
           args:
-            - facebook/opt-125m
+            - --model
+            - microsoft/DialoGPT-large
+            - --enforce-eager
+            - --tensor-parallel-size
+            - "1"
             - --port
             - "8000"
-            - --served-model-name
-            - "facebook/opt-125m"
-            
-            - --enforce-eager
+            - --host
+            - 0.0.0.0
             - --kv-transfer-config
-            - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
+            - '{"kv_connector":"NixlConnector", "kv_role":"kv_producer"}'
           env:
-          - name: CUDA_VISIBLE_DEVICES
-            value: "0"
-          - name: UCX_TLS
-            value: cuda_ipc,cuda_copy,tcp
+          - name: ZE_AFFINITY_MASK
+            value: "1"
+          - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
+            value: "1"
           - name: VLLM_NIXL_SIDE_CHANNEL_PORT
             value: "5557"
           - name: VLLM_NIXL_SIDE_CHANNEL_HOST
@@ -178,6 +224,16 @@ spec:
                 fieldPath: status.podIP
           - name: VLLM_LOGGING_LEVEL
             value: DEBUG
+          - name: TORCH_LLM_ALLREDUCE
+            value: "1"
+          - name: VLLM_USE_V1
+            value: "1"
+          - name: CCL_ZE_IPC_EXCHANGE
+            value: pidfd
+          - name: VLLM_ALLOW_LONG_MAX_MODEL_LEN
+            value: "1"
+          - name: VLLM_WORKER_MULTIPROC_METHOD
+            value: spawn
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
@@ -185,8 +241,15 @@ spec:
           - name: DP_SIZE_LOCAL
             value: "1"
           
-          - name: HF_HUB_CACHE
-            value: /model-cache/path/to/hf_hub_cache
+          - name: HF_HOME
+            value: /model-cache
+          
+          - name: VLLM_USE_V1
+            value: "1"
+          - name: TORCH_LLM_ALLREDUCE
+            value: "1"
+          - name: VLLM_WORKER_MULTIPROC_METHOD
+            value: "spawn"
           ports:
           - containerPort: 8000
             protocol: TCP
@@ -196,12 +259,12 @@ spec:
           resources:
             limits:
               cpu: "16"
-              memory: 16Gi
-              nvidia.com/gpu: "1"
+              gpu.intel.com/i915: "1"
+              memory: 32Gi
             requests:
-              cpu: "16"
+              cpu: "8"
+              gpu.intel.com/i915: "1"
               memory: 16Gi
-              nvidia.com/gpu: "1"
           
           volumeMounts:
             - name: model-storage
