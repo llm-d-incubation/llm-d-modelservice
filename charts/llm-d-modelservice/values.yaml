@@ -133,7 +133,7 @@ routing:
   # cf. https://github.com/llm-d/llm-d-routing-sidecar/
   proxy:
     enabled: true
-    image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.3.0
+    image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.4.0-rc.1
     imagePullPolicy: Always
     # target port on which VLLM should listen
     targetPort: 8200
@@ -149,8 +149,42 @@ routing:
     # The path to the certificate for secure proxy.  Arg is ommitted by default for compatability with legacy sidecar images.
     # certPath: "/certs"
 
-    # Overwrite the verbosity of logging in the sidecar (defaults to 5)
-    # debugLevel: 5
+    # Zap logging configuration
+    # Boolean: Development Mode defaults(encoder=consoleEncoder,logLevel=Debug,stackTraceLevel=Warn). Production Mode defaults(encoder=jsonEncoder,logLevel=Info,stackTraceLevel=Error)
+    # @schema
+    # type: boolean
+    # default:false
+    # @schema
+    # zapDevel: false
+
+    # String: Zap log encoding (one of 'json' or 'console')
+    # @schema
+    # default: json
+    # enum: [json,console]
+    # @schema
+    zapEncoder: json
+
+
+    # String or integer: Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', 'panic' or any integer value > 0 which corresponds to custom debug levels of increasing verbosity
+    # @schema
+    # type: [string, integer]
+    # default: debug
+    # @schema
+    zapLogLevel: debug
+
+    # String: Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+    # @schema
+    # enum: [info,error,panic]
+    # default: error
+    # @schema
+    # zapStacktraceLevel: error
+
+    # String: Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'
+    # @schema
+    # enum: [epoch,millis,nano,iso8601,rfc3339,rfc3339nano]
+    # default: epoch
+    # @schema
+    # zapTimeEncoding: epoch
 
 # @schema
 # additionalProperties: true
@@ -174,7 +208,7 @@ decode:
   # @schema
   containers:
     - name: "vllm"
-      image: "ghcr.io/llm-d/llm-d-inference-sim:v0.3.0"
+      image: "ghcr.io/llm-d/llm-d-inference-sim:v0.6.1"
       # type of command:
       #   vllmServe - modelservice will add the command vllm serve to the container
       #   imageDefault - no command will be added; the default command defined in the image will be used

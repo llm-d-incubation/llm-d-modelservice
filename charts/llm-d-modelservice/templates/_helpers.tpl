@@ -99,7 +99,21 @@ affinity:
     - --port={{ default 8000 .servicePort }}
     - --vllm-port={{ default 8200 .proxy.targetPort }}
     - --connector={{ .proxy.connector | default "nixlv2" }}
-    - -v={{ default 5 .proxy.debugLevel }}
+    {{- if hasKey .proxy "zapDevel" }}
+    - --zap-devel={{ .proxy.zapDevel }}
+    {{- end }}
+    {{- if hasKey .proxy "zapEncoder" }}
+    - --zap-encoder={{ .proxy.zapEncoder }}
+    {{- end }}
+    {{- if hasKey .proxy "zapLogLevel" }}
+    - --zap-log-level={{ .proxy.zapLogLevel }}
+    {{- end }}
+    {{- if hasKey .proxy "zapStacktraceLevel" }}
+    - --zap-stacktrace-level={{ .proxy.zapStacktraceLevel }}
+    {{- end }}
+    {{- if hasKey .proxy "zapTimeEncoding" }}
+    - --zap-time-encoding={{ .proxy.zapTimeEncoding }}
+    {{- end }}
     {{- if hasKey .proxy "secure" }}
     - --secure-proxy={{ .proxy.secure }}
     {{- end }}
