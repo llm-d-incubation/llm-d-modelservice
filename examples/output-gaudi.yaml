@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: gaudi-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.6
+    helm.sh/chart: llm-d-modelservice-v0.3.7
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: gaudi-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.6
+    helm.sh/chart: llm-d-modelservice-v0.3.7
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -33,6 +33,7 @@ spec:
         llm-d.ai/model: random_model
         llm-d.ai/role: decode
     spec:
+      
     
       serviceAccountName: gaudi-llm-d-modelservice
       
@@ -45,7 +46,7 @@ spec:
             readOnly: true
       containers:
         - name: vllm
-          image: opea/vllm-gaudi:1.22.0
+          image: ghcr.io/opea/vllm-gaudi:1.22.0
           
           args:
             - --model

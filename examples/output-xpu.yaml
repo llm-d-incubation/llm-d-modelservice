@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: xpu-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.6
+    helm.sh/chart: llm-d-modelservice-v0.3.7
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: xpu-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.6
+    helm.sh/chart: llm-d-modelservice-v0.3.7
     app.kubernetes.io/version: "v0.2.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -33,6 +33,7 @@ spec:
         llm-d.ai/model: deepseek-ai-deepSeek-r1-distill-qwen-1-5B
         llm-d.ai/role: decode
     spec:
+      
     
       serviceAccountName: xpu-llm-d-modelservice
       

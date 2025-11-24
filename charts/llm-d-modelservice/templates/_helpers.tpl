@@ -104,12 +104,15 @@ Context: dict with "image" (string) and "Values" (root values)
 {{- end -}}
 {{- $parts := splitList "/" $image -}}
 {{- if eq (len $parts) 1 -}}
-{{- /* No registry in image, prepend the registry */}}
 {{- printf "%s/%s" $registry $image -}}
 {{- else -}}
-{{- /* Replace the first part (registry) */}}
-{{- $parts = without $parts (first $parts) -}}
+{{- $first := first $parts -}}
+{{- if or (contains "." $first) (contains ":" $first) -}}
+{{- $parts = without $parts $first -}}
 {{- printf "%s/%s" $registry (join "/" $parts) -}}
+{{- else -}}
+{{- printf "%s/%s" $registry $image -}}
+{{- end -}}
 {{- end -}}
 {{- else -}}
 {{- $image -}}
