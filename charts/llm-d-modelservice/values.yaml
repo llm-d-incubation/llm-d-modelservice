@@ -149,8 +149,21 @@ routing:
     # The path to the certificate for secure proxy.  Arg is ommitted by default for compatability with legacy sidecar images.
     # certPath: "/certs"
 
-    # Overwrite the verbosity of logging in the sidecar (defaults to 5)
-    # debugLevel: 5
+    # Zap logging configuration
+    # Boolean: Development Mode defaults(encoder=consoleEncoder,logLevel=Debug,stackTraceLevel=Warn). Production Mode defaults(encoder=jsonEncoder,logLevel=Info,stackTraceLevel=Error)
+    # zapDevel: false
+
+    # String: Zap log encoding (one of 'json' or 'console')
+    zapEncoder: json
+
+    # String or integer: Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', 'panic' or any integer value > 0 which corresponds to custom debug levels of increasing verbosity
+    zapLogLevel: debug
+
+    # String: Zap Level at and above which stacktraces are captured (one of 'info', 'error', 'panic')
+    # zapStacktraceLevel: error
+
+    # String: Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'
+    # zapTimeEncoding: epoch supports 
 
 # @schema
 # additionalProperties: true
