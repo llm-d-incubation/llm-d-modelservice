@@ -325,9 +325,15 @@ decode:
       interval: "30s"
       # scrapeTimeout -- Timeout after which the scrape is ended
       # scrapeTimeout: "10s"
+      # @schema
+      # additionalProperties: true
+      # @schema
       # labels -- Additional labels to be added to the PodMonitor
       labels: {}
       # annotations -- Additional annotations to be added to the PodMonitor
+      # @schema
+      # additionalProperties: true
+      # @schema
       annotations: {}
       # relabelings -- RelabelConfigs to apply to samples before scraping
       relabelings: []
@@ -460,9 +466,15 @@ prefill:
       interval: "30s"
       # scrapeTimeout -- Timeout after which the scrape is ended
       # scrapeTimeout: "10s"
+      # @schema
+      # additionalProperties: true
+      # @schema
       # labels -- Additional labels to be added to the PodMonitor
       labels: {}
       # annotations -- Additional annotations to be added to the PodMonitor
+      # @schema
+      # additionalProperties: true
+      # @schema
       annotations: {}
       # relabelings -- RelabelConfigs to apply to samples before scraping
       relabelings: []
