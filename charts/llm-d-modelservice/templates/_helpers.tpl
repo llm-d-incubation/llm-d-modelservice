@@ -48,7 +48,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
   {{- $name := .Release.Name | lower | trim -}}
   {{- $name = regexReplaceAll "[^a-z0-9_.-]" $name "-" -}}
   {{- $name = regexReplaceAll "^[\\-._]+" $name "" -}}
-  {{- $name = regexReplaceAll "[\\-._]+$" $name "" -}}
+  {{- $name = regexReplaceAll "[\\-._]+" $name "" -}}
   {{- $name = regexReplaceAll "\\." $name "-" -}}
 
   {{- if gt (len $name) 63 -}}
@@ -122,31 +122,44 @@ Context: dict with "image" (string) and "Values" (root values)
 {{/* Create the init container for the routing proxy/sidecar for decode pods */}}
 {{- define "llm-d-modelservice.routingProxy" -}}
 {{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) -}}
-initContainers:
-  - name: routing-proxy
-    args:
-      - --port={{ default 8000 .servicePort }}
-      - --vllm-port={{ default 8200 .proxy.targetPort }}
-      - --connector={{ .proxy.connector | default "nixlv2" }}
-      - -v={{ default 5 .proxy.debugLevel }}
-      {{- if hasKey .proxy "secure" }}
-      - --secure-proxy={{ .proxy.secure }}
-      {{- end }}
-      {{- if hasKey .proxy "prefillerUseTLS" }}
-      - --prefiller-use-tls={{ .proxy.prefillerUseTLS }}
-      {{- end }}
-      {{- if hasKey .proxy "certPath" }}
-      - --cert-path={{ .proxy.certPath }}
-      {{- end }}
-    image: {{ include "llm-d-modelservice.image" (dict "image" (required "routing.proxy.image must be specified" .proxy.image) "Values" .Values) }}
-    imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
-    ports:
-      - containerPort: {{ default 8000 .servicePort }}
-    resources: {}
-    restartPolicy: Always
-    securityContext:
-      allowPrivilegeEscalation: false
-      runAsNonRoot: true
+- name: routing-proxy
+  args:
+    - --port={{ default 8000 .servicePort }}
+    - --vllm-port={{ default 8200 .proxy.targetPort }}
+    - --connector={{ .proxy.connector | default "nixlv2" }}
+    {{- if hasKey .proxy "zapDevel" }}
+    - --zap-devel={{ .proxy.zapDevel }}
+    {{- end }}
+    {{- if hasKey .proxy "zapEncoder" }}
+    - --zap-encoder={{ .proxy.zapEncoder }}
+    {{- end }}
+    {{- if hasKey .proxy "zapLogLevel" }}
+    - --zap-log-level={{ .proxy.zapLogLevel }}
+    {{- end }}
+    {{- if hasKey .proxy "zapStacktraceLevel" }}
+    - --zap-stacktrace-level={{ .proxy.zapStacktraceLevel }}
+    {{- end }}
+    {{- if hasKey .proxy "zapTimeEncoding" }}
+    - --zap-time-encoding={{ .proxy.zapTimeEncoding }}
+    {{- end }}
+    {{- if hasKey .proxy "secure" }}
+    - --secure-proxy={{ .proxy.secure }}
+    {{- end }}
+    {{- if hasKey .proxy "prefillerUseTLS" }}
+    - --prefiller-use-tls={{ .proxy.prefillerUseTLS }}
+    {{- end }}
+    {{- if hasKey .proxy "certPath" }}
+    - --cert-path={{ .proxy.certPath }}
+    {{- end }}
+  image: {{ include "llm-d-modelservice.image" (dict "image" (required "routing.proxy.image must be specified" .proxy.image) "Values" .Values) }}
+  imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
+  ports:
+    - containerPort: {{ default 8000 .servicePort }}
+  resources: {}
+  restartPolicy: Always
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
 {{- end }}
 {{- end }}
 
@@ -320,22 +333,29 @@ Volumes for PD containers based on model artifact prefix
 Context is .Values.modelArtifacts
 */}}
 {{- define "llm-d-modelservice.mountModelVolumeVolumes" -}}
-{{- $parsedArtifacts := regexSplit "://" .uri -1 -}}
-{{- $protocol := first $parsedArtifacts -}}
-{{- $path := last $parsedArtifacts -}}
-{{- if eq $protocol "hf" -}}
+{{- if hasPrefix "hf://" .uri -}}
 - name: model-storage
   emptyDir:
     sizeLimit: {{ default "0" .size }}
 {{/* supports pvc or pvc+hf prefixes */}}
-{{- else if hasPrefix "pvc" $protocol }}
-{{- $parsedArtifacts := regexSplit "/" $path -1 -}}
+{{- else if hasPrefix "pvc://" .uri }}
+{{- $path := trimPrefix "pvc://" .uri -}}
+{{- $parsedArtifacts := splitList "/" $path -}}
 {{- $claim := first $parsedArtifacts -}}
 - name: model-storage
   persistentVolumeClaim:
     claimName: {{ $claim }}
     readOnly: true
-{{- else if eq $protocol "oci" }}
+{{- else if hasPrefix "pvc+hf://" .uri }}
+{{- $path := trimPrefix "pvc+hf://" .uri -}}
+{{- $parsedArtifacts := splitList "/" $path -}}
+{{- $claim := first $parsedArtifacts -}}
+- name: model-storage
+  persistentVolumeClaim:
+    claimName: {{ $claim }}
+    readOnly: true
+{{- else if hasPrefix "oci://" .uri }}
+{{- $path := trimPrefix "oci://" .uri -}}
 - name: model-storage
   image:
     reference: {{ $path }}
@@ -474,25 +494,25 @@ context is a dict with helm root context plus:
 {{- end }} {{- /* define "llm-d-modelservice.container" */}}
 
 {{- define "llm-d-modelservice.argsByProtocol" -}}
-{{- $parsedArtifacts := regexSplit "://" .Values.modelArtifacts.uri -1 -}}
-{{- $protocol := first $parsedArtifacts -}}
-{{- $other := last $parsedArtifacts -}}
-{{- if eq $protocol "hf" -}}
+{{- if hasPrefix "hf://" .Values.modelArtifacts.uri -}}
+{{- $other := trimPrefix "hf://" .Values.modelArtifacts.uri -}}
 {{- /* $other is the the model */}}
   {{- if .modelArg }}
   - --model
   {{- end }}
   - {{ include "common.tplvalues.render" ( dict "value" $other "context" $ ) }}
-{{- else if eq $protocol "pvc" }}
+{{- else if hasPrefix "pvc://" .Values.modelArtifacts.uri -}}
+{{- $other := trimPrefix "pvc://" .Values.modelArtifacts.uri -}}
 {{- /* $other is the PVC claim and the path to the model */}}
-{{- $claimpath := regexSplit "/" $other 2 -}}
-{{- $path := last $claimpath -}}
+{{- $claimpath := splitList "/" $other -}}
+{{- $path := join "/" (rest $claimpath) -}}
   {{- if .modelArg }}
   - --model
   {{- end }}
   - {{ .Values.modelArtifacts.mountPath }}/{{ $path }}
-{{- else if eq $protocol "pvc+hf" }}
-{{- $claimpath := regexSplit "/" $other -1 -}}
+{{- else if hasPrefix "pvc+hf://" .Values.modelArtifacts.uri -}}
+{{- $other := trimPrefix "pvc+hf://" .Values.modelArtifacts.uri -}}
+{{- $claimpath := splitList "/" $other -}}
 {{- $length := len $claimpath }}
 {{- $namespace := index $claimpath (sub $length 2) -}}
 {{- $modelID := last $claimpath -}}
@@ -500,7 +520,7 @@ context is a dict with helm root context plus:
   - --model
   {{- end }}
   - {{ $namespace }}/{{ $modelID }}
-{{- else if eq $protocol "oci" }}
+{{- else if hasPrefix "oci://" .Values.modelArtifacts.uri -}}
 {{- /* TBD */}}
 {{- fail "arguments for oci:// not implemented" }}
 {{- end }}
@@ -600,18 +620,15 @@ context is a dict with helm root context plus:
 {{- end }} {{- /* define "llm-d-modelservice.command" */}}
 
 {{- define "llm-d-modelservice.hfEnv" -}}
-{{- $parsedArtifacts := regexSplit "://" .Values.modelArtifacts.uri -1 -}}
-{{- $protocol := first $parsedArtifacts -}}
-{{- $other := last $parsedArtifacts -}}
-{{- if contains "hf" $protocol }}
-{{- if eq $protocol "hf" }}
+{{- if hasPrefix "hf://" .Values.modelArtifacts.uri -}}
 {{- if .container.mountModelVolume }}
 - name: HF_HOME
   value: {{ .Values.modelArtifacts.mountPath }}
 {{- end }}
 {{- end }}
-{{- if eq $protocol "pvc+hf" }}
-{{- $claimpath := regexSplit "/" $other -1 -}}
+{{- if hasPrefix "pvc+hf://" .Values.modelArtifacts.uri -}}
+{{- $other := trimPrefix "pvc+hf://" .Values.modelArtifacts.uri -}}
+{{- $claimpath := splitList "/" $other -}}
 {{- $length := len $claimpath }}
 {{- $start := 1 }}
 {{- $end := sub $length 2 }}
@@ -620,7 +637,6 @@ context is a dict with helm root context plus:
 {{- if .container.mountModelVolume }}
 - name: HF_HUB_CACHE
   value: /model-cache/{{ $hfhubcache }}
-{{- end }}
 {{- end }}
 {{- end }}
 {{- with .Values.modelArtifacts.authSecretName }}

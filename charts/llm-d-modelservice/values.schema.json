@@ -271,6 +271,12 @@
                     "required": [],
                     "title": "monitoring"
                 },
+                "nodeSelector": {
+                    "additionalProperties": false,
+                    "required": [],
+                    "title": "nodeSelector",
+                    "type": "object"
+                },
                 "replicas": {
                     "default": 1,
                     "required": [],
@@ -708,6 +714,12 @@
                     "required": [],
                     "title": "monitoring"
                 },
+                "nodeSelector": {
+                    "additionalProperties": false,
+                    "required": [],
+                    "title": "nodeSelector",
+                    "type": "object"
+                },
                 "replicas": {
                     "default": 0,
                     "required": [],
@@ -851,7 +863,7 @@
                             "type": "boolean"
                         },
                         "image": {
-                            "default": "ghcr.io/llm-d/llm-d-routing-sidecar:v0.3.0",
+                            "default": "ghcr.io/llm-d/llm-d-routing-sidecar:v0.4.0-rc.1",
                             "required": [],
                             "title": "image",
                             "type": "string"
@@ -875,6 +887,26 @@
                             "required": [],
                             "title": "targetPort",
                             "type": "integer"
+                        },
+                        "zapEncoder": {
+                            "default": "json",
+                            "description": " prefillerUseTLS: true The path to the certificate for secure proxy.  Arg is ommitted by default for compatability with legacy sidecar images. certPath: \"/certs\" Zap logging configuration Boolean: Development Mode defaults(encoder=consoleEncoder,logLevel=Debug,stackTraceLevel=Warn). Production Mode defaults(encoder=jsonEncoder,logLevel=Info,stackTraceLevel=Error) @schema type: boolean default:false @schema zapDevel: false String: Zap log encoding (one of 'json' or 'console') @schema default: json enum: [json,console] @schema",
+                            "enum": [
+                                "json",
+                                "console"
+                            ],
+                            "required": [],
+                            "title": "zapEncoder"
+                        },
+                        "zapLogLevel": {
+                            "default": "debug",
+                            "description": " @schema type: [string, integer] default: debug @schema",
+                            "required": [],
+                            "title": "zapLogLevel",
+                            "type": [
+                                "string",
+                                "integer"
+                            ]
                         }
                     },
                     "required": [],
