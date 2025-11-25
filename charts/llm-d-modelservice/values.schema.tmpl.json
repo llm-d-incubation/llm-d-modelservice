@@ -211,8 +211,8 @@
               "description": "PodMonitor configuration for Prometheus Operator",
               "properties": {
                 "annotations": {
-                  "additionalProperties": false,
-                  "description": "Additional annotations to be added to the PodMonitor",
+                  "additionalProperties": true,
+                  "description": "Additional annotations to be added to the PodMonitor @schema additionalProperties: true @schema",
                   "required": [],
                   "title": "annotations"
                 },
@@ -229,8 +229,8 @@
                   "title": "interval"
                 },
                 "labels": {
-                  "additionalProperties": false,
-                  "description": "Timeout after which the scrape is ended scrapeTimeout: \"10s\" labels -- Additional labels to be added to the PodMonitor",
+                  "additionalProperties": true,
+                  "description": "Timeout after which the scrape is ended scrapeTimeout: \"10s\" @schema additionalProperties: true @schema labels -- Additional labels to be added to the PodMonitor",
                   "required": [],
                   "title": "labels"
                 },
@@ -685,8 +685,8 @@
               "description": "PodMonitor configuration for Prometheus Operator",
               "properties": {
                 "annotations": {
-                  "additionalProperties": false,
-                  "description": "Additional annotations to be added to the PodMonitor",
+                  "additionalProperties": true,
+                  "description": "Additional annotations to be added to the PodMonitor @schema additionalProperties: true @schema",
                   "required": [],
                   "title": "annotations"
                 },
@@ -703,8 +703,8 @@
                   "title": "interval"
                 },
                 "labels": {
-                  "additionalProperties": false,
-                  "description": "Timeout after which the scrape is ended scrapeTimeout: \"10s\" labels -- Additional labels to be added to the PodMonitor",
+                  "additionalProperties": true,
+                  "description": "Timeout after which the scrape is ended scrapeTimeout: \"10s\" @schema additionalProperties: true @schema labels -- Additional labels to be added to the PodMonitor",
                   "required": [],
                   "title": "labels"
                 },
