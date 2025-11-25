@@ -42,20 +42,20 @@ helm install dra charts/llm-d-modelservice -f examples/values-dra.yaml --set mod
 
 ### Two Gaudi2 devices
 
-In this examples the K8s pod requires two Gaudi2 devices. The model selection is done via `selectors`object. The DRA definition is as follows:
+In this examples the K8s pod requires two Gaudi2 devices. The model selection is done via `selectors` object. The DRA definition is as follows:
 
 ```yaml
 dra:
   enabled: true
-  type: "intel-gaudi3-x2"
+  type: intel-gaudi
   claimTemplates:
-  - name: intel-gaudi3-x2
+  - name: intel-gaudi
     class: gaudi.intel.com
     match: "exactly"
     count: 2
     selectors:
     - cel:
-        expression: device.attributes["gaudi.intel.com"].model == 'Gaudi3'
+        expression: device.attributes["gaudi.intel.com"].model == 'Gaudi2'
 ```
 
 The complete deployment is available in the file [intel-gaudi2-x2.yaml](./intel-gaudi2-x2.yaml) and can be deployed as follows.
