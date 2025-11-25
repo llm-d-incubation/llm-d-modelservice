@@ -7,6 +7,11 @@
 # -- Common configuration values
 common: {}
 
+# -- Global configuration
+global:
+  # imageRegistry -- Global image registry override. If set, replaces the registry part of all images.
+  imageRegistry: "ghcr.io"
+
 # -- Usually used when using llm-d-modelservice as a subchart
 enabled: true
 
