@@ -277,6 +277,39 @@
           "title": "nodeSelector",
           "type": "object"
         },
+        "parallelism": {
+          "additionalProperties": false,
+          "description": "VLLM parallelism configuration",
+          "properties": {
+            "data": {
+              "default": 1,
+              "required": [],
+              "title": "data",
+              "type": "integer"
+            },
+            "dataLocal": {
+              "default": 1,
+              "required": [],
+              "title": "dataLocal",
+              "type": "integer"
+            },
+            "tensor": {
+              "default": 1,
+              "required": [],
+              "title": "tensor",
+              "type": "integer"
+            },
+            "workers": {
+              "default": 1,
+              "required": [],
+              "title": "workers",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "parallelism",
+          "type": "object"
+        },
         "replicas": {
           "default": 1,
           "required": [],
@@ -749,6 +782,39 @@
           "additionalProperties": false,
           "required": [],
           "title": "nodeSelector",
+          "type": "object"
+        },
+        "parallelism": {
+          "additionalProperties": false,
+          "description": "VLLM parallelism configuration",
+          "properties": {
+            "data": {
+              "default": 1,
+              "required": [],
+              "title": "data",
+              "type": "integer"
+            },
+            "dataLocal": {
+              "default": 1,
+              "required": [],
+              "title": "dataLocal",
+              "type": "integer"
+            },
+            "tensor": {
+              "default": 1,
+              "required": [],
+              "title": "tensor",
+              "type": "integer"
+            },
+            "workers": {
+              "default": 1,
+              "required": [],
+              "title": "workers",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "parallelism",
           "type": "object"
         },
         "replicas": {
