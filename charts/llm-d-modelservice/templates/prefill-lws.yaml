@@ -25,9 +25,6 @@ spec:
     subGroupPolicy:
     {{- toYaml .Values.prefill.subGroupPolicy | nindent 6 }}
     {{- end }}
-
-    # no sidecar so no need to specify leader separately
-
     workerTemplate:
       metadata:
         labels:
@@ -50,7 +47,7 @@ spec:
         {{- if hasKey .Values.prefill "hostPID" }}
         hostPID: {{ .Values.prefill.hostPID }}
         {{- end }}
-        {{- if or (hasKey .Values.prefill "initContainers") }}
+        {{- if .Values.prefill.initContainers }}
         initContainers:
         {{- toYaml .Values.prefill.initContainers | nindent 10 }}
         {{- end }}

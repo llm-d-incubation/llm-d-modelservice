@@ -47,13 +47,14 @@ spec:
         {{- if hasKey .Values.decode "hostPID" }}
         hostPID: {{ .Values.decode.hostPID }}
         {{- end }}
-        {{- if or (hasKey .Values.decode "initContainers") (eq .Values.routing.proxy.enabled true) }}
+        {{- if or (.Values.decode.initContainers) (eq .Values.routing.proxy.enabled true) }}
         initContainers:
         {{- with .Values.routing }}
-        {{ (include "llm-d-modelservice.routingProxy" .) | nindent 10 }}
+        {{- (include "llm-d-modelservice.routingProxy" .) | nindent 8 }}
         {{- end }}
-        {{- if hasKey .Values.decode "initContainers" }}
+        {{- if .Values.decode.initContainers }}
         {{- toYaml .Values.decode.initContainers | nindent 10 }}
+        {{- end }}
         {{- end }}
         {{- if hasKey .Values.decode "enableServiceLinks" }}
         enableServiceLinks: {{ .Values.decode.enableServiceLinks }}
