@@ -282,10 +282,10 @@
           "title": "monitoring"
         },
         "nodeSelector": {
-          "additionalProperties": false,
+          "additionalProperties": true,
+          "description": " additionalProperties: true @schema",
           "required": [],
-          "title": "nodeSelector",
-          "type": "object"
+          "title": "nodeSelector"
         },
         "replicas": {
           "default": 1,
@@ -766,10 +766,10 @@
           "title": "monitoring"
         },
         "nodeSelector": {
-          "additionalProperties": false,
+          "additionalProperties": true,
+          "description": " additionalProperties: true @schema",
           "required": [],
-          "title": "nodeSelector",
-          "type": "object"
+          "title": "nodeSelector"
         },
         "replicas": {
           "default": 0,
