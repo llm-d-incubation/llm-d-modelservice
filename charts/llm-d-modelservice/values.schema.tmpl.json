@@ -202,6 +202,16 @@
           "title": "create",
           "type": "boolean"
         },
+        "initContainers": {
+          "description": " type: array items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container @schema Additional init containers to run before the main containers These will be added alongside the routing proxy init container (if enabled)",
+          "items": {
+            "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container",
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
         "monitoring": {
           "additionalProperties": true,
           "description": " additionalProperties: true @schema Monitoring configuration for decode pods",
@@ -675,6 +685,16 @@
           "required": [],
           "title": "create",
           "type": "boolean"
+        },
+        "initContainers": {
+          "description": " type: array items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container @schema Additional init containers to run before the main containers",
+          "items": {
+            "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container",
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
         },
         "monitoring": {
           "additionalProperties": true,
