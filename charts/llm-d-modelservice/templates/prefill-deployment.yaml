@@ -23,9 +23,15 @@ spec:
         {{- toYaml .Values.prefill.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
-      {{- if (hasKey .Values.prefill "initContainers") }}
+      {{- if .Values.prefill.initContainers }}
       initContainers:
       {{- toYaml .Values.prefill.initContainers | nindent 8 }}
+      {{- end }}
+      {{- if hasKey .Values.prefill "enableServiceLinks" }}
+      enableServiceLinks: {{ .Values.prefill.enableServiceLinks }}
+      {{- end }}
+      {{- if hasKey .Values.prefill "terminationGracePeriodSeconds" }}
+      terminationGracePeriodSeconds: {{ .Values.prefill.terminationGracePeriodSeconds }}
       {{- end }}
       {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
       {{- if .Values.prefill.nodeSelector }}

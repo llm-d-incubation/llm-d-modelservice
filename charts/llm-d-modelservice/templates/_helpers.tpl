@@ -344,6 +344,13 @@ volumeMounts:
 {{- if .container.mountModelVolume }}
   - name: model-storage
     mountPath: {{ .Values.modelArtifacts.mountPath }}
+{{- /* enforce readOnly volumeMounts for OCI and PVCs */}}
+{{- $parsedArtifacts := regexSplit "://" .Values.modelArtifacts.uri -1 -}}
+{{- $protocol := first $parsedArtifacts -}}
+{{- $path := last $parsedArtifacts -}}
+{{- if or (eq $protocol "oci") (eq $protocol "pvc") }}
+    readOnly: true
+{{- end -}}
 {{- end }}
 {{- end }}
 
