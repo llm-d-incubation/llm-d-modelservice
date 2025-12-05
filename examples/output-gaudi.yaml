@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: gaudi-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.13
+    helm.sh/chart: llm-d-modelservice-v0.3.14
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: gaudi-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.13
+    helm.sh/chart: llm-d-modelservice-v0.3.14
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
