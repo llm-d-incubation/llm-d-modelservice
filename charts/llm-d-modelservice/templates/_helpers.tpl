@@ -385,7 +385,16 @@ context is a pdSpec
   {{- if or .pdSpec.volumes }}
     {{- toYaml .pdSpec.volumes | nindent 4 }}
   {{- end -}}
+  {{- /* create volume if at least one of the containers in pdSpec has mountModelVolume: true */ -}}
+  {{- $hasModelVolume := false }}
+  {{- range .pdSpec.containers }}
+    {{- if .mountModelVolume }}
+      {{- $hasModelVolume = true }}
+    {{- end -}}
+  {{- end -}}
+  {{- if $hasModelVolume }}
   {{ include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 4}}
+  {{- end -}}
   {{- if .Values.dra.enabled -}}
     {{- (include "llm-d-modelservice.draResourceClaims" (dict "Values" .Values)) | nindent 2 }}
   {{- end -}}
