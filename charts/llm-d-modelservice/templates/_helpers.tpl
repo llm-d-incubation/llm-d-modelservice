@@ -404,7 +404,7 @@ context is a pdSpec
 Container elements of deployment/lws spec template
 context is a dict with helm root context plus:
    key - "container"; value - container spec
-   key - "roll"; value - either "decode" or "prefill"
+   key - "role"; value - either "decode" or "prefill"
    key - "parallelism"; value - $.Values.decode.parallelism
 */}}
 {{- define "llm-d-modelservice.container" -}}
@@ -584,7 +584,7 @@ args:
 Container elements of deployment/lws spec template
 context is a dict with helm root context plus:
    key - "container"; value - container spec
-   key - "roll"; value - either "decode" or "prefill"
+   key - "role"; value - either "decode" or "prefill"
    key - "parallelism"; value - $.Values.decode.parallelism
 */}}
 {{- define "llm-d-modelservice.command" -}}
