@@ -64,6 +64,10 @@ spec:
         {{- (include "llm-d-modelservice.container" (dict "role" "prefill" "container" . "parallelism" $.Values.prefill.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart)) | nindent 8 }}
           {{- end }}
         {{- end }}
+        {{- if .Values.prefill.nodeSelector }}
+        nodeSelector:
+          {{- toYaml .Values.prefill.nodeSelector | nindent 10 }}
+        {{- end }}
         {{- if .Values.prefill.tolerations }}
         tolerations:
           {{- toYaml .Values.prefill.tolerations | nindent 10 }}
