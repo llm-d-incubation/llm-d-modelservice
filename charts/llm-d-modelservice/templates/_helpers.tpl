@@ -395,7 +395,7 @@ context is a pdSpec
   {{- if $hasModelVolume }}
   {{ include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 4}}
   {{- end -}}
-  {{- if .Values.dra.enabled -}}
+  {{- if .Values.dra.accelerator.enabled -}}
     {{- (include "llm-d-modelservice.draResourceClaims" (dict "Values" .Values)) | nindent 2 }}
   {{- end -}}
 {{- end }}
@@ -454,7 +454,7 @@ context is a dict with helm root context plus:
   startupProbe:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .Values.dra.enabled }}
+  {{- if .Values.dra.accelerator.enabled }}
   {{- (include "llm-d-modelservice.draResources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 2 }}
   {{- else }}
   {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 2 }}

@@ -2,8 +2,8 @@
 
 {{- define "llm-d-modelservice.draResources" -}}
 {{- $claim := dict }}
-{{- range .Values.dra.claimTemplates }}
-{{- if eq $.Values.dra.type .name }}
+{{- range .Values.dra.accelerator.claimTemplates }}
+{{- if eq $.Values.dra.accelerator.type .name }}
 {{- $claim = dict "name" .name }}
 {{- end -}}
 {{- end -}}
@@ -14,8 +14,8 @@ resources:
 
 {{- define "llm-d-modelservice.draResourceClaims" -}}
 {{- $claim := dict }}
-{{- range .Values.dra.claimTemplates }}
-{{- if eq $.Values.dra.type .name }}
+{{- range .Values.dra.accelerator.claimTemplates }}
+{{- if eq $.Values.dra.accelerator.type .name }}
 {{- $claim = dict "name" .name }}
 {{- end -}}
 {{- end -}}
@@ -28,8 +28,8 @@ resourceClaims:
 {{- /* Only subset of the features will be supported for now */ -}}
 {{- define "llm-d-modelservice.draResourceClaimDeviceClaim" -}}
 {{- $claim := dict }}
-{{- range .Values.dra.claimTemplates }}
-{{- if eq $.Values.dra.type .name }}
+{{- range .Values.dra.accelerator.claimTemplates }}
+{{- if eq $.Values.dra.accelerator.type .name }}
 {{- $claim = dict "name" .name "class" .class "match" .match "count" .count "selectors" .selectors }}
 {{- end -}}
 {{- end -}}
