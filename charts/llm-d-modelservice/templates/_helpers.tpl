@@ -397,10 +397,10 @@ context is a pdSpec
   {{- if or .Values.dra.accelerator.enabled .Values.dra.existing.enabled }}
   resourceClaims:
   {{- if .Values.dra.accelerator.enabled }}
-    {{- include "llm-d-modelservice.draResourceClaims" . | nindent 4 }}
+    {{- include "llm-d-modelservice.draResourceClaims" . | nindent 2 }}
   {{- end }}
   {{- if .Values.dra.existing.enabled }}
-    {{- include "llm-d-modelservice.existingDraResourceClaims" . | nindent 4 }}
+    {{- include "llm-d-modelservice.existingDraResourceClaims" . | nindent 2 }}
   {{- end }}
   {{- end }}
 {{- end }}
@@ -463,17 +463,17 @@ context is a dict with helm root context plus:
   resources:
     claims:
   {{- if .Values.dra.accelerator.enabled }}
-  {{- (include "llm-d-modelservice.draResources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 4 }}
+  {{- (include "llm-d-modelservice.draResources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 2 }}
   {{- end }}
   {{- if .Values.dra.existing.enabled }}
-  {{- include "llm-d-modelservice.existingDraResources" . | nindent 4 }}
+  {{- include "llm-d-modelservice.existingDraResources" . | nindent 2 }}
   {{- end }}
   {{- else }}
   resources:
   {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 4 }}
   {{- if .Values.dra.existing.enabled }}
     claims:
-  {{- include "llm-d-modelservice.existingDraResources" . | nindent 4 }}
+  {{- include "llm-d-modelservice.existingDraResources" . | nindent 2 }}
   {{- end }}
   {{- end }}
   {{- include "llm-d-modelservice.mountModelVolumeVolumeMounts" (dict "container" .container "Values" .Values) | nindent 2 }}
