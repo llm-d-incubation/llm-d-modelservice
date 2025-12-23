@@ -1,8 +1,8 @@
-{{- if .Values.dra.enabled -}}
+{{- if .Values.dra.accelerator.enabled -}}
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
-  name: {{ .Values.dra.type }}-resource-claim-template
+  name: {{ .Values.dra.accelerator.type }}-resource-claim-template
 spec:
   spec:
     devices:

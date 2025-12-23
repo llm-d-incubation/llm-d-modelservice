@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: dra-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.16
+    helm.sh/chart: llm-d-modelservice-v0.3.17
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: dra-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.16
+    helm.sh/chart: llm-d-modelservice-v0.3.17
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -45,6 +45,7 @@ spec:
             claimName: model-pvc
             readOnly: true
       resourceClaims:
+      
       - name: intel-resource-claim
         resourceClaimTemplateName: intel-resource-claim-template
       containers:
@@ -90,6 +91,7 @@ spec:
                 key: HF_TOKEN
           resources:
             claims:
+          
             - name: intel-resource-claim
           
           volumeMounts:
