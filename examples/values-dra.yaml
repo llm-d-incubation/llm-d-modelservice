@@ -10,8 +10,9 @@ modelArtifacts:
   authSecretName: "llm-d-hf-token"
 
 dra:
-  enabled: true
-  type: "intel"
+  accelerator:
+    enabled: true
+    type: "intel"
 
 # Routing configuration
 routing:
