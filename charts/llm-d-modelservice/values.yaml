@@ -122,7 +122,11 @@ dra:
         match: "exactly"
         count: 1
         selectors: []
-
+  existing:
+    enabled: false
+    resourceClaimTemplates:
+      - claimTemplateName: nvidia-gpu-idx-0
+      - claimTemplateName: nvidia-gpu-idx-1
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
 routing:
