@@ -1661,7 +1661,6 @@
             "properties": {
                 "accelerator": {
                     "additionalProperties": false,
-                    "description": "DRA accelerator configuration",
                     "properties": {
                         "claimTemplates": {
                             "items": {
@@ -1886,8 +1885,7 @@
                     "type": "object"
                 },
                 "existing": {
-                    "default": false,
-                    "description": "Use an existing DRA resources",
+                    "additionalProperties": false,
                     "properties": {
                         "enabled": {
                             "default": false,
@@ -1897,9 +1895,7 @@
                         },
                         "resourceClaimTemplates": {
                             "items": {
-                                "additionalProperties": true,
-                                "required": [],
-                                "type": "object"
+                                "required": []
                             },
                             "required": [],
                             "title": "resourceClaimTemplates",

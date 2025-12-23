@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: pvc-hf-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.16
+    helm.sh/chart: llm-d-modelservice-v0.3.17
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: pvc-hf-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.16
+    helm.sh/chart: llm-d-modelservice-v0.3.17
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -104,8 +104,8 @@ spec:
             protocol: TCP
           - containerPort: 5557
             protocol: TCP
-          
           resources:
+            
             limits:
               cpu: "16"
               memory: 16Gi
@@ -125,7 +125,7 @@ kind: Deployment
 metadata:
   name: pvc-hf-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.16
+    helm.sh/chart: llm-d-modelservice-v0.3.17
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -195,8 +195,8 @@ spec:
             protocol: TCP
           - containerPort: 5557
             protocol: TCP
-          
           resources:
+            
             limits:
               cpu: "16"
               memory: 16Gi

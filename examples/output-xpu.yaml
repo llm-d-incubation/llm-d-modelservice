@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: xpu-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.16
+    helm.sh/chart: llm-d-modelservice-v0.3.17
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: xpu-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.16
+    helm.sh/chart: llm-d-modelservice-v0.3.17
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -93,8 +93,8 @@ spec:
           ports:
           - containerPort: 8200
             protocol: TCP
-          
           resources:
+            
             limits:
               cpu: "8"
               gpu.intel.com/xe: "1"
