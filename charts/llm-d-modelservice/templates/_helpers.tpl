@@ -274,11 +274,10 @@ nvidia.com/gpu
 {{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
 {{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $numGpus)) }}
 {{- end }}
-resources:
-  limits:
-    {{- toYaml $limits | nindent 4 }}
-  requests:
-    {{- toYaml $requests | nindent 4 }}
+limits:
+  {{- toYaml $limits | nindent 2 }}
+requests:
+  {{- toYaml $requests | nindent 2 }}
 {{- end }}
 
 {{/* prefill name */}}
@@ -460,7 +459,7 @@ context is a dict with helm root context plus:
   startupProbe:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if or .Values.dra.accelerator.enabled .Values.dra.existing.enabled }}
+  {{- if or .Values.dra.accelerator.enabled }}
   resources:
     claims:
   {{- if .Values.dra.accelerator.enabled }}
@@ -470,7 +469,12 @@ context is a dict with helm root context plus:
   {{- include "llm-d-modelservice.existingDraResources" . | nindent 4 }}
   {{- end }}
   {{- else }}
-  {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 2 }}
+  resources:
+  {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 4 }}
+  {{- if .Values.dra.existing.enabled }}
+    claims:
+  {{- include "llm-d-modelservice.existingDraResources" . | nindent 4 }}
+  {{- end }}
   {{- end }}
   {{- include "llm-d-modelservice.mountModelVolumeVolumeMounts" (dict "container" .container "Values" .Values) | nindent 2 }}
   {{- /* DEPRECATED; use extraConfig.workingDir instead */ -}}
