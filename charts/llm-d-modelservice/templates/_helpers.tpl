@@ -319,7 +319,7 @@ Context is .Values.modelArtifacts
 - name: model-storage
   persistentVolumeClaim:
     claimName: {{ $claim }}
-    readOnly: true
+    readOnly: {{ if eq $protocol "pvc+hf" }}false{{ else }}true{{ end }}
 {{- else if eq $protocol "oci" }}
 - name: model-storage
   image:
@@ -344,12 +344,12 @@ volumeMounts:
 {{- if .container.mountModelVolume }}
   - name: model-storage
     mountPath: {{ .Values.modelArtifacts.mountPath }}
-{{- /* enforce readOnly volumeMounts for OCI and PVCs */}}
+{{- /* enforce readOnly volumeMounts for OCI and PVCs (but not pvc+hf which needs write access for HF cache) */}}
 {{- $parsedArtifacts := regexSplit "://" .Values.modelArtifacts.uri -1 -}}
 {{- $protocol := first $parsedArtifacts -}}
 {{- $path := last $parsedArtifacts -}}
 {{- if or (eq $protocol "oci") (eq $protocol "pvc") }}
-    readOnly: true
+    readOnly: {{ if eq $protocol "pvc+hf" }}false{{ else }}true{{ end }}
 {{- end -}}
 {{- end }}
 {{- end }}
