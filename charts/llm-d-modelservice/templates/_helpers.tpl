@@ -349,7 +349,7 @@ volumeMounts:
 {{- $protocol := first $parsedArtifacts -}}
 {{- $path := last $parsedArtifacts -}}
 {{- if or (eq $protocol "oci") (eq $protocol "pvc") }}
-    readOnly: {{ if eq $protocol "pvc+hf" }}false{{ else }}true{{ end }}
+    readOnly: true
 {{- end -}}
 {{- end }}
 {{- end }}
