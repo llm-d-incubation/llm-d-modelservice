@@ -49,7 +49,8 @@ jobs:
       run: |
         set -e  # Exit on error
 
-        # Fetch the gh-pages branch (it should exist after chart-releaser runs)
+        # Note: The gh-pages branch is created/updated by chart-releaser-action above
+        # Fetch the gh-pages branch
         git fetch origin gh-pages
 
         # Checkout gh-pages branch
