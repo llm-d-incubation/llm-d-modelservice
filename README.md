@@ -93,6 +93,38 @@ Below are the values you can set.
 | `prefill`                              | Same fields supported in `decode`                                                                                 | See above       | See above                                   |
 | `extraObjects`                         | Additional Kubernetes objects to be deployed alongside the main application                                       | List            | []                                          |
 
+### Accelerator Resource Configuration
+
+The chart automatically calculates accelerator resources (e.g., `nvidia.com/gpu`, `google.com/tpu`) based on parallelism settings. However, you can override this by explicitly setting resources in your container spec.
+
+**Precedence:**
+1. If you explicitly set `resources.limits.<accelerator>` in your container spec, that value is used
+2. Otherwise, the value is auto-calculated from `parallelism.tensor * parallelism.dataLocal`
+
+**Example - Auto-calculated (default):**
+```yaml
+decode:
+  parallelism:
+    tensor: 4
+  containers:
+    - name: vllm
+      # nvidia.com/gpu will be auto-set to 4
+```
+
+**Example - User override:**
+```yaml
+decode:
+  parallelism:
+    tensor: 8  # Used for --tensor-parallel-size
+  containers:
+    - name: vllm
+      resources:
+        limits:
+          google.com/tpu: "4"  # Explicitly set (TPUs: TP=8 needs 4 TPUs)
+```
+
+This is useful for accelerators like TPUs where tensor parallelism does not equal the number of accelerators.
+
 ## Contribute
 
 We welcome contributions to llm-d-modelservice! Please see our [Contributing Guide](CONTRIBUTING.md) for detailed information on how to contribute to this project, including guidelines for submitting issues, pull requests, and development setup.

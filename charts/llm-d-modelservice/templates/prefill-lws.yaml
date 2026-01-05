@@ -6,14 +6,22 @@ metadata:
   labels:
     {{- include "llm-d-modelservice.labels" . | nindent 4 }}
     {{- include "llm-d-modelservice.prefilllabels" . | nindent 4 }}
-  {{- if or .Values.prefill.subGroupExclusiveTopology .Values.prefill.annotations }}
+  {{- $warning := "" }}
+  {{- if .Values.prefill.containers }}
+  {{- $firstContainer := index .Values.prefill.containers 0 }}
+  {{- $warning = include "llm-d-modelservice.acceleratorWarning" (dict "parallelism" .Values.prefill.parallelism "resources" $firstContainer.resources "Values" .Values "container" $firstContainer) }}
+  {{- end }}
+  {{- if or .Values.prefill.subGroupExclusiveTopology .Values.prefill.annotations $warning }}
   annotations:
   {{- if .Values.prefill.subGroupExclusiveTopology }}
     leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
   {{- end }}
   {{- if .Values.prefill.annotations }}
     {{ toYaml .Values.prefill.annotations | nindent 4 }}
-    {{- end }}
+  {{- end }}
+  {{- if $warning }}
+    llm-d.ai/accelerator-warning: {{ $warning | quote }}
+  {{- end }}
   {{- end }}
 spec:
   {{- if not .Values.prefill.autoscaling.enabled }}

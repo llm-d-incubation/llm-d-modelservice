@@ -256,6 +256,20 @@ nvidia.com/gpu
 {{- end -}}
 {{- end }}
 
+{{/* Check for accelerator resource mismatch and return warning message if any */}}
+{{- define "llm-d-modelservice.acceleratorWarning" -}}
+{{- $numGpus := int (include "llm-d-modelservice.numGpuPerWorker" .parallelism) -}}
+{{- $acceleratorResource := include "llm-d-modelservice.acceleratorResource" . -}}
+{{- if and (ge $numGpus 1) (ne $acceleratorResource "") }}
+{{- if and .resources .resources.limits (hasKey .resources.limits $acceleratorResource) }}
+{{- $userValue := int (index .resources.limits $acceleratorResource) }}
+{{- if ne $userValue $numGpus }}
+{{- printf "Accelerator mismatch: %s is set to %d but parallelism calculates %d. Using %d." $acceleratorResource $userValue $numGpus $userValue }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{/* P/D deployment container resources */}}
 {{- define "llm-d-modelservice.resources" -}}
 {{- $numGpus := int (include "llm-d-modelservice.numGpuPerWorker" .parallelism) -}}
@@ -265,14 +279,21 @@ nvidia.com/gpu
 {{- $limits = deepCopy .resources.limits }}
 {{- end }}
 {{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
+{{- /* Respect user's explicit accelerator setting; only auto-fill if not set */}}
+{{- /* This allows TPUs where tensor_parallelism != num_accelerators (e.g., TP=8 needs 4 TPUs) */}}
+{{- if not (hasKey $limits $acceleratorResource) }}
 {{- $limits = mergeOverwrite $limits (dict $acceleratorResource (toString $numGpus)) }}
+{{- end }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
 {{- $requests = deepCopy .resources.requests }}
 {{- end }}
 {{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
+{{- /* Respect user's explicit accelerator setting; only auto-fill if not set */}}
+{{- if not (hasKey $requests $acceleratorResource) }}
 {{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $numGpus)) }}
+{{- end }}
 {{- end }}
 resources:
   limits:
