@@ -47,7 +47,9 @@ jobs:
 
     - name: Sync latest changes to gh-pages
       run: |
-        # Fetch the gh-pages branch
+        set -e  # Exit on error
+
+        # Fetch the gh-pages branch (it should exist after chart-releaser runs)
         git fetch origin gh-pages
 
         # Checkout gh-pages branch
@@ -61,6 +63,7 @@ jobs:
           git add charts/ README.md
           git commit -m "Sync latest changes from main branch"
           git push origin gh-pages
+          echo "Successfully synced changes to gh-pages"
         else
           echo "No changes to sync"
         fi
