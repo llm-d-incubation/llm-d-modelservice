@@ -100,6 +100,7 @@ The chart automatically calculates accelerator resources (e.g., `nvidia.com/gpu`
 **Precedence:**
 1. If you explicitly set `resources.limits.<accelerator>` in your container spec, that value is used
 2. Otherwise, the value is auto-calculated from `parallelism.tensor * parallelism.dataLocal`
+  a. If you use this strategy, vLLM parallelism arguments like `--tensor-parallel-size` and `--data-parallel-size-local` and the corresponding value will be added automatically to the first container
 
 **Example - Auto-calculated (default):**
 ```yaml
