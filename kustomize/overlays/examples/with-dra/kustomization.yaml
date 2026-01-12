@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+resources:
+  - ../../../accelerators/nvidia
+
+components:
+  - ../../../components/dra
+
+configMapGenerator:
+  - name: model-config
+    behavior: merge
+    literals:
+      - modelName=mistralai/Mistral-7B-v0.1
+      - modelUri=hf://mistralai/Mistral-7B-v0.1
+      - modelSize=40Gi
+
+patches:
+  # Enable decode deployment
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "48Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "24"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "48Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "24"
