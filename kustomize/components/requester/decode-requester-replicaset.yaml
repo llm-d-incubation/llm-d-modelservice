@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: modelservice-decode-requester
+  labels:
+    llm-d.ai/role: decode-requester
+    llm-d.ai/component: fma-requester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      llm-d.ai/role: decode-requester
+      llm-d.ai/component: fma-requester
+  template:
+    metadata:
+      labels:
+        llm-d.ai/role: decode-requester
+        llm-d.ai/component: fma-requester
+    spec:
+      serviceAccountName: modelservice
+      containers:
+      - name: requester
+        image: ghcr.io/llm-d-incubation/llm-d-fast-model-actuation-requester:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
+            name: probes
+            protocol: TCP
+          - containerPort: 8081
+            name: spi
+            protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: probes
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: "1"
+            memory: "250Mi"
+            nvidia.com/gpu: "1"
+          requests:
+            cpu: "1"
+            memory: "250Mi"
+            nvidia.com/gpu: "1"

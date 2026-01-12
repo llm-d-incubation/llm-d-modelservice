@@ -1,0 +1,62 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+patches:
+  # Decode Deployment
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits
+        value:
+          google.com/tpu: "1"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests
+        value:
+          google.com/tpu: "1"
+
+  # Prefill Deployment
+  - target:
+      kind: Deployment
+      name: modelservice-prefill
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits
+        value:
+          google.com/tpu: "1"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests
+        value:
+          google.com/tpu: "1"
+
+  # Decode LWS
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-decode-lws
+    patch: |-
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/limits
+        value:
+          google.com/tpu: "1"
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/requests
+        value:
+          google.com/tpu: "1"
+
+  # Prefill LWS
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-prefill-lws
+    patch: |-
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/limits
+        value:
+          google.com/tpu: "1"
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/requests
+        value:
+          google.com/tpu: "1"
