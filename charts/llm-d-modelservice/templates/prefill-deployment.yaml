@@ -33,6 +33,9 @@ spec:
         {{- toYaml .Values.prefill.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if hasKey .Values.prefill "hostNetwork" }}
+      hostNetwork: {{ .Values.prefill.hostNetwork }}
+      {{- end }}
       {{- if .Values.prefill.initContainers }}
       initContainers:
       {{- toYaml .Values.prefill.initContainers | nindent 8 }}
