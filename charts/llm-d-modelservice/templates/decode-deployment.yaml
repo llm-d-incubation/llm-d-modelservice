@@ -33,6 +33,9 @@ spec:
         {{- toYaml .Values.decode.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if hasKey .Values.prefill "hostNetwork" }}
+      hostNetwork: {{ .Values.prefill.hostNetwork }}
+      {{- end }}
       {{- if .Values.decode.nodeSelector }}
       nodeSelector:
         {{- toYaml .Values.decode.nodeSelector | nindent 8 }}
