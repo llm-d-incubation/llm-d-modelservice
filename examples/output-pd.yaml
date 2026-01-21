@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: pd-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.17
+    helm.sh/chart: llm-d-modelservice-v0.3.18
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: pd-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.17
+    helm.sh/chart: llm-d-modelservice-v0.3.18
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -74,6 +74,7 @@ spec:
             - --served-model-name
             - "facebook/opt-125m"
             
+            
             - --enforce-eager
             - --kv-transfer-config
             - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
@@ -99,6 +100,7 @@ spec:
           
           - name: HF_HOME
             value: /model-cache
+          
           ports:
           - containerPort: 8200
             protocol: TCP
@@ -125,7 +127,7 @@ kind: Deployment
 metadata:
   name: pd-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.17
+    helm.sh/chart: llm-d-modelservice-v0.3.18
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -165,6 +167,7 @@ spec:
             - --served-model-name
             - "facebook/opt-125m"
             
+            
             - --enforce-eager
             - --kv-transfer-config
             - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
@@ -190,6 +193,7 @@ spec:
           
           - name: HF_HOME
             value: /model-cache
+          
           ports:
           - containerPort: 8000
             protocol: TCP
