@@ -124,4 +124,4 @@ spec:
       - name: intel-gaudi
         exactly:
           deviceClassName: gaudi.intel.com
-          count: 2
+          count: 1

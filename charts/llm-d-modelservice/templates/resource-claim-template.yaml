@@ -1,17 +1,56 @@
-{{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
-{{- if $draEnabled -}}
-{{- $acceleratorType := include "llm-d-modelservice.draAcceleratorType" . -}}
-{{- $templateName := include "llm-d-modelservice.acceleratorClaimTemplateName" . -}}
-{{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" . -}}
+{{- /* Collect all unique accelerator types that use DRA */}}
+{{- $acceleratorTypes := dict -}}
+{{- $globalDra := .Values.accelerator.dra | default false -}}
+
+{{- /* Check decode pod - does it use DRA? */}}
+{{- $decodeDra := $globalDra -}}
+{{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "dra") -}}
+  {{- $decodeDra = .Values.decode.accelerator.dra -}}
+{{- end -}}
+{{- if $decodeDra -}}
+  {{- $decodeType := .Values.accelerator.type | default "nvidia" -}}
+  {{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "type") -}}
+    {{- $decodeType = .Values.decode.accelerator.type -}}
+  {{- end -}}
+  {{- $_ := set $acceleratorTypes $decodeType (dict "parallelism" .Values.decode.parallelism) -}}
+{{- end -}}
+
+{{- /* Check prefill pod - does it use DRA? */}}
+{{- $prefillDra := $globalDra -}}
+{{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "dra") -}}
+  {{- $prefillDra = .Values.prefill.accelerator.dra -}}
+{{- end -}}
+{{- if $prefillDra -}}
+  {{- $prefillType := .Values.accelerator.type | default "nvidia" -}}
+  {{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "type") -}}
+    {{- $prefillType = .Values.prefill.accelerator.type -}}
+  {{- end -}}
+  {{- $_ := set $acceleratorTypes $prefillType (dict "parallelism" .Values.prefill.parallelism) -}}
+{{- end -}}
+
+{{- /* Only generate templates if at least one component uses DRA */}}
+{{- if $acceleratorTypes -}}
+
+{{- /* Generate a ResourceClaimTemplate for each unique accelerator type */}}
+{{- range $acceleratorType, $typeInfo := $acceleratorTypes -}}
+{{- $context := dict "Values" $.Values "role" "" -}}
+{{- $_ := set $context "Values" $.Values -}}
+{{- $_ := set $context "role" "" -}}
+{{- /* Create a temporary context with the accelerator type to get config */}}
+{{- $tempValues := deepCopy $.Values -}}
+{{- $_ := set $tempValues.accelerator "type" $acceleratorType -}}
+{{- $tempContext := dict "Values" $tempValues -}}
+{{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" $tempContext -}}
 {{- $config := $configJson | fromJson -}}
 {{- if $config -}}
+{{- $templateName := $config.name | default (printf "%s-claim-template" $acceleratorType) -}}
 {{- /* Calculate count from parallelism if not explicitly set */}}
 {{- $count := 1 -}}
 {{- if hasKey $config "count" -}}
   {{- $count = $config.count -}}
 {{- else -}}
-  {{- /* Auto-calculate from decode parallelism (use decode as default) */}}
-  {{- $count = int (include "llm-d-modelservice.numGpuPerWorker" .Values.decode.parallelism) -}}
+  {{- /* Auto-calculate from the type's parallelism */}}
+  {{- $count = int (include "llm-d-modelservice.numGpuPerWorker" $typeInfo.parallelism) -}}
 {{- end -}}
 {{- $class := $config.class | default (printf "gpu.%s.com" $acceleratorType) -}}
 {{- $match := $config.match | default "exactly" -}}
@@ -22,7 +61,7 @@ kind: ResourceClaimTemplate
 metadata:
   name: {{ $templateName }}
   labels:
-    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    {{- include "llm-d-modelservice.labels" $ | nindent 4 }}
 spec:
   spec:
     devices:
@@ -35,5 +74,6 @@ spec:
           selectors:
           {{- toYaml $selectors | nindent 10 }}
           {{- end }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
