@@ -6,6 +6,12 @@
             "additionalProperties": false,
             "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google",
             "properties": {
+                "dra": {
+                    "default": "false",
+                    "description": " When true, uses resourceClaimTemplates instead of device plugin resources",
+                    "required": [],
+                    "title": "dra"
+                },
                 "env": {
                     "additionalProperties": false,
                     "description": "Environment variables specific to accelerator types",
@@ -82,9 +88,222 @@
                     "title": "env",
                     "type": "object"
                 },
+                "resourceClaimTemplates": {
+                    "additionalProperties": false,
+                    "description": " Each accelerator type can have its own claim template configuration",
+                    "properties": {
+                        "amd": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "default": "gpu.amd.com",
+                                    "required": [],
+                                    "title": "class",
+                                    "type": "string"
+                                },
+                                "match": {
+                                    "default": "exactly",
+                                    "required": [],
+                                    "title": "match",
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "default": "amd-claim-template",
+                                    "required": [],
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "selectors": {
+                                    "items": {
+                                        "required": []
+                                    },
+                                    "required": [],
+                                    "title": "selectors",
+                                    "type": "array"
+                                }
+                            },
+                            "required": [],
+                            "title": "amd",
+                            "type": "object"
+                        },
+                        "google": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "default": "tpu.google.com",
+                                    "required": [],
+                                    "title": "class",
+                                    "type": "string"
+                                },
+                                "match": {
+                                    "default": "exactly",
+                                    "required": [],
+                                    "title": "match",
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "default": "google-claim-template",
+                                    "required": [],
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "selectors": {
+                                    "items": {
+                                        "required": []
+                                    },
+                                    "required": [],
+                                    "title": "selectors",
+                                    "type": "array"
+                                }
+                            },
+                            "required": [],
+                            "title": "google",
+                            "type": "object"
+                        },
+                        "intel-gaudi": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "default": "gaudi.intel.com",
+                                    "required": [],
+                                    "title": "class",
+                                    "type": "string"
+                                },
+                                "match": {
+                                    "default": "exactly",
+                                    "required": [],
+                                    "title": "match",
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "default": "intel-gaudi-claim-template",
+                                    "required": [],
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "selectors": {
+                                    "items": {
+                                        "required": []
+                                    },
+                                    "required": [],
+                                    "title": "selectors",
+                                    "type": "array"
+                                }
+                            },
+                            "required": [],
+                            "title": "intel-gaudi",
+                            "type": "object"
+                        },
+                        "intel-i915": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "default": "gpu.intel.com",
+                                    "required": [],
+                                    "title": "class",
+                                    "type": "string"
+                                },
+                                "match": {
+                                    "default": "exactly",
+                                    "required": [],
+                                    "title": "match",
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "default": "intel-i915-claim-template",
+                                    "required": [],
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "selectors": {
+                                    "items": {
+                                        "required": []
+                                    },
+                                    "required": [],
+                                    "title": "selectors",
+                                    "type": "array"
+                                }
+                            },
+                            "required": [],
+                            "title": "intel-i915",
+                            "type": "object"
+                        },
+                        "intel-xe": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "default": "gpu.intel.com",
+                                    "required": [],
+                                    "title": "class",
+                                    "type": "string"
+                                },
+                                "match": {
+                                    "default": "exactly",
+                                    "required": [],
+                                    "title": "match",
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "default": "intel-xe-claim-template",
+                                    "required": [],
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "selectors": {
+                                    "items": {
+                                        "required": []
+                                    },
+                                    "required": [],
+                                    "title": "selectors",
+                                    "type": "array"
+                                }
+                            },
+                            "required": [],
+                            "title": "intel-xe",
+                            "type": "object"
+                        },
+                        "nvidia": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "default": "gpu.nvidia.com",
+                                    "required": [],
+                                    "title": "class",
+                                    "type": "string"
+                                },
+                                "match": {
+                                    "default": "exactly",
+                                    "required": [],
+                                    "title": "match",
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "default": "nvidia-claim-template",
+                                    "required": [],
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "selectors": {
+                                    "description": "count: 1  # Optional: If not specified, auto-calculated from parallelism (tensor * dataLocal)",
+                                    "items": {
+                                        "required": []
+                                    },
+                                    "required": [],
+                                    "title": "selectors",
+                                    "type": "array"
+                                }
+                            },
+                            "required": [],
+                            "title": "nvidia",
+                            "type": "object"
+                        }
+                    },
+                    "required": [],
+                    "title": "resourceClaimTemplates"
+                },
                 "resources": {
                     "additionalProperties": false,
-                    "description": "Resource names for different accelerator types",
+                    "description": "Resource names for different accelerator types (used when dra: false)",
                     "properties": {
                         "amd": {
                             "default": "amd.com/gpu",
@@ -1640,6 +1859,29 @@
                     "title": "replicas",
                     "type": "integer"
                 },
+                "resourceClaims": {
+                    "description": " type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+                    "items": {
+                        "properties": {
+                            "name": {
+                                "required": [],
+                                "type": "string"
+                            },
+                            "resourceClaimTemplateName": {
+                                "required": [],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "resourceClaimTemplateName"
+                        ],
+                        "type": "object"
+                    },
+                    "required": [],
+                    "title": "resourceClaims",
+                    "type": "array"
+                },
                 "volumes": {
                     "description": " type: array items:   type: object   additionalProperties: true @schema",
                     "items": {
@@ -1654,231 +1896,6 @@
             },
             "required": [],
             "title": "decode"
-        },
-        "dra": {
-            "additionalProperties": true,
-            "description": " additionalProperties: true @schema",
-            "properties": {
-                "claimTemplates": {
-                    "items": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "class": {
-                                        "default": "gpu.nvidia.com",
-                                        "required": [],
-                                        "title": "class",
-                                        "type": "string"
-                                    },
-                                    "count": {
-                                        "default": 1,
-                                        "required": [],
-                                        "title": "count",
-                                        "type": "integer"
-                                    },
-                                    "match": {
-                                        "default": "exactly",
-                                        "required": [],
-                                        "title": "match",
-                                        "type": "string"
-                                    },
-                                    "name": {
-                                        "default": "nvidia",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    },
-                                    "selectors": {
-                                        "items": {
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "selectors",
-                                        "type": "array"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            },
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "class": {
-                                        "default": "tpu.google.com",
-                                        "required": [],
-                                        "title": "class",
-                                        "type": "string"
-                                    },
-                                    "count": {
-                                        "default": 1,
-                                        "required": [],
-                                        "title": "count",
-                                        "type": "integer"
-                                    },
-                                    "match": {
-                                        "default": "exactly",
-                                        "required": [],
-                                        "title": "match",
-                                        "type": "string"
-                                    },
-                                    "name": {
-                                        "default": "google",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    },
-                                    "selectors": {
-                                        "items": {
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "selectors",
-                                        "type": "array"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            },
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "class": {
-                                        "default": "gpu.intel.com",
-                                        "required": [],
-                                        "title": "class",
-                                        "type": "string"
-                                    },
-                                    "count": {
-                                        "default": 1,
-                                        "required": [],
-                                        "title": "count",
-                                        "type": "integer"
-                                    },
-                                    "match": {
-                                        "default": "exactly",
-                                        "required": [],
-                                        "title": "match",
-                                        "type": "string"
-                                    },
-                                    "name": {
-                                        "default": "intel",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    },
-                                    "selectors": {
-                                        "items": {
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "selectors",
-                                        "type": "array"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            },
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "class": {
-                                        "default": "gaudi.intel.com",
-                                        "required": [],
-                                        "title": "class",
-                                        "type": "string"
-                                    },
-                                    "count": {
-                                        "default": 1,
-                                        "required": [],
-                                        "title": "count",
-                                        "type": "integer"
-                                    },
-                                    "match": {
-                                        "default": "exactly",
-                                        "required": [],
-                                        "title": "match",
-                                        "type": "string"
-                                    },
-                                    "name": {
-                                        "default": "intel-gaudi",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    },
-                                    "selectors": {
-                                        "items": {
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "selectors",
-                                        "type": "array"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            },
-                            {
-                                "additionalProperties": false,
-                                "properties": {
-                                    "class": {
-                                        "default": "gpu.amd.com",
-                                        "required": [],
-                                        "title": "class",
-                                        "type": "string"
-                                    },
-                                    "count": {
-                                        "default": 1,
-                                        "required": [],
-                                        "title": "count",
-                                        "type": "integer"
-                                    },
-                                    "match": {
-                                        "default": "exactly",
-                                        "required": [],
-                                        "title": "match",
-                                        "type": "string"
-                                    },
-                                    "name": {
-                                        "default": "amd",
-                                        "required": [],
-                                        "title": "name",
-                                        "type": "string"
-                                    },
-                                    "selectors": {
-                                        "items": {
-                                            "required": []
-                                        },
-                                        "required": [],
-                                        "title": "selectors",
-                                        "type": "array"
-                                    }
-                                },
-                                "required": [],
-                                "type": "object"
-                            }
-                        ],
-                        "required": []
-                    },
-                    "required": [],
-                    "title": "claimTemplates",
-                    "type": "array"
-                },
-                "enabled": {
-                    "default": false,
-                    "required": [],
-                    "title": "enabled",
-                    "type": "boolean"
-                },
-                "type": {
-                    "default": "nvidia",
-                    "required": [],
-                    "title": "type",
-                    "type": "string"
-                }
-            },
-            "required": [],
-            "title": "dra"
         },
         "enabled": {
             "default": "true",
@@ -3470,6 +3487,29 @@
                     "required": [],
                     "title": "replicas",
                     "type": "integer"
+                },
+                "resourceClaims": {
+                    "description": " type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+                    "items": {
+                        "properties": {
+                            "name": {
+                                "required": [],
+                                "type": "string"
+                            },
+                            "resourceClaimTemplateName": {
+                                "required": [],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "resourceClaimTemplateName"
+                        ],
+                        "type": "object"
+                    },
+                    "required": [],
+                    "title": "resourceClaims",
+                    "type": "array"
                 },
                 "volumes": {
                     "description": " type: array items:   type: object   additionalProperties: true @schema",
