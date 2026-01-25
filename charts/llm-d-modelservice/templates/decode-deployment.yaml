@@ -39,9 +39,7 @@ spec:
       {{- end }}
       {{- if or (.Values.decode.initContainers) (eq .Values.routing.proxy.enabled true) }}
       initContainers:
-      {{- with .Values.routing }}
-      {{- (include "llm-d-modelservice.routingProxy" .) | nindent 8 }}
-      {{- end }}
+      {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" .Values.routing.proxy "servicePort" .Values.routing.servicePort "Values" .Values)) | nindent 8 }}
       {{- if .Values.decode.initContainers }}
       {{- toYaml .Values.decode.initContainers | nindent 8 }}
       {{- end }}

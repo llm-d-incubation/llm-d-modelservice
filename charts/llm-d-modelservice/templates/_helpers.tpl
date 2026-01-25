@@ -125,6 +125,19 @@ affinity:
     {{- end }}
   image: {{ required "routing.proxy.image must be specified" .proxy.image }}
   imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
+  env:
+{{- if and .Values.global.tracing .Values.global.tracing.enabled }}
+    - name: OTEL_SERVICE_NAME
+      value: "routing-proxy"
+    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+      value: {{ .Values.global.tracing.otlpEndpoint | quote }}
+    - name: OTEL_TRACES_EXPORTER
+      value: "otlp"
+    - name: OTEL_TRACES_SAMPLER
+      value: {{ .Values.global.tracing.sampling.sampler | quote }}
+    - name: OTEL_TRACES_SAMPLER_ARG
+      value: {{ .Values.global.tracing.sampling.samplerArg | quote }}
+{{- end }}
   ports:
     - containerPort: {{ default 8000 .servicePort }}
   resources: {}
