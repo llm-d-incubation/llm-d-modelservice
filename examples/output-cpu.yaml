@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: cpu-sim-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.17
+    helm.sh/chart: llm-d-modelservice-v0.3.18
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: cpu-sim-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.17
+    helm.sh/chart: llm-d-modelservice-v0.3.18
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -73,6 +73,7 @@ spec:
             - "8200"
             - --served-model-name
             - "random/model"
+            
           env:
           - name: DP_SIZE
             value: "1"
@@ -83,6 +84,7 @@ spec:
           
           - name: HF_HOME
             value: /model-cache
+          
           ports:
           - containerPort: 8200
             protocol: TCP
@@ -103,7 +105,7 @@ kind: Deployment
 metadata:
   name: cpu-sim-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.17
+    helm.sh/chart: llm-d-modelservice-v0.3.18
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -142,6 +144,7 @@ spec:
             - "8000"
             - --served-model-name
             - "random/model"
+            
           env:
           - name: DP_SIZE
             value: "1"
@@ -152,6 +155,7 @@ spec:
           
           - name: HF_HOME
             value: /model-cache
+          
           ports:
           - containerPort: 8000
             protocol: TCP
