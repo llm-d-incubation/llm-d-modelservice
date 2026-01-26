@@ -1,6 +1,6 @@
 {{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
 {{- if $draEnabled -}}
-{{- $acceleratorType := include "llm-d-modelservice.draAcceleratorType" . -}}
+{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
 {{- $templateName := include "llm-d-modelservice.acceleratorClaimTemplateName" . -}}
 {{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" . -}}
 {{- $config := $configJson | fromJson -}}

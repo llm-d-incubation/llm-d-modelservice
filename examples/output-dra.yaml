@@ -47,8 +47,8 @@ spec:
       resourceClaims:
         - name: intel-gaudi-claim-template
           resourceClaimTemplateName: intel-gaudi-claim-template
-        - name: llm-d-imex-channel-0
-          resourceClaimTemplateName: llm-d-imex-channel-0
+        - name: llm-d-existing-claim-sample
+          resourceClaimTemplateName: llm-d-existing-claim-sample
       containers:
         - name: vllm
           image: intel/vllm:0.10.0-xpu
@@ -104,7 +104,7 @@ spec:
               memory: 8Gi
             claims:
               - name: intel-gaudi-claim-template
-              - name: llm-d-imex-channel-0
+              - name: llm-d-existing-claim-sample
           
           volumeMounts:
             - name: model-storage
