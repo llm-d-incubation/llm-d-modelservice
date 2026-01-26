@@ -37,6 +37,9 @@ spec:
       nodeSelector:
         {{- toYaml .Values.decode.nodeSelector | nindent 8 }}
       {{- end }}
+      {{- if .Values.decode.runtimeClassName }}
+      runtimeClassName: {{ .Values.decode.runtimeClassName }}
+      {{- end }}
       {{- if or (.Values.decode.initContainers) (eq .Values.routing.proxy.enabled true) }}
       initContainers:
       {{- with .Values.routing }}

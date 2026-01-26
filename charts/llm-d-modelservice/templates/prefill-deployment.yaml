@@ -48,6 +48,9 @@ spec:
       nodeSelector:
         {{- toYaml .Values.prefill.nodeSelector | nindent 8 }}
       {{- end }}
+      {{- if .Values.prefill.runtimeClassName }}
+      runtimeClassName: {{ .Values.prefill.runtimeClassName }}
+      {{- end }}
       {{- with .Values.prefill.containers }}
       containers:
         {{- range . }}

@@ -326,6 +326,13 @@
           "title": "replicas",
           "type": "integer"
         },
+        "runtimeClassName": {
+          "additionalProperties": true,
+          "default": "",
+          "description": " additionalProperties: true @schema",
+          "required": [],
+          "title": "runtimeClassName"
+        },
         "volumes": {
           "description": " type: array items:   type: object   additionalProperties: true @schema",
           "items": {
@@ -918,6 +925,13 @@
           "required": [],
           "title": "replicas",
           "type": "integer"
+        },
+        "runtimeClassName": {
+          "additionalProperties": true,
+          "default": "",
+          "description": " additionalProperties: true @schema",
+          "required": [],
+          "title": "runtimeClassName"
         },
         "volumes": {
           "description": " type: array items:   type: object   additionalProperties: true @schema",
