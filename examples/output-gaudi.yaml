@@ -57,6 +57,7 @@ spec:
             - --served-model-name
             - "meta-llama/Llama-3.1-8B-Instruct"
             
+            
             - --block-size=128
             - --max-num-seqs=256
             - --max-seq-len-to-capture=2048
@@ -87,6 +88,7 @@ spec:
               secretKeyRef:
                 name: llm-d-hf-token
                 key: HF_TOKEN
+          
           ports:
           - containerPort: 8200
             protocol: TCP

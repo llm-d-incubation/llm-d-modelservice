@@ -75,6 +75,7 @@ spec:
             - --served-model-name
             - "facebook/opt-125m"
             
+            
             - --enforce-eager
             - --kv-transfer-config
             - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
@@ -100,6 +101,7 @@ spec:
           
           - name: HF_HUB_CACHE
             value: /model-cache/path/to/hf_hub_cache
+          
           ports:
           - containerPort: 8200
             protocol: TCP
@@ -167,6 +169,7 @@ spec:
             - --served-model-name
             - "facebook/opt-125m"
             
+            
             - --enforce-eager
             - --kv-transfer-config
             - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
@@ -192,6 +195,7 @@ spec:
           
           - name: HF_HUB_CACHE
             value: /model-cache/path/to/hf_hub_cache
+          
           ports:
           - containerPort: 8000
             protocol: TCP

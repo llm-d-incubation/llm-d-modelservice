@@ -67,6 +67,7 @@ spec:
             - --served-model-name
             - "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
             
+            
             - --enforce-eager
             - --dtype
             - float16
@@ -91,6 +92,7 @@ spec:
           
           - name: HF_HOME
             value: /model-cache
+          
           ports:
           - containerPort: 8200
             protocol: TCP

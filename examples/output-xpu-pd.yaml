@@ -132,6 +132,7 @@ spec:
             value: "1"
           - name: VLLM_WORKER_MULTIPROC_METHOD
             value: "spawn"
+          
           ports:
           - containerPort: 8200
             protocol: TCP
@@ -255,6 +256,7 @@ spec:
             value: "1"
           - name: VLLM_WORKER_MULTIPROC_METHOD
             value: "spawn"
+          
           ports:
           - containerPort: 8000
             protocol: TCP

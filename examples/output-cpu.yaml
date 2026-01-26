@@ -74,6 +74,7 @@ spec:
             - "8200"
             - --served-model-name
             - "random/model"
+            
           env:
           - name: DP_SIZE
             value: "1"
@@ -84,6 +85,7 @@ spec:
           
           - name: HF_HOME
             value: /model-cache
+          
           ports:
           - containerPort: 8200
             protocol: TCP
@@ -144,6 +146,7 @@ spec:
             - "8000"
             - --served-model-name
             - "random/model"
+            
           env:
           - name: DP_SIZE
             value: "1"
@@ -154,6 +157,7 @@ spec:
           
           - name: HF_HOME
             value: /model-cache
+          
           ports:
           - containerPort: 8000
             protocol: TCP

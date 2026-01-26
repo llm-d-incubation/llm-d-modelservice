@@ -63,6 +63,7 @@ spec:
             - --served-model-name
             - "random/model"
             
+            
             - --dtype=float16
             - --block-size=64
             - --max-num-seqs=64
@@ -92,6 +93,7 @@ spec:
               secretKeyRef:
                 name: llm-d-hf-token
                 key: HF_TOKEN
+          
           
           resources:
             limits:

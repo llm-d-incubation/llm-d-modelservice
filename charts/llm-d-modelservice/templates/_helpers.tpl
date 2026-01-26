@@ -473,6 +473,8 @@ context is a dict with helm root context plus:
   {{- /* Add accelerator-specific environment variables */}}
   {{- $acceleratorEnv := include "llm-d-modelservice.acceleratorEnv" . }}
   {{- if $acceleratorEnv }}{{ $acceleratorEnv | nindent 2 }}{{- end }}
+  {{- /* Add tracing environment variables from global config */}}
+  {{- (include "llm-d-modelservice.tracingEnv" .) | nindent 2 }}
   {{- with .container.ports }}
   ports:
     {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
@@ -565,6 +567,8 @@ args:
   {{- end }}
   - --served-model-name
   - {{ .Values.modelArtifacts.name | quote }}
+{{- /* Add tracing args from global config */}}
+{{- (include "llm-d-modelservice.vllmTracingArgs" .) | nindent 2 }}
 {{- with .container.args }}
   {{ toYaml . | nindent 2 }}
 {{- end }}
@@ -593,6 +597,8 @@ args:
   {{- end }}
   - --served-model-name
   - {{ .Values.modelArtifacts.name | quote }}
+{{- /* Add tracing args from global config */}}
+{{- (include "llm-d-modelservice.vllmTracingArgs" .) | nindent 2 }}
 {{- with .container.args }}
   {{ toYaml . | nindent 2 }}
 {{- end }}
@@ -675,3 +681,43 @@ context is a dict with helm root context plus:
 - name: DP_SIZE_LOCAL
   value: {{ include "llm-d-modelservice.dataLocalParallelism" .parallelism | quote }}
 {{- end }} {{- /* define "llm-d-modelservice.parallelismEnv" */}}
+
+{{/*
+OpenTelemetry tracing environment variables for vLLM containers
+Requires: .Values.global.tracing, .role ("decode" or "prefill")
+Returns: YAML list of environment variables if tracing is enabled, empty otherwise
+*/}}
+{{- define "llm-d-modelservice.tracingEnv" -}}
+{{- if and .Values.global.tracing .Values.global.tracing.enabled }}
+{{- $serviceName := "" }}
+{{- if eq .role "decode" }}
+  {{- $serviceName = .Values.global.tracing.serviceNames.vllmDecode }}
+{{- else if eq .role "prefill" }}
+  {{- $serviceName = .Values.global.tracing.serviceNames.vllmPrefill }}
+{{- end }}
+- name: OTEL_SERVICE_NAME
+  value: {{ $serviceName | quote }}
+- name: OTEL_EXPORTER_OTLP_ENDPOINT
+  value: {{ .Values.global.tracing.otlpEndpoint | quote }}
+- name: OTEL_TRACES_EXPORTER
+  value: "otlp"
+- name: OTEL_TRACES_SAMPLER
+  value: {{ .Values.global.tracing.sampling.sampler | quote }}
+- name: OTEL_TRACES_SAMPLER_ARG
+  value: {{ .Values.global.tracing.sampling.samplerArg | quote }}
+{{- end }}
+{{- end }} {{- /* define "llm-d-modelservice.tracingEnv" */}}
+
+{{/*
+vLLM tracing command-line arguments
+Requires: .Values.global.tracing
+Returns: YAML list of vLLM args (--otlp-traces-endpoint, --collect-detailed-traces) if tracing is enabled
+*/}}
+{{- define "llm-d-modelservice.vllmTracingArgs" -}}
+{{- if and .Values.global.tracing .Values.global.tracing.enabled }}
+- --otlp-traces-endpoint
+- {{ .Values.global.tracing.otlpEndpoint | quote }}
+- --collect-detailed-traces
+- {{ .Values.global.tracing.vllm.collectDetailedTraces | quote }}
+{{- end }}
+{{- end }} {{- /* define "llm-d-modelservice.vllmTracingArgs" */}}
