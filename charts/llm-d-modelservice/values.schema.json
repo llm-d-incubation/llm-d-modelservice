@@ -7,10 +7,11 @@
             "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google",
             "properties": {
                 "dra": {
-                    "default": "false",
-                    "description": " When true, uses resourceClaimTemplates instead of device plugin resources",
+                    "default": false,
+                    "description": " type: boolean @schema Enable Dynamic Resource Allocation (DRA) for accelerators When true, uses resourceClaimTemplates instead of device plugin resources",
                     "required": [],
-                    "title": "dra"
+                    "title": "dra",
+                    "type": "boolean"
                 },
                 "env": {
                     "additionalProperties": false,
