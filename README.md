@@ -9,7 +9,7 @@ TL;DR:
 Active scenarios supported:
 - P/D disaggregation
 - Multi-node inference, utilizing data parallelism
-- One pod per DP rank
+- Dynamic Resource Allocation (DRA) for flexible accelerator management
 
 Integration with `llm-d` components:
 - Quickstart guide in `llm-d-infra` depends on ModelService
@@ -90,7 +90,12 @@ Below are the values you can set.
 | `decode.parallelism.workers`           | Number of workers over which data parallelism is implemented                                                      | int             | 1                                           |
 | `decode.acceleratorTypes.labelKey`     | Key of label on node that identifies the hosted GPU type                                                          | string          | N/A                                         |
 | `decode.acceleratorTypes.labelValue`   | Value of label on node that identifies type of hosted GPU                                                         | string          | N/A                                         |
+| `decode.resourceClaims`                | List of non-accelerator ResourceClaims to create and attach to decode pods                                        | List            | []                                          |
 | `prefill`                              | Same fields supported in `decode`                                                                                 | See above       | See above                                   |
+| `prefill.resourceClaims`               | List of non-accelerator ResourceClaims to create and attach to prefill pods                                       | List            | []                                          |
+| `accelerator.type`                     | Accelerator type (nvidia, intel-gaudi, intel-i915, intel-xe, amd, google)                                         | string          | N/A                                         |
+| `accelerator.dra`                      | Enable Dynamic Resource Allocation (DRA) for accelerators. When true, uses ResourceClaimTemplates instead of device plugins | bool            | `false`                                     |
+| `accelerator.resourceClaimTemplates`   | Map of accelerator types to ResourceClaimTemplate definitions for DRA mode                                        | map             | See values.yaml                             |
 | `extraObjects`                         | Additional Kubernetes objects to be deployed alongside the main application                                       | List            | []                                          |
 
 ### Accelerator Resource Configuration
@@ -125,6 +130,58 @@ decode:
 ```
 
 This is useful for accelerators like TPUs where tensor parallelism does not equal the number of accelerators.
+
+### Dynamic Resource Allocation (DRA)
+
+The chart supports Kubernetes Dynamic Resource Allocation for flexible accelerator management. Enable DRA mode with `accelerator.dra: true`.
+
+**DRA vs Device Plugin Mode:**
+
+| Aspect | Device Plugin (default) | DRA Mode (`accelerator.dra: true`) |
+|--------|------------------------|-----------------------------------|
+| Accelerator allocation | Via `resources.limits` (e.g., `nvidia.com/gpu: 4`) | Via ResourceClaims and ResourceClaimTemplates |
+| Device count | Manual or auto-calculated | Auto-calculated from parallelism settings |
+| Flexibility | Standard device plugin constraints | Advanced selection criteria via claim templates |
+| Non-accelerator resources | Specified in `resources.limits/requests` | Specified in `resources.limits/requests` (pass-through) |
+
+**Example - DRA Mode:**
+```yaml
+accelerator:
+  type: intel-gaudi
+  dra: true  # Enable DRA
+  resourceClaimTemplates:
+    intel-gaudi:
+      name: gaudi-claim-template
+      class: gaudi.intel.com
+      match: "exactly"
+      count: 2  # Optional override; auto-calculated from parallelism if omitted
+
+decode:
+  parallelism:
+    tensor: 2
+    dataLocal: 1
+  containers:
+    - name: vllm
+      resources:
+        limits:
+          cpu: "4"       # Non-accelerator resources work normally
+          memory: "16Gi"
+        requests:
+          cpu: "2"
+          memory: "8Gi"
+        claims:          # Optional: add non-accelerator claims
+        - name: custom-resource-claim
+  resourceClaims:        # Define non-accelerator claims here
+  - name: custom-resource-claim
+    resourceClaimTemplateName: my-custom-template
+```
+
+**Key Points:**
+- When `accelerator.dra: true`, do NOT specify accelerator resources in `resources.limits` (e.g., don't use `nvidia.com/gpu`)
+- Accelerator allocation is handled automatically via claims
+- Device count is auto-calculated as `parallelism.tensor * parallelism.dataLocal` unless explicitly overridden in `resourceClaimTemplates[].count`
+- CPU, memory, and other non-accelerator resources are specified normally in `resources.limits/requests`
+- User-defined claims for non-accelerator resources (e.g., RDMA, custom devices) can be added via `resourceClaims` and referenced in `resources.claims`
 
 ## Contribute
 
