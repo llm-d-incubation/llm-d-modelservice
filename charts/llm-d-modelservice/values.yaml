@@ -116,13 +116,8 @@ accelerator:
       match: "exactly"
       # count: 1  # Optional: If not specified, auto-calculated from parallelism (tensor * dataLocal)
       selectors: []
-    intel-i915:
-      name: intel-i915-claim-template
-      class: gpu.intel.com
-      match: "exactly"
-      selectors: []
-    intel-xe:
-      name: intel-xe-claim-template
+    intel:
+      name: intel-claim-template
       class: gpu.intel.com
       match: "exactly"
       selectors: []
