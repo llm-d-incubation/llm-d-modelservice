@@ -49,22 +49,48 @@ false
 {{/* Get accelerator claim name based on type */}}
 {{- define "llm-d-modelservice.acceleratorClaimName" -}}
 {{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
+{{- $role := .role | default "" -}}
 {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template := index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
-  {{- $template.name | default (printf "%s-claim" $acceleratorType) -}}
+  {{- if $role -}}
+    {{- if $template.name -}}
+      {{- printf "%s-%s-claim" (trimSuffix "-claim-template" $template.name) $role -}}
+    {{- else -}}
+      {{- printf "%s-%s-claim" $acceleratorType $role -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $template.name | default (printf "%s-claim" $acceleratorType) -}}
+  {{- end -}}
 {{- else -}}
-  {{- printf "%s-claim" $acceleratorType -}}
+  {{- if $role -}}
+    {{- printf "%s-%s-claim" $acceleratorType $role -}}
+  {{- else -}}
+    {{- printf "%s-claim" $acceleratorType -}}
+  {{- end -}}
 {{- end -}}
 {{- end }}
 
 {{/* Get accelerator claim template name */}}
 {{- define "llm-d-modelservice.acceleratorClaimTemplateName" -}}
 {{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
+{{- $role := .role | default "" -}}
 {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template := index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
-  {{- $template.name | default (printf "%s-claim-template" $acceleratorType) -}}
+  {{- if $role -}}
+    {{- if $template.name -}}
+      {{- printf "%s-%s" $template.name $role -}}
+    {{- else -}}
+      {{- printf "%s-%s-claim-template" $acceleratorType $role -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $template.name | default (printf "%s-claim-template" $acceleratorType) -}}
+  {{- end -}}
 {{- else -}}
-  {{- printf "%s-claim-template" $acceleratorType -}}
+  {{- if $role -}}
+    {{- printf "%s-%s-claim-template" $acceleratorType $role -}}
+  {{- else -}}
+    {{- printf "%s-claim-template" $acceleratorType -}}
+  {{- end -}}
 {{- end -}}
 {{- end }}
 

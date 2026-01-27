@@ -9,6 +9,7 @@ multinode: false
 # Global accelerator configuration (fallback for components without specific type)
 accelerator:
   type: nvidia
+  dra: true
 
 modelArtifacts:
 # This is the model name used to start vLLM.
@@ -40,7 +41,7 @@ decode:
     dra: true  # Enable DRA for decode pods
 
   parallelism:
-    tensor: 1
+    tensor: 2
     data: 1
     dataLocal: 1
     workers: 1
@@ -85,11 +86,11 @@ prefill:
   create: true
   replicas: 1
 
-  # Override accelerator configuration for prefill pods
-  # Using device plugin mode (not DRA) for prefill
-  accelerator:
-    type: intel-gaudi
-    # dra: false  # Not specified - uses device plugin mode (global default)
+  # # Override accelerator configuration for prefill pods
+  # # Using device plugin mode (not DRA) for prefill
+  # accelerator:
+  #   type: intel-gaudi
+  #   # dra: false  # Not specified - uses device plugin mode (global default)
 
   parallelism:
     tensor: 1

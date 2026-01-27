@@ -45,8 +45,8 @@ spec:
             claimName: model-pvc
             readOnly: true
       resourceClaims:
-        - name: intel-gaudi-claim-template
-          resourceClaimTemplateName: intel-gaudi-claim-template
+        - name: intel-gaudi-decode-claim
+          resourceClaimTemplateName: intel-gaudi-claim-template-decode
         - name: llm-d-existing-claim-sample
           resourceClaimTemplateName: llm-d-existing-claim-sample
       containers:
@@ -103,7 +103,7 @@ spec:
               cpu: "2"
               memory: 8Gi
             claims:
-              - name: intel-gaudi-claim-template
+              - name: intel-gaudi-decode-claim
               - name: llm-d-existing-claim-sample
           
           volumeMounts:
@@ -114,11 +114,12 @@ spec:
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
-  name: intel-gaudi-claim-template
+  name: intel-gaudi-claim-template-decode
   labels:
     helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
+    llm-d.ai/role: decode
 spec:
   spec:
     devices:
@@ -126,4 +127,4 @@ spec:
       - name: intel-gaudi
         exactly:
           deviceClassName: gaudi.intel.com
-          count: 1
+          count: 2

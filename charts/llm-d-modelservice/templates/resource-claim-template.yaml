@@ -1,60 +1,40 @@
-{{- /* Collect all unique accelerator types that use DRA */}}
-{{- $acceleratorTypes := dict -}}
-{{- $globalDra := .Values.accelerator.dra | default false -}}
+{{- /* Process decode and prefill separately to create role-specific templates */}}
 
-{{- /* Check decode pod - does it use DRA? */}}
+{{- /* Process decode pod if it should be created and uses DRA */}}
+{{- if .Values.decode.create -}}
+{{- $globalDra := .Values.accelerator.dra | default false -}}
 {{- $decodeDra := $globalDra -}}
 {{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "dra") -}}
   {{- $decodeDra = .Values.decode.accelerator.dra -}}
 {{- end -}}
+
 {{- if $decodeDra -}}
-  {{- $decodeType := .Values.accelerator.type | default "nvidia" -}}
-  {{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "type") -}}
-    {{- $decodeType = .Values.decode.accelerator.type -}}
-  {{- end -}}
-  {{- $_ := set $acceleratorTypes $decodeType (dict "parallelism" .Values.decode.parallelism) -}}
+{{- $decodeType := .Values.accelerator.type | default "nvidia" -}}
+{{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "type") -}}
+  {{- $decodeType = .Values.decode.accelerator.type -}}
 {{- end -}}
-
-{{- /* Check prefill pod - does it use DRA? */}}
-{{- $prefillDra := $globalDra -}}
-{{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "dra") -}}
-  {{- $prefillDra = .Values.prefill.accelerator.dra -}}
-{{- end -}}
-{{- if $prefillDra -}}
-  {{- $prefillType := .Values.accelerator.type | default "nvidia" -}}
-  {{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "type") -}}
-    {{- $prefillType = .Values.prefill.accelerator.type -}}
-  {{- end -}}
-  {{- $_ := set $acceleratorTypes $prefillType (dict "parallelism" .Values.prefill.parallelism) -}}
-{{- end -}}
-
-{{- /* Only generate templates if at least one component uses DRA */}}
-{{- if $acceleratorTypes -}}
-
-{{- /* Generate a ResourceClaimTemplate for each unique accelerator type */}}
-{{- range $acceleratorType, $typeInfo := $acceleratorTypes -}}
-{{- $context := dict "Values" $.Values "role" "" -}}
-{{- $_ := set $context "Values" $.Values -}}
-{{- $_ := set $context "role" "" -}}
-{{- /* Create a temporary context with the accelerator type to get config */}}
-{{- $tempValues := deepCopy $.Values -}}
-{{- $_ := set $tempValues.accelerator "type" $acceleratorType -}}
-{{- $tempContext := dict "Values" $tempValues -}}
-{{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" $tempContext -}}
+{{- /* Create context for decode */}}
+{{- $context := dict "Values" .Values "role" "decode" -}}
+{{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" $context -}}
 {{- $config := $configJson | fromJson -}}
 {{- if $config -}}
-{{- $templateName := $config.name | default (printf "%s-claim-template" $acceleratorType) -}}
-{{- /* Calculate count from parallelism if not explicitly set */}}
+{{- /* Include role in template name */}}
+{{- $templateName := "" -}}
+{{- if hasKey $config "name" -}}
+  {{- $templateName = printf "%s-decode" $config.name -}}
+{{- else -}}
+  {{- $templateName = printf "%s-decode-claim-template" $decodeType -}}
+{{- end -}}
+{{- /* Calculate count from decode's parallelism */}}
 {{- $count := 1 -}}
 {{- if hasKey $config "count" -}}
   {{- $count = $config.count -}}
 {{- else -}}
-  {{- /* Auto-calculate from the type's parallelism */}}
-  {{- $count = int (include "llm-d-modelservice.numGpuPerWorker" $typeInfo.parallelism) -}}
+  {{- $count = int (include "llm-d-modelservice.numGpuPerWorker" .Values.decode.parallelism) -}}
 {{- end -}}
-{{- $class := $config.class | default (printf "gpu.%s.com" $acceleratorType) -}}
+{{- $class := $config.class | default (printf "gpu.%s.com" $decodeType) -}}
 {{- $match := $config.match | default "exactly" -}}
-{{- $selectors := $config.selectors | default list -}}
+{{- $selectors := $config.selectors | default list }}
 ---
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
@@ -62,11 +42,12 @@ metadata:
   name: {{ $templateName }}
   labels:
     {{- include "llm-d-modelservice.labels" $ | nindent 4 }}
+    llm-d.ai/role: decode
 spec:
   spec:
     devices:
       requests:
-      - name: {{ $acceleratorType }}
+      - name: {{ $decodeType }}
         {{ $match }}:
           deviceClassName: {{ $class }}
           count: {{ $count }}
@@ -76,4 +57,63 @@ spec:
           {{- end }}
 {{- end -}}
 {{- end -}}
+{{- end }}
+
+{{- /* Process prefill pod if it should be created and uses DRA */}}
+{{- if .Values.prefill.create -}}
+{{- $globalDra := .Values.accelerator.dra | default false -}}
+{{- $prefillDra := $globalDra -}}
+{{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "dra") -}}
+  {{- $prefillDra = .Values.prefill.accelerator.dra -}}
 {{- end -}}
+
+{{- if $prefillDra -}}
+{{- $prefillType := .Values.accelerator.type | default "nvidia" -}}
+{{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "type") -}}
+  {{- $prefillType = .Values.prefill.accelerator.type -}}
+{{- end -}}
+{{- /* Create context for prefill */}}
+{{- $context := dict "Values" .Values "role" "prefill" -}}
+{{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" $context -}}
+{{- $config := $configJson | fromJson -}}
+{{- if $config -}}
+{{- /* Include role in template name */}}
+{{- $templateName := "" -}}
+{{- if hasKey $config "name" -}}
+  {{- $templateName = printf "%s-prefill" $config.name -}}
+{{- else -}}
+  {{- $templateName = printf "%s-prefill-claim-template" $prefillType -}}
+{{- end -}}
+{{- /* Calculate count from prefill's parallelism */}}
+{{- $count := 1 -}}
+{{- if hasKey $config "count" -}}
+  {{- $count = $config.count -}}
+{{- else -}}
+  {{- $count = int (include "llm-d-modelservice.numGpuPerWorker" .Values.prefill.parallelism) -}}
+{{- end -}}
+{{- $class := $config.class | default (printf "gpu.%s.com" $prefillType) -}}
+{{- $match := $config.match | default "exactly" -}}
+{{- $selectors := $config.selectors | default list }}
+---
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: {{ $templateName }}
+  labels:
+    {{- include "llm-d-modelservice.labels" $ | nindent 4 }}
+    llm-d.ai/role: prefill
+spec:
+  spec:
+    devices:
+      requests:
+      - name: {{ $prefillType }}
+        {{ $match }}:
+          deviceClassName: {{ $class }}
+          count: {{ $count }}
+          {{- if $selectors }}
+          selectors:
+          {{- toYaml $selectors | nindent 10 }}
+          {{- end }}
+{{- end -}}
+{{- end -}}
+{{- end }}

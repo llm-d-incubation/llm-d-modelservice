@@ -63,8 +63,8 @@ spec:
             sizeLimit: 20Gi
         
       resourceClaims:
-        - name: nvidia-claim-template
-          resourceClaimTemplateName: nvidia-claim-template
+        - name: nvidia-decode-claim
+          resourceClaimTemplateName: nvidia-claim-template-decode
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d:v0.2.0
@@ -74,6 +74,8 @@ spec:
             - "facebook/opt-125m"
             - --port
             - "8200"
+            - --tensor-parallel-size
+            - "2"
             - --served-model-name
             - "facebook/opt-125m"
             
@@ -97,7 +99,7 @@ spec:
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
-            value: "1"
+            value: "2"
           - name: DP_SIZE_LOCAL
             value: "1"
           
@@ -118,7 +120,7 @@ spec:
               cpu: "16"
               memory: 16Gi
             claims:
-              - name: nvidia-claim-template
+              - name: nvidia-decode-claim
           
           volumeMounts:
             - name: model-storage
@@ -158,7 +160,9 @@ spec:
           emptyDir:
             sizeLimit: 20Gi
         
-      
+      resourceClaims:
+        - name: nvidia-prefill-claim
+          resourceClaimTemplateName: nvidia-claim-template-prefill
       containers:
         - name: vllm
           image: vault.habana.ai/gaudi-docker/1.18.0/ubuntu22.04/habanalabs/pytorch-installer-2.4.0:latest
@@ -207,12 +211,12 @@ spec:
           resources:
             limits:
               cpu: "16"
-              habana.ai/gaudi: "1"
               memory: 16Gi
             requests:
               cpu: "16"
-              habana.ai/gaudi: "1"
               memory: 16Gi
+            claims:
+              - name: nvidia-prefill-claim
           
           volumeMounts:
             - name: model-storage
@@ -222,11 +226,31 @@ spec:
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
-  name: nvidia-claim-template
+  name: nvidia-claim-template-decode
   labels:
     helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
+    llm-d.ai/role: decode
+spec:
+  spec:
+    devices:
+      requests:
+      - name: nvidia
+        exactly:
+          deviceClassName: gpu.nvidia.com
+          count: 2
+---
+# Source: llm-d-modelservice/templates/resource-claim-template.yaml
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: nvidia-claim-template-prefill
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.4.1
+    app.kubernetes.io/version: "v0.3.0"
+    app.kubernetes.io/managed-by: Helm
+    llm-d.ai/role: prefill
 spec:
   spec:
     devices:
