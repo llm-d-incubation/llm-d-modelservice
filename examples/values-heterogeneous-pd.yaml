@@ -9,7 +9,6 @@ multinode: false
 # Global accelerator configuration (fallback for components without specific type)
 accelerator:
   type: nvidia
-  dra: true
 
 modelArtifacts:
 # This is the model name used to start vLLM.

@@ -160,9 +160,7 @@ spec:
           emptyDir:
             sizeLimit: 20Gi
         
-      resourceClaims:
-        - name: nvidia-prefill-claim
-          resourceClaimTemplateName: nvidia-claim-template-prefill
+      
       containers:
         - name: vllm
           image: vault.habana.ai/gaudi-docker/1.18.0/ubuntu22.04/habanalabs/pytorch-installer-2.4.0:latest
@@ -212,11 +210,11 @@ spec:
             limits:
               cpu: "16"
               memory: 16Gi
+              nvidia.com/gpu: "1"
             requests:
               cpu: "16"
               memory: 16Gi
-            claims:
-              - name: nvidia-prefill-claim
+              nvidia.com/gpu: "1"
           
           volumeMounts:
             - name: model-storage
@@ -240,22 +238,3 @@ spec:
         exactly:
           deviceClassName: gpu.nvidia.com
           count: 2
----
-# Source: llm-d-modelservice/templates/resource-claim-template.yaml
-apiVersion: resource.k8s.io/v1
-kind: ResourceClaimTemplate
-metadata:
-  name: nvidia-claim-template-prefill
-  labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.1
-    app.kubernetes.io/version: "v0.3.0"
-    app.kubernetes.io/managed-by: Helm
-    llm-d.ai/role: prefill
-spec:
-  spec:
-    devices:
-      requests:
-      - name: nvidia
-        exactly:
-          deviceClassName: gpu.nvidia.com
-          count: 1
