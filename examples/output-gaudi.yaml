@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: gaudi-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: gaudi-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -57,6 +57,7 @@ spec:
             - --served-model-name
             - "meta-llama/Llama-3.1-8B-Instruct"
             
+            
             - --block-size=128
             - --max-num-seqs=256
             - --max-seq-len-to-capture=2048
@@ -87,6 +88,7 @@ spec:
               secretKeyRef:
                 name: llm-d-hf-token
                 key: HF_TOKEN
+          
           ports:
           - containerPort: 8200
             protocol: TCP

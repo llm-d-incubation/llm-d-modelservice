@@ -28,7 +28,7 @@ false
 {{- end }}
 
 {{/* Get accelerator type */}}
-{{- define "llm-d-modelservice.draAcceleratorType" -}}
+{{- define "llm-d-modelservice.acceleratorType" -}}
 {{- if and .role (eq .role "decode") -}}
   {{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "type") -}}
     {{- .Values.decode.accelerator.type -}}
@@ -48,7 +48,7 @@ false
 
 {{/* Get accelerator claim name based on type */}}
 {{- define "llm-d-modelservice.acceleratorClaimName" -}}
-{{- $acceleratorType := include "llm-d-modelservice.draAcceleratorType" . -}}
+{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
 {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template := index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template.name | default (printf "%s-claim" $acceleratorType) -}}
@@ -59,7 +59,7 @@ false
 
 {{/* Get accelerator claim template name */}}
 {{- define "llm-d-modelservice.acceleratorClaimTemplateName" -}}
-{{- $acceleratorType := include "llm-d-modelservice.draAcceleratorType" . -}}
+{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
 {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template := index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template.name | default (printf "%s-claim-template" $acceleratorType) -}}
@@ -70,7 +70,7 @@ false
 
 {{/* Get DRA claim count (auto-calculate from parallelism if not set) */}}
 {{- define "llm-d-modelservice.draClaimCount" -}}
-{{- $acceleratorType := include "llm-d-modelservice.draAcceleratorType" . -}}
+{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
 {{- $count := 1 -}}
 {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template := index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
@@ -127,7 +127,7 @@ claims:
 
 {{/* Get DRA ResourceClaimTemplate configuration for the current accelerator type */}}
 {{- define "llm-d-modelservice.draResourceClaimTemplateConfig" -}}
-{{- $acceleratorType := include "llm-d-modelservice.draAcceleratorType" . -}}
+{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
 {{- $config := dict -}}
 {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $config = index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}

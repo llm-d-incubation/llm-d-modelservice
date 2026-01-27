@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: dra-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: dra-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -47,8 +47,8 @@ spec:
       resourceClaims:
         - name: intel-gaudi-claim-template
           resourceClaimTemplateName: intel-gaudi-claim-template
-        - name: llm-d-imex-channel-0
-          resourceClaimTemplateName: llm-d-imex-channel-0
+        - name: llm-d-existing-claim-sample
+          resourceClaimTemplateName: llm-d-existing-claim-sample
       containers:
         - name: vllm
           image: intel/vllm:0.10.0-xpu
@@ -62,6 +62,7 @@ spec:
             - "2"
             - --served-model-name
             - "random/model"
+            
             
             - --dtype=float16
             - --block-size=64
@@ -93,6 +94,7 @@ spec:
                 name: llm-d-hf-token
                 key: HF_TOKEN
           
+          
           resources:
             limits:
               cpu: "4"
@@ -102,7 +104,7 @@ spec:
               memory: 8Gi
             claims:
               - name: intel-gaudi-claim-template
-              - name: llm-d-imex-channel-0
+              - name: llm-d-existing-claim-sample
           
           volumeMounts:
             - name: model-storage
@@ -114,7 +116,7 @@ kind: ResourceClaimTemplate
 metadata:
   name: intel-gaudi-claim-template
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:

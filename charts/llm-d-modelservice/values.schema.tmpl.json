@@ -7,10 +7,11 @@
       "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google",
       "properties": {
         "dra": {
-          "default": "false",
-          "description": " When true, uses resourceClaimTemplates instead of device plugin resources",
+          "default": false,
+          "description": " type: boolean @schema Enable Dynamic Resource Allocation (DRA) for accelerators When true, uses resourceClaimTemplates instead of device plugin resources",
           "required": [],
-          "title": "dra"
+          "title": "dra",
+          "type": "boolean"
         },
         "env": {
           "additionalProperties": false,
@@ -546,7 +547,7 @@
           "type": "integer"
         },
         "resourceClaims": {
-          "description": "   # Optional: Override global accelerator configuration for decode pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for decode pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu   type: nvidia    # Override DRA (Dynamic Resource Allocation) mode for decode pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+          "description": " type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
           "items": {
             "properties": {
               "name": {
@@ -605,14 +606,89 @@
       "title": "fullnameOverride"
     },
     "global": {
-      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "additionalProperties": false,
+      "description": "Name of the scheduler to use for scheduling model pods schedulerName: default-scheduler Global configuration that can be referenced by subcharts and components",
+      "properties": {
+        "tracing": {
+          "additionalProperties": false,
+          "description": " When enabled, vLLM containers will export traces to the OTLP endpoint",
+          "properties": {
+            "enabled": {
+              "default": "false",
+              "description": "Enable distributed tracing for vLLM containers",
+              "required": [],
+              "title": "enabled"
+            },
+            "otlpEndpoint": {
+              "default": "http://opentelemetry-collector.monitoring.svc.cluster.local:4317",
+              "description": "OTLP gRPC endpoint for trace export (e.g., OpenTelemetry Collector) Override via: export OTEL_COLLECTOR_ENDPOINT=\"http://your-collector:4317\"",
+              "required": [],
+              "title": "otlpEndpoint"
+            },
+            "sampling": {
+              "additionalProperties": false,
+              "description": "Trace sampling configuration",
+              "properties": {
+                "sampler": {
+                  "default": "parentbased_traceidratio",
+                  "description": "OpenTelemetry sampler type (e.g., \"parentbased_traceidratio\", \"always_on\", \"always_off\")",
+                  "required": [],
+                  "title": "sampler"
+                },
+                "samplerArg": {
+                  "default": "1.0",
+                  "description": "Sampling ratio (0.0 to 1.0). Use 1.0 for 100% sampling (demo/debug), 0.1 for 10% (production)",
+                  "required": [],
+                  "title": "samplerArg"
+                }
+              },
+              "required": [],
+              "title": "sampling"
+            },
+            "serviceNames": {
+              "additionalProperties": false,
+              "description": "Service name overrides for different components",
+              "properties": {
+                "vllmDecode": {
+                  "default": "vllm-decode",
+                  "description": "Service name for vLLM decode instances",
+                  "required": [],
+                  "title": "vllmDecode"
+                },
+                "vllmPrefill": {
+                  "default": "vllm-prefill",
+                  "description": "Service name for vLLM prefill instances",
+                  "required": [],
+                  "title": "vllmPrefill"
+                }
+              },
+              "required": [],
+              "title": "serviceNames"
+            },
+            "vllm": {
+              "additionalProperties": false,
+              "description": "vLLM-specific tracing options",
+              "properties": {
+                "collectDetailedTraces": {
+                  "default": "all",
+                  "description": "Level of trace detail collection (e.g., \"all\", \"model\", \"scheduler\")",
+                  "required": [],
+                  "title": "collectDetailedTraces"
+                }
+              },
+              "required": [],
+              "title": "vllm"
+            }
+          },
+          "required": [],
+          "title": "tracing"
+        }
+      },
       "required": [],
-      "title": "global",
-      "type": "object"
+      "title": "global"
     },
     "modelArtifacts": {
       "additionalProperties": false,
-      "description": "Name of the scheduler to use for scheduling model pods schedulerName: default-scheduler",
       "properties": {
         "authSecretName": {
           "default": "",
@@ -669,7 +745,8 @@
         }
       },
       "required": [],
-      "title": "modelArtifacts"
+      "title": "modelArtifacts",
+      "type": "object"
     },
     "multinode": {
       "default": false,
@@ -861,7 +938,7 @@
           "type": "integer"
         },
         "resourceClaims": {
-          "description": "   # Optional: Override global accelerator configuration for prefill pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for prefill pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu   type: intel-gaudi    # Override DRA (Dynamic Resource Allocation) mode for prefill pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+          "description": " type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
           "items": {
             "properties": {
               "name": {
