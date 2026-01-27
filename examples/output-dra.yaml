@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: dra-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.18
+    helm.sh/chart: llm-d-modelservice-v0.4.0
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: dra-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.3.18
+    helm.sh/chart: llm-d-modelservice-v0.4.0
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -45,8 +45,10 @@ spec:
             claimName: model-pvc
             readOnly: true
       resourceClaims:
-      - name: intel-resource-claim
-        resourceClaimTemplateName: intel-resource-claim-template
+        - name: intel-gaudi-claim-template
+          resourceClaimTemplateName: intel-gaudi-claim-template
+        - name: llm-d-existing-claim-sample
+          resourceClaimTemplateName: llm-d-existing-claim-sample
       containers:
         - name: vllm
           image: intel/vllm:0.10.0-xpu
@@ -56,6 +58,8 @@ spec:
             - meta-llama/Llama-3.1-8B-Instruct
             - --port
             - "8000"
+            - --tensor-parallel-size
+            - "2"
             - --served-model-name
             - "random/model"
             
@@ -78,7 +82,7 @@ spec:
           - name: DP_SIZE
             value: "1"
           - name: TP_SIZE
-            value: "1"
+            value: "2"
           - name: DP_SIZE_LOCAL
             value: "1"
           
@@ -90,9 +94,17 @@ spec:
                 name: llm-d-hf-token
                 key: HF_TOKEN
           
+          
           resources:
+            limits:
+              cpu: "4"
+              memory: 16Gi
+            requests:
+              cpu: "2"
+              memory: 8Gi
             claims:
-            - name: intel-resource-claim
+              - name: intel-gaudi-claim-template
+              - name: llm-d-existing-claim-sample
           
           volumeMounts:
             - name: model-storage
@@ -102,12 +114,16 @@ spec:
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
-  name: intel-resource-claim-template
+  name: intel-gaudi-claim-template
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.4.0
+    app.kubernetes.io/version: "v0.3.0"
+    app.kubernetes.io/managed-by: Helm
 spec:
   spec:
     devices:
       requests:
-      - name: intel
+      - name: intel-gaudi
         exactly:
-          deviceClassName: gpu.intel.com
-          count: 1
+          deviceClassName: gaudi.intel.com
+          count: 2

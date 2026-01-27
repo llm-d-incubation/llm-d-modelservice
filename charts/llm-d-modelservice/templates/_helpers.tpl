@@ -272,34 +272,52 @@ nvidia.com/gpu
 
 {{/* P/D deployment container resources */}}
 {{- define "llm-d-modelservice.resources" -}}
-{{- $numGpus := int (include "llm-d-modelservice.numGpuPerWorker" .parallelism) -}}
-{{- $acceleratorResource := include "llm-d-modelservice.acceleratorResource" . -}}
 {{- $limits := dict }}
 {{- if and .resources .resources.limits }}
-{{- $limits = deepCopy .resources.limits }}
-{{- end }}
-{{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
-{{- /* Respect user's explicit accelerator setting; only auto-fill if not set */}}
-{{- /* This allows TPUs where tensor_parallelism != num_accelerators (e.g., TP=8 needs 4 TPUs) */}}
-{{- if not (hasKey $limits $acceleratorResource) }}
-{{- $limits = mergeOverwrite $limits (dict $acceleratorResource (toString $numGpus)) }}
-{{- end }}
+  {{- $limits = deepCopy .resources.limits }}
 {{- end }}
 {{- $requests := dict }}
 {{- if and .resources .resources.requests }}
-{{- $requests = deepCopy .resources.requests }}
+  {{- $requests = deepCopy .resources.requests }}
 {{- end }}
-{{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
-{{- /* Respect user's explicit accelerator setting; only auto-fill if not set */}}
-{{- if not (hasKey $requests $acceleratorResource) }}
-{{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $numGpus)) }}
-{{- end }}
-{{- end }}
+{{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
+{{- if $draEnabled -}}
+  {{- /* DRA mode: pass through user-defined limits/requests as-is, add claims */}}
+  {{- /* Users should not include accelerator resources in limits when DRA is enabled */}}
 resources:
   limits:
     {{- toYaml $limits | nindent 4 }}
   requests:
     {{- toYaml $requests | nindent 4 }}
+  {{- include "llm-d-modelservice.containerResourceClaims" . | nindent 2 }}
+{{- else -}}
+  {{- /* Device Plugin mode: existing logic */}}
+  {{- $numGpus := int (include "llm-d-modelservice.numGpuPerWorker" .parallelism) -}}
+  {{- $acceleratorResource := include "llm-d-modelservice.acceleratorResource" . -}}
+  {{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
+    {{- /* Respect user's explicit accelerator setting; only auto-fill if not set */}}
+    {{- /* This allows TPUs where tensor_parallelism != num_accelerators (e.g., TP=8 needs 4 TPUs) */}}
+    {{- if not (hasKey $limits $acceleratorResource) }}
+      {{- $limits = mergeOverwrite $limits (dict $acceleratorResource (toString $numGpus)) }}
+    {{- end }}
+  {{- end }}
+  {{- if and (ge (int $numGpus) 1) (ne $acceleratorResource "") }}
+    {{- /* Respect user's explicit accelerator setting; only auto-fill if not set */}}
+    {{- if not (hasKey $requests $acceleratorResource) }}
+      {{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $numGpus)) }}
+    {{- end }}
+  {{- end }}
+resources:
+  limits:
+    {{- toYaml $limits | nindent 4 }}
+  requests:
+    {{- toYaml $requests | nindent 4 }}
+  {{- /* Include user-defined claims even in Device Plugin mode */}}
+  {{- if and .resources .resources.claims }}
+  claims:
+    {{- toYaml .resources.claims | nindent 4 }}
+  {{- end }}
+{{- end -}}
 {{- end }}
 
 {{/* prefill name */}}
@@ -416,9 +434,8 @@ context is a pdSpec
   {{- if $hasModelVolume }}
   {{ include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 4}}
   {{- end -}}
-  {{- if .Values.dra.enabled -}}
-    {{- (include "llm-d-modelservice.draResourceClaims" (dict "Values" .Values)) | nindent 2 }}
-  {{- end -}}
+  {{- /* Add resourceClaims for DRA (new and old API) */}}
+  {{- include "llm-d-modelservice.podResourceClaims" . | nindent 2 }}
 {{- end }}
 
 {{/*
@@ -477,11 +494,7 @@ context is a dict with helm root context plus:
   startupProbe:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .Values.dra.enabled }}
-  {{- (include "llm-d-modelservice.draResources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 2 }}
-  {{- else }}
   {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 2 }}
-  {{- end }}
   {{- include "llm-d-modelservice.mountModelVolumeVolumeMounts" (dict "container" .container "Values" .Values) | nindent 2 }}
   {{- /* DEPRECATED; use extraConfig.workingDir instead */ -}}
   {{- with .container.workingDir }}

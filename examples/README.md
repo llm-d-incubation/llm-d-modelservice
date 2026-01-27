@@ -142,8 +142,7 @@ This route supports requests with the prefix `mymodel/`; for example, to call th
 
 ### 6. Dynamic Resource Allocation
 
-See [this README](./dra/README.md).
-
+When `accelerator.dra` is `true`, accelerator resource (gpu) requirements are specified using _Dynamic Resource Allocation_. In particular, the `accelerator.type` is used to identify a `ResourceClaimTemplate` to create (from `accelerator.resourceClaimTemplates`). The vllm containers use `resources.claims` instead of `resources.limits` to request the necessary resources. For example, see `values-dra.yaml`.
 
 ## Troubleshooting:
 

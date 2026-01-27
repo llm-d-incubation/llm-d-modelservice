@@ -28,6 +28,9 @@ generate_output "gaudi" "examples/values-gaudi.yaml" "examples/output-gaudi.yaml
 # Generate output-pd.yaml (PD deployment)
 generate_output "pd" "examples/values-pd.yaml" "examples/output-pd.yaml"
 
+# Generate output-pd.yaml (PD deployment with Multi Node NVLink)
+generate_output "pd" "examples/values-pd-mnnvl.yaml" "examples/output-pd-mnnvl.yaml"
+
 # Generate output-xpu-pd.yaml (Intel i915)
 generate_output "xpu-pd" "examples/values-xpu-pd.yaml" "examples/output-xpu-pd.yaml"
 

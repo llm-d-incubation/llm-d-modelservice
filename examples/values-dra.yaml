@@ -1,7 +1,8 @@
-# This example demonstrates the folowing capabilities
-# 1. Use of Dynamic Resource Allocation (DRA)
-# 2. Via DRA, select two Gaudi3 devices for the decode pod
-# 3. For clarity, all other features are disabled, only Deployment and ResourceClaimTemplate are created
+# This example demonstrates the following capabilities:
+# 1. Use of Dynamic Resource Allocation (DRA) with the new accelerator.dra API
+# 2. Via DRA, select Intel Gaudi devices for the decode pod
+# 3. Auto-calculation of device count from parallelism settings
+# 4. For clarity, all other features are disabled, only Deployment and ResourceClaimTemplate are created
 
 modelArtifacts:
   name: random/model
@@ -9,9 +10,20 @@ modelArtifacts:
   size: 50Gi
   authSecretName: "llm-d-hf-token"
 
-dra:
-  enabled: true
-  type: "intel"
+# New DRA API: Enable DRA for accelerators
+accelerator:
+  type: intel-gaudi
+  dra: true
+  # The resourceClaimTemplate for intel-gaudi is defined in values.yaml
+  # Count will be auto-calculated from decode.parallelism (tensor * dataLocal)
+  # To override, uncomment and set:
+  # resourceClaimTemplates:
+  #   intel-gaudi:
+  #     name: intel-gaudi-claim-template
+  #     class: gaudi.intel.com
+  #     match: "exactly"
+  #     count: 2  # Explicit count override
+  #     selectors: []
 
 # Routing configuration
 routing:
@@ -20,6 +32,10 @@ routing:
 
 decode:
   create: true
+  # Parallelism settings determine the auto-calculated device count
+  parallelism:
+    tensor: 2      # Will request 2 Gaudi devices (2 * 1 = 2)
+    dataLocal: 1
   containers:
   - name: vllm
     image: intel/vllm:0.10.0-xpu
@@ -41,6 +57,23 @@ decode:
     - name: VLLM_SKIP_WARMUP
       value: "true"
     mountModelVolume: true
+    # When using DRA (accelerator.dra: true) -- as in this example:
+    # - Do NOT specify accelerator resources in limits (e.g., habana.ai/gaudi)
+    # - Accelerator allocation is handled via claims (auto-added by the chart)
+    # - You CAN specify non-accelerator resources like CPU and memory
+    # - You CAN specify other resources via claims (as in this example):
+    resources:
+      limits:
+        cpu: "4"
+        memory: "16Gi"
+      requests:
+        cpu: "2"
+        memory: "8Gi"
+      claims:
+      - name: llm-d-existing-claim-sample
+  resourceClaims:
+  - name: llm-d-existing-claim-sample
+    resourceClaimTemplateName: llm-d-existing-claim-sample
 
 prefill:
   create: false

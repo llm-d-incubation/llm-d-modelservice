@@ -1,10 +1,39 @@
-{{- if .Values.dra.enabled -}}
+{{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
+{{- if $draEnabled -}}
+{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
+{{- $templateName := include "llm-d-modelservice.acceleratorClaimTemplateName" . -}}
+{{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" . -}}
+{{- $config := $configJson | fromJson -}}
+{{- if $config -}}
+{{- /* Calculate count from parallelism if not explicitly set */}}
+{{- $count := 1 -}}
+{{- if hasKey $config "count" -}}
+  {{- $count = $config.count -}}
+{{- else -}}
+  {{- /* Auto-calculate from decode parallelism (use decode as default) */}}
+  {{- $count = int (include "llm-d-modelservice.numGpuPerWorker" .Values.decode.parallelism) -}}
+{{- end -}}
+{{- $class := $config.class | default (printf "gpu.%s.com" $acceleratorType) -}}
+{{- $match := $config.match | default "exactly" -}}
+{{- $selectors := $config.selectors | default list -}}
+---
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
-  name: {{ .Values.dra.type }}-resource-claim-template
+  name: {{ $templateName }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
 spec:
   spec:
     devices:
-      {{- (include "llm-d-modelservice.draResourceClaimDeviceClaim" (dict "Values" .Values)) | nindent 6 }}
-{{- end}}
+      requests:
+      - name: {{ $acceleratorType }}
+        {{ $match }}:
+          deviceClassName: {{ $class }}
+          count: {{ $count }}
+          {{- if $selectors }}
+          selectors:
+          {{- toYaml $selectors | nindent 10 }}
+          {{- end }}
+{{- end -}}
+{{- end -}}
