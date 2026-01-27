@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: xpu-pd-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.1
+    helm.sh/chart: llm-d-modelservice-v0.4.2
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: xpu-pd-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.1
+    helm.sh/chart: llm-d-modelservice-v0.4.2
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -42,7 +42,7 @@ spec:
             - --zap-encoder=json
             - --zap-log-level=debug
             - --secure-proxy=false
-          image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.3.0
+          image: ghcr.io/llm-d/llm-d-routing-sidecar:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -74,7 +74,7 @@ spec:
       
       containers:
         - name: vllm
-          image: ghcr.io/llm-d/llm-d-xpu:v0.2.0
+          image: ghcr.io/llm-d/llm-d-xpu:latest
           imagePullPolicy: Never
           
           command:
@@ -159,7 +159,7 @@ kind: Deployment
 metadata:
   name: xpu-pd-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.1
+    helm.sh/chart: llm-d-modelservice-v0.4.2
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -199,7 +199,7 @@ spec:
       
       containers:
         - name: vllm
-          image: ghcr.io/llm-d/llm-d-xpu:v0.2.0
+          image: ghcr.io/llm-d/llm-d-xpu:latest
           
           command:
             - python3
