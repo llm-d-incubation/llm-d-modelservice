@@ -74,7 +74,7 @@ modelArtifacts:
 multinode: false
 
 # Global accelerator configuration
-# Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google
+# Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu
 accelerator:
   # Type of accelerator to use
   type: nvidia
@@ -99,6 +99,9 @@ accelerator:
         value: "1"
       - name: TORCH_LLM_ALLREDUCE
         value: "1"
+      - name: VLLM_WORKER_MULTIPROC_METHOD
+        value: "spawn"
+    intel-xe:
       - name: VLLM_WORKER_MULTIPROC_METHOD
         value: "spawn"
   # ResourceClaimTemplate configurations for DRA (used when dra: true)

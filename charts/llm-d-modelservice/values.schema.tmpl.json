@@ -14,7 +14,7 @@
           "type": "boolean"
         },
         "env": {
-          "additionalProperties": false,
+          "additionalProperties": true,
           "description": "Environment variables specific to accelerator types",
           "properties": {
             "intel-i915": {
