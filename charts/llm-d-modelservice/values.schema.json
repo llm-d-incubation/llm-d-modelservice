@@ -4,7 +4,7 @@
     "properties": {
         "accelerator": {
             "additionalProperties": false,
-            "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google",
+            "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu",
             "properties": {
                 "dra": {
                     "default": false,
@@ -14,7 +14,7 @@
                     "type": "boolean"
                 },
                 "env": {
-                    "additionalProperties": true,
+                    "additionalProperties": false,
                     "description": "Environment variables specific to accelerator types",
                     "properties": {
                         "intel-i915": {
@@ -82,6 +82,35 @@
                             },
                             "required": [],
                             "title": "intel-i915",
+                            "type": "array"
+                        },
+                        "intel-xe": {
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "name": {
+                                                "default": "VLLM_WORKER_MULTIPROC_METHOD",
+                                                "required": [],
+                                                "title": "name",
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "default": "spawn",
+                                                "required": [],
+                                                "title": "value",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [],
+                                        "type": "object"
+                                    }
+                                ],
+                                "required": []
+                            },
+                            "required": [],
+                            "title": "intel-xe",
                             "type": "array"
                         }
                     },
