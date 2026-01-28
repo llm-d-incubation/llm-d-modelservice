@@ -3620,7 +3620,7 @@
                     "type": "boolean"
                 },
                 "image": {
-                    "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation-requester:latest",
+                    "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest",
                     "required": [],
                     "title": "image",
                     "type": "string"

@@ -142,7 +142,7 @@ accelerator:
 # -- Requester configuration part of the dual-pod solution for FMA
 requester:
   enable: false
-  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation-requester:latest"
+  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
   adminPort: 8081
   port:
     probes: 8080
