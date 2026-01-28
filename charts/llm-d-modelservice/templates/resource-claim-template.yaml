@@ -1,28 +1,57 @@
-{{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
-{{- if $draEnabled -}}
-{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
-{{- $templateName := include "llm-d-modelservice.acceleratorClaimTemplateName" . -}}
-{{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" . -}}
-{{- $config := $configJson | fromJson -}}
-{{- if $config -}}
-{{- /* Calculate count from parallelism if not explicitly set */}}
-{{- $count := 1 -}}
-{{- if hasKey $config "count" -}}
-  {{- $count = $config.count -}}
-{{- else -}}
-  {{- /* Auto-calculate from decode parallelism (use decode as default) */}}
-  {{- $count = int (include "llm-d-modelservice.numGpuPerWorker" .Values.decode.parallelism) -}}
-{{- end -}}
-{{- $class := $config.class | default (printf "gpu.%s.com" $acceleratorType) -}}
-{{- $match := $config.match | default "exactly" -}}
-{{- $selectors := $config.selectors | default list -}}
+{{- /* Iterate over decode and prefill roles to create role-specific templates */}}
+{{- $roles := list
+  (dict "name" "decode" "config" .Values.decode)
+  (dict "name" "prefill" "config" .Values.prefill)
+-}}
+{{- $globalDra := .Values.accelerator.dra | default false -}}
+{{- range $role := $roles -}}
+  {{- if $role.config.create -}}
+    {{- /* Check if this role uses DRA */ -}}
+    {{- $useDra := $globalDra -}}
+    {{- if and $role.config.accelerator (hasKey $role.config.accelerator "dra") -}}
+      {{- $useDra = $role.config.accelerator.dra -}}
+    {{- end -}}
+
+    {{- if $useDra -}}
+      {{- /* Determine accelerator type */ -}}
+      {{- $acceleratorType := $.Values.accelerator.type | default "nvidia" -}}
+      {{- if and $role.config.accelerator (hasKey $role.config.accelerator "type") -}}
+        {{- $acceleratorType = $role.config.accelerator.type -}}
+      {{- end -}}
+
+      {{- /* Create context and get config */ -}}
+      {{- $context := dict "Values" $.Values "role" $role.name -}}
+      {{- $configJson := include "llm-d-modelservice.draResourceClaimTemplateConfig" $context -}}
+      {{- $config := $configJson | fromJson -}}
+
+      {{- if $config -}}
+        {{- /* Calculate template name */ -}}
+        {{- $templateName := "" -}}
+        {{- if hasKey $config "name" -}}
+          {{- $templateName = printf "%s-%s" $config.name $role.name -}}
+        {{- else -}}
+          {{- $templateName = printf "%s-%s-claim-template" $acceleratorType $role.name -}}
+        {{- end -}}
+
+        {{- /* Calculate count */ -}}
+        {{- $count := 1 -}}
+        {{- if hasKey $config "count" -}}
+          {{- $count = $config.count -}}
+        {{- else -}}
+          {{- $count = int (include "llm-d-modelservice.numGpuPerWorker" $role.config.parallelism) -}}
+        {{- end -}}
+
+        {{- $class := $config.class | default (printf "gpu.%s.com" $acceleratorType) -}}
+        {{- $match := $config.match | default "exactly" -}}
+        {{- $selectors := $config.selectors | default list }}
 ---
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:
   name: {{ $templateName }}
   labels:
-    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    {{- include "llm-d-modelservice.labels" $ | nindent 4 }}
+    llm-d.ai/role: {{ $role.name }}
 spec:
   spec:
     devices:
@@ -35,5 +64,7 @@ spec:
           selectors:
           {{- toYaml $selectors | nindent 10 }}
           {{- end }}
-{{- end -}}
-{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end }}

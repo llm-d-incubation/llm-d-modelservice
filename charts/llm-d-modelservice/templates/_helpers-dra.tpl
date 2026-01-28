@@ -4,7 +4,23 @@ DRA (Dynamic Resource Allocation) Helper Functions
 
 {{/* Check if DRA is enabled */}}
 {{- define "llm-d-modelservice.draEnabled" -}}
-{{- if .Values.accelerator.dra -}}
+{{- $draEnabled := false -}}
+{{- if and .role (eq .role "decode") -}}
+  {{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "dra") -}}
+    {{- $draEnabled = .Values.decode.accelerator.dra -}}
+  {{- else -}}
+    {{- $draEnabled = .Values.accelerator.dra | default false -}}
+  {{- end -}}
+{{- else if and .role (eq .role "prefill") -}}
+  {{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "dra") -}}
+    {{- $draEnabled = .Values.prefill.accelerator.dra -}}
+  {{- else -}}
+    {{- $draEnabled = .Values.accelerator.dra | default false -}}
+  {{- end -}}
+{{- else -}}
+  {{- $draEnabled = .Values.accelerator.dra | default false -}}
+{{- end -}}
+{{- if $draEnabled -}}
 true
 {{- else -}}
 false
@@ -13,28 +29,68 @@ false
 
 {{/* Get accelerator type */}}
 {{- define "llm-d-modelservice.acceleratorType" -}}
-{{- .Values.accelerator.type | default "nvidia" -}}
+{{- if and .role (eq .role "decode") -}}
+  {{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "type") -}}
+    {{- .Values.decode.accelerator.type -}}
+  {{- else -}}
+    {{- .Values.accelerator.type | default "nvidia" -}}
+  {{- end -}}
+{{- else if and .role (eq .role "prefill") -}}
+  {{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "type") -}}
+    {{- .Values.prefill.accelerator.type -}}
+  {{- else -}}
+    {{- .Values.accelerator.type | default "nvidia" -}}
+  {{- end -}}
+{{- else -}}
+  {{- .Values.accelerator.type | default "nvidia" -}}
+{{- end -}}
 {{- end }}
 
 {{/* Get accelerator claim name based on type */}}
 {{- define "llm-d-modelservice.acceleratorClaimName" -}}
 {{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
+{{- $role := .role | default "" -}}
 {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template := index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
-  {{- $template.name | default (printf "%s-claim" $acceleratorType) -}}
+  {{- if $role -}}
+    {{- if $template.name -}}
+      {{- printf "%s-%s-claim" (trimSuffix "-claim-template" $template.name) $role -}}
+    {{- else -}}
+      {{- printf "%s-%s-claim" $acceleratorType $role -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $template.name | default (printf "%s-claim" $acceleratorType) -}}
+  {{- end -}}
 {{- else -}}
-  {{- printf "%s-claim" $acceleratorType -}}
+  {{- if $role -}}
+    {{- printf "%s-%s-claim" $acceleratorType $role -}}
+  {{- else -}}
+    {{- printf "%s-claim" $acceleratorType -}}
+  {{- end -}}
 {{- end -}}
 {{- end }}
 
 {{/* Get accelerator claim template name */}}
 {{- define "llm-d-modelservice.acceleratorClaimTemplateName" -}}
 {{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
+{{- $role := .role | default "" -}}
 {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
   {{- $template := index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
-  {{- $template.name | default (printf "%s-claim-template" $acceleratorType) -}}
+  {{- if $role -}}
+    {{- if $template.name -}}
+      {{- printf "%s-%s" $template.name $role -}}
+    {{- else -}}
+      {{- printf "%s-%s-claim-template" $acceleratorType $role -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $template.name | default (printf "%s-claim-template" $acceleratorType) -}}
+  {{- end -}}
 {{- else -}}
-  {{- printf "%s-claim-template" $acceleratorType -}}
+  {{- if $role -}}
+    {{- printf "%s-%s-claim-template" $acceleratorType $role -}}
+  {{- else -}}
+    {{- printf "%s-claim-template" $acceleratorType -}}
+  {{- end -}}
 {{- end -}}
 {{- end }}
 

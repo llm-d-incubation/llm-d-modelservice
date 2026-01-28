@@ -4,9 +4,9 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: pd-llm-d-modelservice
+  name: pd-mnnvl-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -14,9 +14,9 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pd-llm-d-modelservice-decode
+  name: pd-mnnvl-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -52,7 +52,7 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
     
-      serviceAccountName: pd-llm-d-modelservice
+      serviceAccountName: pd-mnnvl-llm-d-modelservice
       
       volumes:
         - emptyDir: {}
@@ -130,9 +130,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pd-llm-d-modelservice-prefill
+  name: pd-mnnvl-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.1
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -150,7 +150,7 @@ spec:
         llm-d.ai/role: prefill
     spec:
     
-      serviceAccountName: pd-llm-d-modelservice
+      serviceAccountName: pd-mnnvl-llm-d-modelservice
       
       volumes:
         - emptyDir: {}

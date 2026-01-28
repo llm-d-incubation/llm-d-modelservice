@@ -232,7 +232,7 @@ Context is helm root context plus key "role" ("decode" or "prefill")
 
 {{/* Get accelerator resource name based on type */}}
 {{- define "llm-d-modelservice.acceleratorResource" -}}
-{{- $acceleratorType := .Values.accelerator.type | default "nvidia" -}}
+{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
 {{- if and .container .container.image (contains "llm-d-inference-sim" .container.image) -}}
 {{/* No resource name for llm-d-inference-sim */}}
 {{- else if eq $acceleratorType "cpu" -}}
@@ -246,7 +246,7 @@ nvidia.com/gpu
 
 {{/* Get accelerator environment variables based on type */}}
 {{- define "llm-d-modelservice.acceleratorEnv" -}}
-{{- $acceleratorType := .Values.accelerator.type | default "nvidia" -}}
+{{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
 {{- if and (ne $acceleratorType "cpu") (hasKey .Values.accelerator.env $acceleratorType) -}}
 {{- $envVars := index .Values.accelerator.env $acceleratorType -}}
 {{- range $envVars }}
@@ -494,7 +494,7 @@ context is a dict with helm root context plus:
   startupProbe:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values)) | nindent 2 }}
+  {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values "role" .role)) | nindent 2 }}
   {{- include "llm-d-modelservice.mountModelVolumeVolumeMounts" (dict "container" .container "Values" .Values) | nindent 2 }}
   {{- /* DEPRECATED; use extraConfig.workingDir instead */ -}}
   {{- with .container.workingDir }}

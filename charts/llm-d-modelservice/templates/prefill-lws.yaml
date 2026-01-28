@@ -65,7 +65,7 @@ spec:
         {{- if hasKey .Values.prefill "terminationGracePeriodSeconds" }}
         terminationGracePeriodSeconds: {{ .Values.prefill.terminationGracePeriodSeconds }}
         {{- end }}
-        {{- (include "llm-d-modelservice.modelPod" (dict "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
+        {{- (include "llm-d-modelservice.modelPod" (dict "role" "prefill" "pdSpec" .Values.prefill "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
         {{- with .Values.prefill.containers }}
         containers:
           {{- range . }}
