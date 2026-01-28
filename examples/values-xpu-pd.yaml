@@ -19,7 +19,7 @@ accelerator:
 routing:
   servicePort: 8000
   proxy:
-    image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.3.0
+    image: ghcr.io/llm-d/llm-d-routing-sidecar:latest
     targetPort: 8200
     # Use compatible connector for XPU
     connector: nixlv2
@@ -30,7 +30,7 @@ decode:
   replicas: 1  # Just 1 decode pod
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d-xpu:v0.2.0"
+    image: "ghcr.io/llm-d/llm-d-xpu:latest"
     imagePullPolicy: Never
     modelCommand: custom
     command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
@@ -97,7 +97,7 @@ prefill:
   replicas: 1  # Just 1 prefill pod
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d-xpu:v0.2.0"
+    image: "ghcr.io/llm-d/llm-d-xpu:latest"
     modelCommand: custom
     command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
     args:
