@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+# Use Nvidia accelerator base
+resources:
+  - ../../../accelerators/nvidia
+
+# Override model configuration. Update model name, uri, and size.
+configMapGenerator:
+  - name: model-config
+    behavior: merge
+    literals:
+      - modelName=facebook/opt-125m
+      - modelUri=hf://facebook/opt-125m
+      - modelSize=20Gi
+
+# Customize resources for this deployment as required.
+patches:
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "16Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "16"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "16Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "16"

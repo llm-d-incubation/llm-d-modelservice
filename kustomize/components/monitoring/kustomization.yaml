@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - decode-podmonitor.yaml
+  - prefill-podmonitor.yaml
+
+# Ensure pods have named metrics port for PodMonitor to scrape
+patches:
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/ports/0/name
+        value: metrics
+
+  - target:
+      kind: Deployment
+      name: modelservice-prefill
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/ports/0/name
+        value: metrics
+
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-decode-lws
+    patch: |-
+      - op: replace
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/ports/0/name
+        value: metrics
+
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-prefill-lws
+    patch: |-
+      - op: replace
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/ports/0/name
+        value: metrics
