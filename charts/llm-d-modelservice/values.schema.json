@@ -417,10 +417,11 @@
                     "type": "array"
                 },
                 "create": {
-                    "default": true,
+                    "const": true,
+                    "default": "true",
+                    "description": " const: true @schema",
                     "required": [],
-                    "title": "create",
-                    "type": "boolean"
+                    "title": "create"
                 },
                 "initContainers": {
                     "description": " type: array items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container @schema Additional init containers to run before the main containers These will be added alongside the routing proxy init container (if enabled)",

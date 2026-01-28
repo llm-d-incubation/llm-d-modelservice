@@ -229,6 +229,9 @@ routing:
 # @schema
 # -- Decode pod configuration
 decode:
+  # @schema
+  # const: true
+  # @schema
   create: true
   autoscaling:
     enabled: false
