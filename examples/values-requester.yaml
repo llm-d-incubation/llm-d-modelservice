@@ -29,7 +29,7 @@ routing:
 # -- Requester configuration part of the dual-pod solution for FMA
 requester:
   enable: true
-  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation-requester:latest"
+  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
   port:
     probes: 8080
     spi: 8081
