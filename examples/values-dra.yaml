@@ -69,8 +69,6 @@ decode:
       requests:
         cpu: "2"
         memory: "8Gi"
-      claims:
-      - name: llm-d-existing-claim-sample
   resourceClaims:
   - name: llm-d-existing-claim-sample
     resourceClaimTemplateName: llm-d-existing-claim-sample

@@ -60,8 +60,6 @@ decode:
       requests:
         cpu: "16"
         memory: 16Gi
-      claims:
-      - name: llm-d-imex-channel-0
     mountModelVolume: true
   resourceClaims:
   - name: llm-d-imex-channel-0
@@ -104,8 +102,6 @@ prefill:
       requests:
         cpu: "16"
         memory: 16Gi
-      claims:
-      - name: llm-d-imex-channel-0
     mountModelVolume: true
   resourceClaims:
   - name: llm-d-imex-channel-0

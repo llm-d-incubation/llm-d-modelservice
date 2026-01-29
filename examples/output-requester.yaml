@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: requester-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.2
+    helm.sh/chart: llm-d-modelservice-v0.4.3
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -94,7 +94,6 @@ spec:
                   protocol: TCP
                 - containerPort: 5557
                   protocol: TCP
-                
                 resources:
                   limits:
                     cpu: "16"
@@ -143,7 +142,7 @@ kind: Deployment
 metadata:
   name: requester-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.2
+    helm.sh/chart: llm-d-modelservice-v0.4.3
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -216,7 +215,6 @@ spec:
             protocol: TCP
           - containerPort: 5557
             protocol: TCP
-          
           resources:
             limits:
               cpu: "16"
