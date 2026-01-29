@@ -1,0 +1,11 @@
+# Lychee link checker configuration
+# https://lychee.cli.rs/
+
+# Accept non-200 status codes (429: rate limits)
+accept = ["200", "429"]
+
+# Timeout per request (seconds)
+timeout = 20
+
+# Retry failed requests
+max_retries = 3
