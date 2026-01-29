@@ -38,7 +38,7 @@ Once a model is deployed, inference requests must be routed to it. To do this, t
 
 Note that when using the GAIE [inferencepool chart](https://github.com/kubernetes-sigs/gateway-api-inference-extension/tree/main/config/charts/inferencepool) together with the modelservice chart the following relationships will exist:
 
-- The modelservice field `modelArtifact.routing.servicePort` should match the GAIE field `inferencePool.targetPortNumber` or be an entry in the list `inferencePool.targets` (depending on the apiVersion of InferencePool).
+- The modelservice field `modelArtifact.routing.servicePort` should match the GAIE field `inferencePool.targetPortNumber` (for InferencePool v1alpha2) or be an entry in the list `inferencePool.targets` (for InferencePool v1).
 - The modelservice field `modelArtifact.labels` should match the GAIE field, `inferencePool.modelServers.matchLabels`.
 Note that the field `llm-d.ai/role` will be addition in addition to the labels specified in the `modelArtifacts.labels` field.
 
