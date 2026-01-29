@@ -6,8 +6,8 @@ kind: ServiceAccount
 metadata:
   name: pd-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.3
-    app.kubernetes.io/version: "v0.3.0"
+    helm.sh/chart: llm-d-modelservice-v0.4.4
+    app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: llm-d-modelservice/templates/decode-deployment.yaml
@@ -16,8 +16,8 @@ kind: Deployment
 metadata:
   name: pd-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.3
-    app.kubernetes.io/version: "v0.3.0"
+    helm.sh/chart: llm-d-modelservice-v0.4.4
+    app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -128,8 +128,8 @@ kind: Deployment
 metadata:
   name: pd-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.3
-    app.kubernetes.io/version: "v0.3.0"
+    helm.sh/chart: llm-d-modelservice-v0.4.4
+    app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
