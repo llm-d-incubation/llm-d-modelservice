@@ -95,7 +95,7 @@ spec:
     name: INSERT_GATEWAY_NAME
   rules:
   - backendRefs:
-    - group: inference.networking.x-k8s.io
+    - group: inference.networking.k8s.io
       kind: InferencePool
       name: INSERT_INFERENCEPOOL_NAME
       port: 8000
@@ -122,7 +122,7 @@ spec:
     name: INSERT_GATEWAY_NAME
   rules:
   - backendRefs:
-    - group: inference.networking.x-k8s.io
+    - group: inference.networking.k8s.io
       kind: InferencePool
       name: INSERT_INFERENCEPOOL_NAME
       port: 8000
