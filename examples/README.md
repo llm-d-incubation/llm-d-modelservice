@@ -14,11 +14,11 @@ helm repo update
 |---------|-------------|----------------------|
 | [`values-cpu.yaml`](#1-cpu-only) | CPU-only inference example | Single node, no GPU required |
 | [`values-pd.yaml`](#2-pd-disaggregation) | Prefill/decode disaggregation example | Multi-GPU, demonstrates P/D splitting |
-| [`values-xpu.yaml`](#5-intel-xpu-examples) | Intel XPU single-node example | Intel Data Center GPU Max |
-| [`pvc/`](#4-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
+| [`values-xpu.yaml`](#4-intel-xpu-examples) | Intel XPU single-node example | Intel Data Center GPU Max |
+| [`pvc/`](#3-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
 | [`dra/`](#6-dynamic-resource-allocation) | Dynamic Resource Allocation (DRA) examples | Shows different DRA use cases |
 
-All the examples assume a `Gateway` and GAIE configuration have been deployed.  See the [llm-d guides](https://github.com/llm-d/llm-d/tree/main/guides) for examples.  Further, an `HTTPRoute` must be deployed. Some examples of `HTTPRoute` is provided [below](https://github.com/llm-d-incubation/llm-d-modelservice/blob/main/examples/README.md#httproute).
+All the examples assume a `Gateway` and GAIE configuration have been deployed.  See the [llm-d guides](https://github.com/llm-d/llm-d/tree/main/guides) for examples.  Further, an `HTTPRoute` must be deployed. Some examples of `HTTPRoute` is provided [below](#httproute-examples).
 
 ## Usage Examples
 

@@ -23,7 +23,7 @@ We welcome contributions to the llm-d-modelservice chart! If you have a bug fix,
 
 Before submitting a pull request, please make sure you have the following tools installed:
 
-- [Helm](http://helm.sh/)
+- [Helm](https://helm.sh/)
 - [Chart Testing](https://github.com/helm/chart-testing)
 - [pre-commit](https://pre-commit.com/)
 <!-- TODO: Once supported, also install:
@@ -80,7 +80,7 @@ make pre-commit-run
 For every Pull Request submitted, ensure the following steps have been done:
 
 1. [Sign your commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
-2. [Sign-off your commits](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt-code--signoffcode)
+2. [Sign-off your commits](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---signoff)
 3. Ensure that the `make lint`, `make verify` command runs successfully to validate your changes
 4. Update the version number in the [`charts/llm-d-modelservice/Chart.yaml`](charts/llm-d-modelservice/Chart.yaml) file using
    [semantic versioning](https://semver.org/). Follow the `X.Y.Z` format so the nature of the changes is reflected in the
