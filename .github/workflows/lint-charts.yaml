@@ -3,11 +3,30 @@ name: Lint and Test Charts
 on: pull_request
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check for chart changes
+        id: check
+        run: |
+          if git diff --name-only origin/${{ github.event.repository.default_branch }}...HEAD | grep -q '^charts/'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
   lint-test:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -16,21 +35,8 @@ jobs:
         with:
           version: v3.17.0
 
-      - uses: actions/setup-python@v5.3.0
-        with:
-          python-version: '3.x'
-          check-latest: true
-
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.7.0
-
-      - name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
-          if [[ -n "$changed" ]]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
+        uses: helm/chart-testing-action@v2.8.0
 
       - name: Add Helm dependency repos
         run: |
@@ -38,8 +44,7 @@ jobs:
             helm dependency list  --max-col-width 120 $dir 2> /dev/null | tail +2 | head -n -1 | awk '{ print "helm repo add " $1 " " $3 }' | while read cmd; do $cmd; done
           done
 
-      - name: Run make lint for chart-testing
-        if: steps.list-changed.outputs.changed == 'true'
+      - name: Run make lint
         env:
           TARGET_BRANCH: ${{ github.event.repository.default_branch }}
         run: make lint
@@ -48,19 +53,7 @@ jobs:
         run: make verify
 
       - name: Create kind cluster
-        if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1.12.0
 
-      - name: Install CRDs
-        if: steps.list-changed.outputs.changed == 'true'
-        run: |
-          # Install Kubernetes Gateway API CRDs
-          kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
-
-          # Install Kubernetes Gateway API Inference Extension CRDs
-          VERSION=v0.3.0
-          kubectl apply -f https://github.com/kubernetes-sigs/gateway-api-inference-extension/releases/download/$VERSION/manifests.yaml
-
       - name: Run chart-testing (install)
-        if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --helm-extra-set-args "--set=accelerator.type=cpu"
