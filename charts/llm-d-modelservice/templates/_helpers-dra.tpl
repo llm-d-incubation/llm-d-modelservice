@@ -112,8 +112,8 @@ false
 {{- $count -}}
 {{- end }}
 
-{{/* Generate pod-level resourceClaims (merges accelerator + user-defined claims) */}}
-{{- define "llm-d-modelservice.podResourceClaims" -}}
+{{/* Generate resourceClaims Variable (merges accelerator + user-defined claims) */}}
+{{- define "llm-d-modelservice.resourceClaimsBase" -}}
 {{- $claims := list -}}
 {{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
 {{- if $draEnabled -}}
@@ -125,29 +125,15 @@ false
   {{- $claims = concat $claims .pdSpec.resourceClaims -}}
 {{- end -}}
 {{- if $claims -}}
-resourceClaims:
-{{- toYaml $claims | nindent 2 }}
+{{- toYaml $claims }}
 {{- end -}}
 {{- end }}
 
-{{/* Generate container-level resource claims (merges accelerator + user-defined claims) */}}
-{{- define "llm-d-modelservice.containerResourceClaims" -}}
-{{- $claims := list -}}
-{{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
-{{- if $draEnabled -}}
-  {{- $claimName := include "llm-d-modelservice.acceleratorClaimName" . -}}
-  {{- $claims = append $claims (dict "name" $claimName) -}}
-{{- end -}}
-{{- if and .resources .resources.claims -}}
-  {{- if kindIs "slice" .resources.claims -}}
-    {{- $claims = concat $claims .resources.claims -}}
-  {{- else -}}
-    {{- fail "resources.claims must be a list of objects with 'name' field, e.g., [{\"name\": \"claim-name\"}]" -}}
-  {{- end -}}
-{{- end -}}
-{{- if $claims -}}
-claims:
-{{- toYaml $claims | nindent 2 }}
+{{- define "llm-d-modelservice.podResourceClaims" -}}
+{{- $claimList := include "llm-d-modelservice.resourceClaimsBase" . -}}
+{{- if $claimList -}}
+resourceClaims:
+{{- $claimList | nindent 2 }}
 {{- end -}}
 {{- end }}
 

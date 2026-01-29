@@ -347,20 +347,6 @@ decode:
         # additionalProperties: true
         # @schema
         requests: {}
-        # @schema
-        # type: array
-        # items:
-        #   type: object
-        #   required: [name]
-        #   properties:
-        #     name:
-        #       type: string
-        # @schema
-        # Resource claims for this container (DRA)
-        # Will be merged with accelerator claim when accelerator.dra is enabled
-        claims: []
-        # Example:
-        # - name: llm-d-imex-channel-0
       # when set, a volumeMount (and volume) is created for model storage
       mountModelVolume: true
       # @schema
@@ -579,20 +565,6 @@ prefill:
         # additionalProperties: true
         # @schema
         requests: {}
-        # @schema
-        # type: array
-        # items:
-        #   type: object
-        #   required: [name]
-        #   properties:
-        #     name:
-        #       type: string
-        # @schema
-        # Resource claims for this container (DRA)
-        # Will be merged with accelerator claim when accelerator.dra is enabled
-        claims: []
-        # Example:
-        # - name: llm-d-imex-channel-0
       # @schema
       # type: array
       # items:
