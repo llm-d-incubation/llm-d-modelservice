@@ -138,7 +138,6 @@ spec:
             protocol: TCP
           - containerPort: 5557
             protocol: TCP
-          
           resources:
             limits:
               cpu: "8"
@@ -262,7 +261,6 @@ spec:
             protocol: TCP
           - containerPort: 5557
             protocol: TCP
-          
           resources:
             limits:
               cpu: "16"

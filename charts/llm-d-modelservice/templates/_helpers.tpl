@@ -281,15 +281,14 @@ nvidia.com/gpu
   {{- $requests = deepCopy .resources.requests }}
 {{- end }}
 {{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
+resources:
 {{- if $draEnabled -}}
   {{- /* DRA mode: pass through user-defined limits/requests as-is, add claims */}}
   {{- /* Users should not include accelerator resources in limits when DRA is enabled */}}
-resources:
   limits:
     {{- toYaml $limits | nindent 4 }}
   requests:
     {{- toYaml $requests | nindent 4 }}
-  {{- include "llm-d-modelservice.containerResourceClaims" . | nindent 2 }}
 {{- else -}}
   {{- /* Device Plugin mode: existing logic */}}
   {{- $numGpus := int (include "llm-d-modelservice.numGpuPerWorker" .parallelism) -}}
@@ -307,17 +306,20 @@ resources:
       {{- $requests = mergeOverwrite $requests (dict $acceleratorResource (toString $numGpus)) }}
     {{- end }}
   {{- end }}
-resources:
   limits:
     {{- toYaml $limits | nindent 4 }}
   requests:
     {{- toYaml $requests | nindent 4 }}
-  {{- /* Include user-defined claims even in Device Plugin mode */}}
-  {{- if and .resources .resources.claims }}
-  claims:
-    {{- toYaml .resources.claims | nindent 4 }}
-  {{- end }}
 {{- end -}}
+{{- $claimList := include "llm-d-modelservice.resourceClaimsBase" . | fromYamlArray -}}
+{{- if $claimList }}
+  claims:
+  {{- $containerClaims := list -}}
+  {{- range $claimList -}}
+    {{- $containerClaims = append $containerClaims (dict "name" .name) -}}
+  {{- end }}
+    {{- toYaml $containerClaims | nindent 4 }}
+{{- end }}
 {{- end }}
 
 {{/* prefill name */}}
@@ -494,7 +496,7 @@ context is a dict with helm root context plus:
   startupProbe:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values "role" .role)) | nindent 2 }}
+  {{- (include "llm-d-modelservice.resources" (dict "resources" .container.resources "parallelism" .parallelism "container" .container "Values" .Values "role" .role "pdSpec" .pdSpec)) | nindent 2 }}
   {{- include "llm-d-modelservice.mountModelVolumeVolumeMounts" (dict "container" .container "Values" .Values) | nindent 2 }}
   {{- /* DEPRECATED; use extraConfig.workingDir instead */ -}}
   {{- with .container.workingDir }}

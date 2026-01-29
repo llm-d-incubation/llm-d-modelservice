@@ -34,7 +34,7 @@ spec:
             {{- with .Values.decode.containers }}
             containers:
               {{- range . }}
-              {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart)) | nindent 14 }}
+              {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.decode)) | nindent 14 }}
               {{- end }}
             {{- end }}
     spec:
