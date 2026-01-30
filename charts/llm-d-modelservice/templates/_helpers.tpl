@@ -550,8 +550,10 @@ context is a dict with helm root context plus:
 command: ["vllm", "serve"]
 args:
 {{- (include "llm-d-modelservice.argsByProtocol" .) }}
+  {{- if not (has "--port" .container.args) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+  {{- end }}
   {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .parallelism) -}}
   {{- if gt (int $tensorParallelism) 1 }}
   - --tensor-parallel-size
@@ -580,8 +582,10 @@ args:
 {{- /* no command needed, set --model and --port arguments */}}
 args:
 {{- (include "llm-d-modelservice.argsByProtocol" (merge . (dict "modelArg" true))) }}
+  {{- if not (has "--port" .container.args) }}
   - --port
   - {{ (include "llm-d-modelservice.vllmPort" .) | quote }}
+  {{- end }}
   {{- $tensorParallelism := int (include "llm-d-modelservice.tensorParallelism" .parallelism) -}}
   {{- if gt (int $tensorParallelism) 1 }}
   - --tensor-parallel-size
