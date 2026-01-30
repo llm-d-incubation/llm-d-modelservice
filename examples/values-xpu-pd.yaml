@@ -56,7 +56,7 @@ decode:
           fieldRef:
             fieldPath: status.podIP
       - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-        value: "5557"
+        value: "5600"
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
       # Intel XPU specific environment variables
@@ -73,7 +73,7 @@ decode:
     ports:
       - containerPort: 8200
         protocol: TCP
-      - containerPort: 5557  # NIXL side channel
+      - containerPort: 5600  # NIXL side channel
         protocol: TCP
     resources:
       limits:
@@ -118,7 +118,7 @@ prefill:
       - name: ZE_ENABLE_PCI_ID_DEVICE_ORDER
         value: "1"
       - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-        value: "5557"
+        value: "5600"
       - name: VLLM_NIXL_SIDE_CHANNEL_HOST
         valueFrom:
           fieldRef:
@@ -139,7 +139,7 @@ prefill:
     ports:
       - containerPort: 8000
         protocol: TCP
-      - containerPort: 5557
+      - containerPort: 5600
         protocol: TCP
     resources:
       limits:

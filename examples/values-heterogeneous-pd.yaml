@@ -63,13 +63,13 @@ decode:
           fieldRef:
             fieldPath: status.podIP
       - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-        value: "5557"
+        value: "5600"
       - name: VLLM_LOGGING_LEVEL
         value: DEBUG
     ports:
       - containerPort: 8200  # from routing.proxy.targetPort
         protocol: TCP
-      - containerPort: 5557  # NIXL side channel
+      - containerPort: 5600  # NIXL side channel
         protocol: TCP
     resources:
       limits:
@@ -112,7 +112,7 @@ prefill:
       - name: UCX_TLS
         value: "tcp"
       - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-        value: "5557"
+        value: "5600"
       - name: VLLM_NIXL_SIDE_CHANNEL_HOST
         valueFrom:
           fieldRef:
@@ -122,7 +122,7 @@ prefill:
     ports:
       - containerPort: 8000  # from routing.servicePort
         protocol: TCP
-      - containerPort: 5557  # NIXL side channel
+      - containerPort: 5600  # NIXL side channel
         protocol: TCP
     resources:
       limits:

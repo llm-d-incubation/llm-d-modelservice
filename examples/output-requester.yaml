@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: requester-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.3
+    helm.sh/chart: llm-d-modelservice-v0.4.4
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -76,7 +76,7 @@ spec:
                     fieldRef:
                       fieldPath: status.podIP
                 - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-                  value: "5557"
+                  value: "5600"
                 - name: VLLM_LOGGING_LEVEL
                   value: DEBUG
                 - name: DP_SIZE
@@ -92,7 +92,7 @@ spec:
                 ports:
                 - containerPort: 8200
                   protocol: TCP
-                - containerPort: 5557
+                - containerPort: 5600
                   protocol: TCP
                 resources:
                   limits:
@@ -142,7 +142,7 @@ kind: Deployment
 metadata:
   name: requester-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.3
+    helm.sh/chart: llm-d-modelservice-v0.4.4
     app.kubernetes.io/version: "v0.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -193,7 +193,7 @@ spec:
           - name: UCX_TLS
             value: cuda_ipc,cuda_copy,tcp
           - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-            value: "5557"
+            value: "5600"
           - name: VLLM_NIXL_SIDE_CHANNEL_HOST
             valueFrom:
               fieldRef:
@@ -213,7 +213,7 @@ spec:
           ports:
           - containerPort: 8000
             protocol: TCP
-          - containerPort: 5557
+          - containerPort: 5600
             protocol: TCP
           resources:
             limits:
