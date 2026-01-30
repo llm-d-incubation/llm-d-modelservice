@@ -1,0 +1,64 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+# Use Nvidia accelerator as base
+resources:
+  - ../../../accelerators/nvidia
+
+# Enable routing proxy and prefill disaggregation
+components:
+  - ../../../components/routing-proxy
+  - ../../../components/prefill-disaggregation
+
+configMapGenerator:
+  - name: model-config
+    behavior: merge
+    literals:
+      - modelName=facebook/opt-125m
+      - modelUri=hf://facebook/opt-125m
+      - modelSize=20Gi
+
+patches:
+  # Enable and configure decode deployment
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "32Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "16"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "32Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "16"
+
+  # Configure prefill deployment (enabled by component)
+  - target:
+      kind: Deployment
+      name: modelservice-prefill
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "24Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "12"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "24Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "12"
