@@ -221,9 +221,18 @@ Required number of GPU per worker -- dpl * tp
 {{/*
 Port on which vllm container should listen.
 Context is helm root context plus key "role" ("decode" or "prefill")
+For prefill: uses prefill.servicePort if set, otherwise fall back to routing.servicePort
+For decode with proxy: uses routing.proxy.targetPort
+For decode without proxy: uses routing.servicePort
 */}}
 {{- define "llm-d-modelservice.vllmPort" -}}
-{{- if or (eq .role "prefill") (eq .Values.routing.proxy.enabled false) }}
+{{- if eq .role "prefill" }}
+{{- if .Values.prefill.servicePort }}
+{{- .Values.prefill.servicePort }}
+{{- else }}
+{{- .Values.routing.servicePort }}
+{{- end }}
+{{- else if eq .Values.routing.proxy.enabled false }}
 {{- .Values.routing.servicePort }}
 {{- else }}
 {{- .Values.routing.proxy.targetPort }}
@@ -477,9 +486,13 @@ context is a dict with helm root context plus:
   {{- if $acceleratorEnv }}{{ $acceleratorEnv | nindent 2 }}{{- end }}
   {{- /* Add tracing environment variables from global config */}}
   {{- (include "llm-d-modelservice.tracingEnv" .) | nindent 2 }}
-  {{- with .container.ports }}
+  {{- /* Set containerPorts - prefill.servicePort takes precedence if it is set */}}
+  {{- if and (eq .role "prefill") .Values.prefill.servicePort }}
   ports:
-    {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
+    - containerPort: {{ .Values.prefill.servicePort }}
+  {{- else if .container.ports }}
+  ports:
+    {{- include "common.tplvalues.render" ( dict "value" .container.ports "context" $ ) | nindent 2 }}
   {{- end }}
   {{- /* DEPRECATED; use extraConfig.livenessProbe instead */ -}}
   {{- with .container.livenessProbe }}

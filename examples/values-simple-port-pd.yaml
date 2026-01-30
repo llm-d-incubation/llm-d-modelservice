@@ -1,0 +1,66 @@
+# Simple example to show port configuration in P/D (Prefill/Decode) setup
+# when prefill and decode pods uses different service ports.
+
+modelArtifacts:
+  name: facebook/opt-125m
+  labels:
+    llm-d.ai/inferenceServing: "true"
+    llm-d.ai/model: facebook-opt-125m
+  uri: hf://facebook/opt-125m
+  size: 10Gi
+
+# Port configuration at routing level
+routing:
+  servicePort: 8000        # External service port (decode sidecar receives requests here)
+  proxy:
+    targetPort: 8200       # Internal decode port (decode main llm-d container responses here)
+
+prefill:
+  create: true
+  replicas: 1
+  servicePort: 8300         # External service port (prefill pod recieves requests here)
+  containers:
+  - name: "vllm"
+    image: "ghcr.io/llm-d/llm-d-cuda:latest"
+    modelCommand: vllmServe
+    args:
+      - "--kv-transfer-config"
+      - '{"kv_connector":"NixlConnector", "kv_role":"kv_producer"}'
+    env:
+      - name: VLLM_NIXL_SIDE_CHANNEL_PORT
+        value: "5600"
+
+    # PREFILL PORTS: Uses servicePort (8300)
+    ports:
+      - containerPort: 8300  # Main service port for incoming requests
+        protocol: TCP
+      - containerPort: 5600  # NIXL side channel for P/D communication
+        protocol: TCP
+
+    mountModelVolume: true
+
+# Decode pod - handles token generation
+decode:
+  create: true
+  replicas: 1
+  containers:
+  - name: "vllm"
+    image: "ghcr.io/llm-d/llm-d-cuda:latest"
+    modelCommand: vllmServe
+    args:
+      - "--kv-transfer-config"
+      - '{"kv_connector":"NixlConnector", "kv_role":"kv_consumer"}'
+    env:
+      - name: VLLM_NIXL_SIDE_CHANNEL_PORT
+        value: "5600"  # Side channel for P/D communication
+
+    # DECODE PORTS: Uses multiple ports (8000 and 8200)
+    ports:
+      - containerPort: 8000
+        protocol: TCP
+      - containerPort: 8200
+        protocol: TCP
+      - containerPort: 5600  # NIXL side channel for P/D communication
+        protocol: TCP
+
+    mountModelVolume: true

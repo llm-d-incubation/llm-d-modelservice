@@ -929,7 +929,7 @@
         },
         "parallelism": {
           "additionalProperties": false,
-          "description": "VLLM parallelism configuration",
+          "description": "Name of the scheduler to use for scheduling prefill pods (overrides global schedulerName) schedulerName: prefill-scheduler VLLM parallelism configuration",
           "properties": {
             "data": {
               "default": 1,
@@ -957,8 +957,7 @@
             }
           },
           "required": [],
-          "title": "parallelism",
-          "type": "object"
+          "title": "parallelism"
         },
         "replicas": {
           "default": 0,

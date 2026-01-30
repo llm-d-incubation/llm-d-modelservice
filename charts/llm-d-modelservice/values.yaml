@@ -459,10 +459,16 @@ prefill:
     enabled: false
 
   replicas: 0
+
   # @schema
   # additionalProperties: true
   # @schema
   nodeSelector: {}
+
+  # Port on which the prefill vLLM container listens
+  # When not specified, falls back to routing.servicePort
+  # Uncomment to override:
+  # servicePort: 8000
   # schedulerName -- Name of the scheduler to use for scheduling prefill pods (overrides global schedulerName)
   # schedulerName: prefill-scheduler
 
