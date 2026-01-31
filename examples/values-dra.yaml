@@ -9,6 +9,9 @@ modelArtifacts:
   uri: "hf://{{ .Values.modelArtifacts.name }}"
   size: 50Gi
   authSecretName: "llm-d-hf-token"
+  labels:
+    llm-d.ai/inferenceServing: "true"
+    llm-d.ai/model: random_model
 
 # New DRA API: Enable DRA for accelerators
 accelerator:
