@@ -54,9 +54,12 @@ modelArtifacts:
   # These should match the labels of any associated InferencePool
   # In addition, the label llm-d.ai/role will be added with the value 'prefill'
   # or 'decode' depending on the role of the pod.
+  # @schema
+  # type: object
+  # additionalProperties: true
+  # @schema
   labels:
-    llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: random_model
+    llm-d.ai/inference-serving: "true"
 
   # model URI. One of:
   #   hf://model/name - model as defined on Hugging Face

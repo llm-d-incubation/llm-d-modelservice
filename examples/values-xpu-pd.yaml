@@ -8,7 +8,7 @@
 modelArtifacts:
   name: microsoft/DialoGPT-large
   labels:
-    llm-d.ai/inferenceServing: "true"
+    llm-d.ai/inference-serving: "true"
     llm-d.ai/model: microsoft-dialogpt-large
   uri: "hf://microsoft/DialoGPT-large"
   size: 10Gi

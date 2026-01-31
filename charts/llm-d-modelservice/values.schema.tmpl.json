@@ -727,24 +727,19 @@
           "type": "string"
         },
         "labels": {
-          "additionalProperties": false,
-          "description": " These should match the labels of any associated InferencePool In addition, the label llm-d.ai/role will be added with the value 'prefill' or 'decode' depending on the role of the pod.",
+          "additionalProperties": true,
+          "description": " These should match the labels of any associated InferencePool In addition, the label llm-d.ai/role will be added with the value 'prefill' or 'decode' depending on the role of the pod. @schema type: object additionalProperties: true @schema",
           "properties": {
-            "llm-d.ai/inferenceServing": {
+            "llm-d.ai/inference-serving": {
               "default": "true",
               "required": [],
-              "title": "llm-d.ai/inferenceServing",
-              "type": "string"
-            },
-            "llm-d.ai/model": {
-              "default": "random_model",
-              "required": [],
-              "title": "llm-d.ai/model",
+              "title": "llm-d.ai/inference-serving",
               "type": "string"
             }
           },
           "required": [],
-          "title": "labels"
+          "title": "labels",
+          "type": "object"
         },
         "mountPath": {
           "default": "/model-cache",

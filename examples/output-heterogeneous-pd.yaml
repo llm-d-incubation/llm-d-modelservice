@@ -6,8 +6,8 @@ kind: ServiceAccount
 metadata:
   name: heterogeneous-pd-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.4
-    app.kubernetes.io/version: "v0.3.0"
+    helm.sh/chart: llm-d-modelservice-v0.4.5
+    app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: llm-d-modelservice/templates/decode-deployment.yaml
@@ -16,20 +16,20 @@ kind: Deployment
 metadata:
   name: heterogeneous-pd-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.4
-    app.kubernetes.io/version: "v0.3.0"
+    helm.sh/chart: llm-d-modelservice-v0.4.5
+    app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
   selector:
     matchLabels:
-      llm-d.ai/inferenceServing: "true"
+      llm-d.ai/inference-serving: "true"
       llm-d.ai/model: facebook-opt-125m
       llm-d.ai/role: decode
   template:
     metadata:
       labels:
-        llm-d.ai/inferenceServing: "true"
+        llm-d.ai/inference-serving: "true"
         llm-d.ai/model: facebook-opt-125m
         llm-d.ai/role: decode
     spec:
@@ -131,20 +131,20 @@ kind: Deployment
 metadata:
   name: heterogeneous-pd-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.4
-    app.kubernetes.io/version: "v0.3.0"
+    helm.sh/chart: llm-d-modelservice-v0.4.5
+    app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
   selector:
     matchLabels:
-      llm-d.ai/inferenceServing: "true"
+      llm-d.ai/inference-serving: "true"
       llm-d.ai/model: facebook-opt-125m
       llm-d.ai/role: prefill
   template:
     metadata:
       labels:
-        llm-d.ai/inferenceServing: "true"
+        llm-d.ai/inference-serving: "true"
         llm-d.ai/model: facebook-opt-125m
         llm-d.ai/role: prefill
     spec:
@@ -224,8 +224,8 @@ kind: ResourceClaimTemplate
 metadata:
   name: nvidia-claim-template-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.4
-    app.kubernetes.io/version: "v0.3.0"
+    helm.sh/chart: llm-d-modelservice-v0.4.5
+    app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/role: decode
 spec:
