@@ -10,8 +10,8 @@ modelArtifacts:
   size: 50Gi
   authSecretName: "llm-d-hf-token"
   labels:
-    llm-d.ai/inferenceServing: "true"
-    llm-d.ai/model: random_model
+    llm-d.ai/inference-serving: "true"
+    llm-d.ai/model: random-model
 
 # New DRA API: Enable DRA for accelerators
 accelerator:
