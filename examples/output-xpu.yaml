@@ -6,13 +6,8 @@ kind: ServiceAccount
 metadata:
   name: xpu-llm-d-modelservice
   labels:
-<<<<<<< HEAD
-    helm.sh/chart: llm-d-modelservice-v0.4.5
+    helm.sh/chart: llm-d-modelservice-v0.4.6
     app.kubernetes.io/version: "v0.4.0"
-=======
-    helm.sh/chart: llm-d-modelservice-v0.4.1
-    app.kubernetes.io/version: "v0.3.0"
->>>>>>> ccc6810 (update examples)
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: llm-d-modelservice/templates/decode-deployment.yaml
@@ -21,13 +16,8 @@ kind: Deployment
 metadata:
   name: xpu-llm-d-modelservice-decode
   labels:
-<<<<<<< HEAD
-    helm.sh/chart: llm-d-modelservice-v0.4.5
+    helm.sh/chart: llm-d-modelservice-v0.4.6
     app.kubernetes.io/version: "v0.4.0"
-=======
-    helm.sh/chart: llm-d-modelservice-v0.4.1
-    app.kubernetes.io/version: "v0.3.0"
->>>>>>> ccc6810 (update examples)
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
