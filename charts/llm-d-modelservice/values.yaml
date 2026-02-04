@@ -121,6 +121,16 @@ accelerator:
       class: gpu.intel.com
       match: "exactly"
       selectors: []
+    intel-i915: # deprecated, use intel instead
+      name: intel-claim-template
+      class: gpu.intel.com
+      match: "exactly"
+      selectors: []
+    intel-xe: # deprecated, use intel instead
+      name: intel-claim-template
+      class: gpu.intel.com
+      match: "exactly"
+      selectors: []
     intel-gaudi:
       name: intel-gaudi-claim-template
       class: gaudi.intel.com

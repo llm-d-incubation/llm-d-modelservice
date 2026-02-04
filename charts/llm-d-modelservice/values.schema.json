@@ -258,6 +258,74 @@
                             "title": "intel-gaudi",
                             "type": "object"
                         },
+                        "intel-i915": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "default": "gpu.intel.com",
+                                    "required": [],
+                                    "title": "class",
+                                    "type": "string"
+                                },
+                                "match": {
+                                    "default": "exactly",
+                                    "required": [],
+                                    "title": "match",
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "default": "intel-claim-template",
+                                    "required": [],
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "selectors": {
+                                    "items": {
+                                        "required": []
+                                    },
+                                    "required": [],
+                                    "title": "selectors",
+                                    "type": "array"
+                                }
+                            },
+                            "required": [],
+                            "title": "intel-i915",
+                            "type": "object"
+                        },
+                        "intel-xe": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "default": "gpu.intel.com",
+                                    "required": [],
+                                    "title": "class",
+                                    "type": "string"
+                                },
+                                "match": {
+                                    "default": "exactly",
+                                    "required": [],
+                                    "title": "match",
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "default": "intel-claim-template",
+                                    "required": [],
+                                    "title": "name",
+                                    "type": "string"
+                                },
+                                "selectors": {
+                                    "items": {
+                                        "required": []
+                                    },
+                                    "required": [],
+                                    "title": "selectors",
+                                    "type": "array"
+                                }
+                            },
+                            "required": [],
+                            "title": "intel-xe",
+                            "type": "object"
+                        },
                         "nvidia": {
                             "additionalProperties": false,
                             "properties": {
