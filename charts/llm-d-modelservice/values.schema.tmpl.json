@@ -190,6 +190,40 @@
               "title": "google",
               "type": "object"
             },
+            "intel": {
+              "additionalProperties": false,
+              "properties": {
+                "class": {
+                  "default": "gpu.intel.com",
+                  "required": [],
+                  "title": "class",
+                  "type": "string"
+                },
+                "match": {
+                  "default": "exactly",
+                  "required": [],
+                  "title": "match",
+                  "type": "string"
+                },
+                "name": {
+                  "default": "intel-claim-template",
+                  "required": [],
+                  "title": "name",
+                  "type": "string"
+                },
+                "selectors": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "selectors",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "intel",
+              "type": "object"
+            },
             "intel-gaudi": {
               "additionalProperties": false,
               "properties": {
@@ -240,7 +274,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "default": "intel-i915-claim-template",
+                  "default": "intel-claim-template",
                   "required": [],
                   "title": "name",
                   "type": "string"
@@ -274,7 +308,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "default": "intel-xe-claim-template",
+                  "default": "intel-claim-template",
                   "required": [],
                   "title": "name",
                   "type": "string"
