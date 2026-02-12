@@ -24,8 +24,8 @@ serviceAccountOverride: ""
 tracing:
   # -- Enable distributed tracing
   enabled: false
-  # -- OTLP gRPC endpoint for trace export (e.g., OpenTelemetry Collector)
-  otlpEndpoint: "http://opentelemetry-collector.monitoring.svc.cluster.local:4317"
+  # -- OTLP gRPC endpoint for trace export (OTel Collector in the same namespace)
+  otlpEndpoint: "http://otel-collector:4317"
   # -- Trace sampling configuration
   sampling:
     # -- OpenTelemetry sampler type (e.g., "parentbased_traceidratio", "always_on", "always_off")

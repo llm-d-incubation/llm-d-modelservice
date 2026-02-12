@@ -3783,8 +3783,8 @@
                     "title": "enabled"
                 },
                 "otlpEndpoint": {
-                    "default": "http://opentelemetry-collector.monitoring.svc.cluster.local:4317",
-                    "description": "OTLP gRPC endpoint for trace export (e.g., OpenTelemetry Collector)",
+                    "default": "http://otel-collector:4317",
+                    "description": "OTLP gRPC endpoint for trace export (OTel Collector in the same namespace)",
                     "required": [],
                     "title": "otlpEndpoint"
                 },
