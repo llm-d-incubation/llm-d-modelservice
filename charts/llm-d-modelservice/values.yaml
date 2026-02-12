@@ -19,32 +19,31 @@ serviceAccountOverride: ""
 # schedulerName -- Name of the scheduler to use for scheduling model pods
 # schedulerName: default-scheduler
 
-# Global configuration that can be referenced by subcharts and components
-global:
-  # OpenTelemetry distributed tracing configuration
-  # When enabled, vLLM containers will export traces to the OTLP endpoint
-  tracing:
-    # -- Enable distributed tracing for vLLM containers
-    enabled: false
-    # -- OTLP gRPC endpoint for trace export (e.g., OpenTelemetry Collector)
-    # Override via: export OTEL_COLLECTOR_ENDPOINT="http://your-collector:4317"
-    otlpEndpoint: "http://opentelemetry-collector.monitoring.svc.cluster.local:4317"
-    # -- Trace sampling configuration
-    sampling:
-      # -- OpenTelemetry sampler type (e.g., "parentbased_traceidratio", "always_on", "always_off")
-      sampler: "parentbased_traceidratio"
-      # -- Sampling ratio (0.0 to 1.0). Use 1.0 for 100% sampling (demo/debug), 0.1 for 10% (production)
-      samplerArg: "1.0"
-    # -- Service name overrides for different components
-    serviceNames:
-      # -- Service name for vLLM decode instances
-      vllmDecode: "vllm-decode"
-      # -- Service name for vLLM prefill instances
-      vllmPrefill: "vllm-prefill"
-    # -- vLLM-specific tracing options
-    vllm:
-      # -- Level of trace detail collection (e.g., "all", "model", "scheduler")
-      collectDetailedTraces: "all"
+# OpenTelemetry distributed tracing configuration
+# When enabled, vLLM and routing-proxy containers will export traces to the OTLP endpoint
+tracing:
+  # -- Enable distributed tracing
+  enabled: false
+  # -- OTLP gRPC endpoint for trace export (OTel Collector in the same namespace)
+  otlpEndpoint: "http://otel-collector:4317"
+  # -- Trace sampling configuration
+  sampling:
+    # -- OpenTelemetry sampler type (e.g., "parentbased_traceidratio", "always_on", "always_off")
+    sampler: "parentbased_traceidratio"
+    # -- Sampling ratio (0.0 to 1.0). Use 1.0 for 100% sampling (demo/debug), 0.1 for 10% (production)
+    samplerArg: "1.0"
+  # -- Service name overrides for different components
+  serviceNames:
+    # -- Service name for vLLM decode instances
+    vllmDecode: "vllm-decode"
+    # -- Service name for vLLM prefill instances
+    vllmPrefill: "vllm-prefill"
+    # -- Service name for routing proxy sidecar
+    routingProxy: "routing-proxy"
+  # -- vLLM-specific tracing options
+  vllm:
+    # -- Level of trace detail collection (e.g., "all", "model", "scheduler")
+    collectDetailedTraces: "all"
 
 modelArtifacts:
   # name is the value of the model parameter in OpenAI requests

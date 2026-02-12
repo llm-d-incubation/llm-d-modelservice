@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: requester-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.6
+    helm.sh/chart: llm-d-modelservice-v0.4.7
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -43,6 +43,7 @@ spec:
                 - --secure-proxy=false
               image: ghcr.io/llm-d/llm-d-routing-sidecar:latest
               imagePullPolicy: Always
+              env:
               ports:
                 - containerPort: 8000
               resources: {}
@@ -142,7 +143,7 @@ kind: Deployment
 metadata:
   name: requester-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.6
+    helm.sh/chart: llm-d-modelservice-v0.4.7
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
