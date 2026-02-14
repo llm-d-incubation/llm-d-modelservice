@@ -1,0 +1,4 @@
+tensorParallelism: "1"
+dataParallelism: "1"
+dataParallelismLocal: "1"
+workers: "1"
