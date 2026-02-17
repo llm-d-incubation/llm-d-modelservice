@@ -3506,6 +3506,11 @@
             "additionalProperties": true,
             "description": "Requester configuration part of the dual-pod solution for FMA",
             "properties": {
+                "accelerators": {
+                    "default": "GPU-0",
+                    "title": "accelerators",
+                    "type": "string"
+                },
                 "adminPort": {
                     "default": 8081,
                     "title": "adminPort",
@@ -3520,6 +3525,147 @@
                     "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest",
                     "title": "image",
                     "type": "string"
+                },
+                "inferenceServerConfig": {
+                    "default": "",
+                    "description": "Name of the InferenceServerConfig resource (required when requester is enabled)",
+                    "title": "inferenceServerConfig",
+                    "type": "string"
+                },
+                "launcherConfig": {
+                    "default": "",
+                    "description": "Name of the LauncherConfig resource (required when requester is enabled)",
+                    "title": "launcherConfig",
+                    "type": "string"
+                },
+                "launcherConfigSpec": {
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema",
+                    "properties": {
+                        "maxSleepingInstances": {
+                            "default": 3,
+                            "title": "maxSleepingInstances",
+                            "type": "integer"
+                        },
+                        "podTemplate": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "metadata": {
+                                    "additionalProperties": true,
+                                    "description": " additionalProperties: true @schema",
+                                    "required": [],
+                                    "title": "metadata"
+                                },
+                                "spec": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "containers": {
+                                            "items": {
+                                                "anyOf": [
+                                                    {
+                                                        "additionalProperties": false,
+                                                        "properties": {
+                                                            "args": {
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        }
+                                                                    ],
+                                                                    "required": []
+                                                                },
+                                                                "title": "args",
+                                                                "type": "array"
+                                                            },
+                                                            "command": {
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "string"
+                                                                        }
+                                                                    ],
+                                                                    "required": []
+                                                                },
+                                                                "title": "command",
+                                                                "type": "array"
+                                                            },
+                                                            "image": {
+                                                                "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest",
+                                                                "title": "image",
+                                                                "type": "string"
+                                                            },
+                                                            "imagePullPolicy": {
+                                                                "default": "IfNotPresent",
+                                                                "title": "imagePullPolicy",
+                                                                "type": "string"
+                                                            },
+                                                            "name": {
+                                                                "default": "inference-server",
+                                                                "title": "name",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [],
+                                                        "type": "object"
+                                                    }
+                                                ],
+                                                "required": []
+                                            },
+                                            "title": "containers",
+                                            "type": "array"
+                                        }
+                                    },
+                                    "required": [],
+                                    "title": "spec",
+                                    "type": "object"
+                                }
+                            },
+                            "required": [],
+                            "title": "podTemplate",
+                            "type": "object"
+                        }
+                    },
+                    "required": [],
+                    "title": "launcherConfigSpec"
+                },
+                "modelServerConfig": {
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema",
+                    "properties": {
+                        "annotations": {
+                            "additionalProperties": true,
+                            "description": " additionalProperties: true @schema",
+                            "required": [],
+                            "title": "annotations"
+                        },
+                        "env_vars": {
+                            "additionalProperties": true,
+                            "description": " additionalProperties: true @schema",
+                            "required": [],
+                            "title": "env_vars"
+                        },
+                        "labels": {
+                            "additionalProperties": true,
+                            "description": " additionalProperties: true @schema",
+                            "required": [],
+                            "title": "labels"
+                        },
+                        "options": {
+                            "default": "",
+                            "title": "options",
+                            "type": "string"
+                        },
+                        "port": {
+                            "default": 8005,
+                            "title": "port",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [],
+                    "title": "modelServerConfig"
                 },
                 "port": {
                     "additionalProperties": false,

@@ -159,17 +159,64 @@ requester:
   enable: false
   image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
   adminPort: 8081
+  accelerators: "GPU-0"
+  # Name of the InferenceServerConfig resource (required when requester is enabled)
+  inferenceServerConfig: ""
+  # Name of the LauncherConfig resource (required when requester is enabled)
+  launcherConfig: ""
   port:
     probes: 8080
     spi: 8081
   readinessProbe:
     initialDelaySeconds: 2
     periodSeconds: 5
+
   resources:
     limits:
       gpus: 1
       cpus: 1
       memory: 250Mi
+
+  # @schema
+  # additionalProperties: true
+  # @schema
+  launcherConfigSpec:
+    maxSleepingInstances: 3
+    podTemplate:
+      # @schema
+      # additionalProperties: true
+      # @schema
+      metadata: {}
+      spec:
+        containers:
+          - name: inference-server
+            image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest"
+            imagePullPolicy: IfNotPresent
+            command:
+              - /bin/bash
+              - -c
+            args:
+              - |
+                uvicorn launcher:app --host 0.0.0.0 --log-level info --port 8001
+
+  # @schema
+  # additionalProperties: true
+  # @schema
+  modelServerConfig:
+    # @schema
+    # additionalProperties: true
+    # @schema
+    annotations: {}
+    # @schema
+    # additionalProperties: true
+    # @schema
+    labels: {}
+    # @schema
+    # additionalProperties: true
+    # @schema
+    env_vars: {}
+    options: ""
+    port: 8005
 
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
 # also describes elements for Gateway API Inference Extension configuration
