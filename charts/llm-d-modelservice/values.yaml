@@ -307,24 +307,6 @@ decode:
   # type: array
   # items:
   #   type: object
-  #   required: [name, resourceClaimTemplateName]
-  #   properties:
-  #     name:
-  #       type: string
-  #     resourceClaimTemplateName:
-  #       type: string
-  # @schema
-  # Additional resource claims for non-accelerator resources (e.g., IMEX channels)
-  # These will be merged with accelerator claims when accelerator.dra is enabled
-  resourceClaims: []
-  # Example:
-  # - name: llm-d-imex-channel-0
-  #   resourceClaimTemplateName: llm-d-imex-channel-0
-
-  # @schema
-  # type: array
-  # items:
-  #   type: object
   #   additionalProperties: true
   # @schema
   containers:
@@ -516,24 +498,6 @@ prefill:
   #   # Override DRA (Dynamic Resource Allocation) mode for prefill pods
   #   # When not specified, falls back to accelerator.dra
   #   dra: false
-
-  # @schema
-  # type: array
-  # items:
-  #   type: object
-  #   required: [name, resourceClaimTemplateName]
-  #   properties:
-  #     name:
-  #       type: string
-  #     resourceClaimTemplateName:
-  #       type: string
-  # @schema
-  # Additional resource claims for non-accelerator resources (e.g., IMEX channels)
-  # These will be merged with accelerator claims when accelerator.dra is enabled
-  resourceClaims: []
-  # Example:
-  # - name: llm-d-imex-channel-0
-  #   resourceClaimTemplateName: llm-d-imex-channel-0
 
   # @schema
   # type: array
