@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "accelerator": {
       "additionalProperties": false,
@@ -9,7 +9,6 @@
         "dra": {
           "default": false,
           "description": " type: boolean @schema Enable Dynamic Resource Allocation (DRA) for accelerators When true, uses resourceClaimTemplates instead of device plugin resources",
-          "required": [],
           "title": "dra",
           "type": "boolean"
         },
@@ -25,13 +24,11 @@
                     "properties": {
                       "name": {
                         "default": "VLLM_USE_V1",
-                        "required": [],
                         "title": "name",
                         "type": "string"
                       },
                       "value": {
                         "default": "1",
-                        "required": [],
                         "title": "value",
                         "type": "string"
                       }
@@ -44,13 +41,11 @@
                     "properties": {
                       "name": {
                         "default": "TORCH_LLM_ALLREDUCE",
-                        "required": [],
                         "title": "name",
                         "type": "string"
                       },
                       "value": {
                         "default": "1",
-                        "required": [],
                         "title": "value",
                         "type": "string"
                       }
@@ -63,13 +58,11 @@
                     "properties": {
                       "name": {
                         "default": "VLLM_WORKER_MULTIPROC_METHOD",
-                        "required": [],
                         "title": "name",
                         "type": "string"
                       },
                       "value": {
                         "default": "spawn",
-                        "required": [],
                         "title": "value",
                         "type": "string"
                       }
@@ -80,7 +73,6 @@
                 ],
                 "required": []
               },
-              "required": [],
               "title": "intel-i915",
               "type": "array"
             },
@@ -92,13 +84,11 @@
                     "properties": {
                       "name": {
                         "default": "VLLM_WORKER_MULTIPROC_METHOD",
-                        "required": [],
                         "title": "name",
                         "type": "string"
                       },
                       "value": {
                         "default": "spawn",
-                        "required": [],
                         "title": "value",
                         "type": "string"
                       }
@@ -109,7 +99,6 @@
                 ],
                 "required": []
               },
-              "required": [],
               "title": "intel-xe",
               "type": "array"
             }
@@ -127,19 +116,16 @@
               "properties": {
                 "class": {
                   "default": "gpu.amd.com",
-                  "required": [],
                   "title": "class",
                   "type": "string"
                 },
                 "match": {
                   "default": "exactly",
-                  "required": [],
                   "title": "match",
                   "type": "string"
                 },
                 "name": {
                   "default": "amd-claim-template",
-                  "required": [],
                   "title": "name",
                   "type": "string"
                 },
@@ -147,7 +133,6 @@
                   "items": {
                     "required": []
                   },
-                  "required": [],
                   "title": "selectors",
                   "type": "array"
                 }
@@ -161,19 +146,16 @@
               "properties": {
                 "class": {
                   "default": "tpu.google.com",
-                  "required": [],
                   "title": "class",
                   "type": "string"
                 },
                 "match": {
                   "default": "exactly",
-                  "required": [],
                   "title": "match",
                   "type": "string"
                 },
                 "name": {
                   "default": "google-claim-template",
-                  "required": [],
                   "title": "name",
                   "type": "string"
                 },
@@ -181,7 +163,6 @@
                   "items": {
                     "required": []
                   },
-                  "required": [],
                   "title": "selectors",
                   "type": "array"
                 }
@@ -195,19 +176,16 @@
               "properties": {
                 "class": {
                   "default": "gpu.intel.com",
-                  "required": [],
                   "title": "class",
                   "type": "string"
                 },
                 "match": {
                   "default": "exactly",
-                  "required": [],
                   "title": "match",
                   "type": "string"
                 },
                 "name": {
                   "default": "intel-claim-template",
-                  "required": [],
                   "title": "name",
                   "type": "string"
                 },
@@ -215,7 +193,6 @@
                   "items": {
                     "required": []
                   },
-                  "required": [],
                   "title": "selectors",
                   "type": "array"
                 }
@@ -229,19 +206,16 @@
               "properties": {
                 "class": {
                   "default": "gaudi.intel.com",
-                  "required": [],
                   "title": "class",
                   "type": "string"
                 },
                 "match": {
                   "default": "exactly",
-                  "required": [],
                   "title": "match",
                   "type": "string"
                 },
                 "name": {
                   "default": "intel-gaudi-claim-template",
-                  "required": [],
                   "title": "name",
                   "type": "string"
                 },
@@ -249,7 +223,6 @@
                   "items": {
                     "required": []
                   },
-                  "required": [],
                   "title": "selectors",
                   "type": "array"
                 }
@@ -263,19 +236,16 @@
               "properties": {
                 "class": {
                   "default": "gpu.intel.com",
-                  "required": [],
                   "title": "class",
                   "type": "string"
                 },
                 "match": {
                   "default": "exactly",
-                  "required": [],
                   "title": "match",
                   "type": "string"
                 },
                 "name": {
                   "default": "intel-claim-template",
-                  "required": [],
                   "title": "name",
                   "type": "string"
                 },
@@ -283,7 +253,6 @@
                   "items": {
                     "required": []
                   },
-                  "required": [],
                   "title": "selectors",
                   "type": "array"
                 }
@@ -297,19 +266,16 @@
               "properties": {
                 "class": {
                   "default": "gpu.intel.com",
-                  "required": [],
                   "title": "class",
                   "type": "string"
                 },
                 "match": {
                   "default": "exactly",
-                  "required": [],
                   "title": "match",
                   "type": "string"
                 },
                 "name": {
                   "default": "intel-claim-template",
-                  "required": [],
                   "title": "name",
                   "type": "string"
                 },
@@ -317,7 +283,6 @@
                   "items": {
                     "required": []
                   },
-                  "required": [],
                   "title": "selectors",
                   "type": "array"
                 }
@@ -331,19 +296,16 @@
               "properties": {
                 "class": {
                   "default": "gpu.nvidia.com",
-                  "required": [],
                   "title": "class",
                   "type": "string"
                 },
                 "match": {
                   "default": "exactly",
-                  "required": [],
                   "title": "match",
                   "type": "string"
                 },
                 "name": {
                   "default": "nvidia-claim-template",
-                  "required": [],
                   "title": "name",
                   "type": "string"
                 },
@@ -352,7 +314,6 @@
                   "items": {
                     "required": []
                   },
-                  "required": [],
                   "title": "selectors",
                   "type": "array"
                 }
@@ -371,37 +332,31 @@
           "properties": {
             "amd": {
               "default": "amd.com/gpu",
-              "required": [],
               "title": "amd",
               "type": "string"
             },
             "google": {
               "default": "google.com/tpu",
-              "required": [],
               "title": "google",
               "type": "string"
             },
             "intel-gaudi": {
               "default": "habana.ai/gaudi",
-              "required": [],
               "title": "intel-gaudi",
               "type": "string"
             },
             "intel-i915": {
               "default": "gpu.intel.com/i915",
-              "required": [],
               "title": "intel-i915",
               "type": "string"
             },
             "intel-xe": {
               "default": "gpu.intel.com/xe",
-              "required": [],
               "title": "intel-xe",
               "type": "string"
             },
             "nvidia": {
               "default": "nvidia.com/gpu",
-              "required": [],
               "title": "nvidia",
               "type": "string"
             }
@@ -413,7 +368,6 @@
         "type": {
           "default": "nvidia",
           "description": "Type of accelerator to use",
-          "required": [],
           "title": "type",
           "type": "string"
         }
@@ -437,14 +391,12 @@
           "properties": {
             "labelKey": {
               "default": "",
-              "required": [],
               "title": "labelKey",
               "type": "string"
             },
             "labelValues": {
               "description": " items:   type: string @schema",
               "items": {
-                "required": [],
                 "type": "string"
               },
               "required": [],
@@ -459,7 +411,6 @@
           "properties": {
             "enabled": {
               "default": false,
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             }
@@ -475,13 +426,11 @@
             "required": [],
             "type": "object"
           },
-          "required": [],
           "title": "containers",
           "type": "array"
         },
         "create": {
           "default": true,
-          "required": [],
           "title": "create",
           "type": "boolean"
         },
@@ -491,7 +440,6 @@
             "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container",
             "required": []
           },
-          "required": [],
           "title": "initContainers",
           "type": "array"
         },
@@ -572,40 +520,34 @@
         },
         "parallelism": {
           "additionalProperties": false,
-          "description": "VLLM parallelism configuration",
+          "description": "Set to \"none\" or leave empty to not set a priority class priorityClassName: high-priority VLLM parallelism configuration",
           "properties": {
             "data": {
               "default": 1,
-              "required": [],
               "title": "data",
               "type": "integer"
             },
             "dataLocal": {
               "default": 1,
-              "required": [],
               "title": "dataLocal",
               "type": "integer"
             },
             "tensor": {
               "default": 1,
-              "required": [],
               "title": "tensor",
               "type": "integer"
             },
             "workers": {
               "default": 1,
-              "required": [],
               "title": "workers",
               "type": "integer"
             }
           },
           "required": [],
-          "title": "parallelism",
-          "type": "object"
+          "title": "parallelism"
         },
         "replicas": {
           "default": 1,
-          "required": [],
           "title": "replicas",
           "type": "integer"
         },
@@ -614,11 +556,9 @@
           "items": {
             "properties": {
               "name": {
-                "required": [],
                 "type": "string"
               },
               "resourceClaimTemplateName": {
-                "required": [],
                 "type": "string"
               }
             },
@@ -628,7 +568,6 @@
             ],
             "type": "object"
           },
-          "required": [],
           "title": "resourceClaims",
           "type": "array"
         },
@@ -639,7 +578,6 @@
             "required": [],
             "type": "object"
           },
-          "required": [],
           "title": "volumes",
           "type": "array"
         }
@@ -680,7 +618,6 @@
         "authSecretName": {
           "default": "",
           "description": "name of secret containing credentials for accessing the model (e.g., HF_TOKEN)",
-          "required": [],
           "title": "authSecretName",
           "type": "string"
         },
@@ -690,7 +627,6 @@
           "properties": {
             "llm-d.ai/inference-serving": {
               "default": "true",
-              "required": [],
               "title": "llm-d.ai/inference-serving",
               "type": "string"
             }
@@ -702,7 +638,6 @@
         "mountPath": {
           "default": "/model-cache",
           "description": "location where model volume will be mounted (used when mountModelVolume: true)",
-          "required": [],
           "title": "mountPath",
           "type": "string"
         },
@@ -715,7 +650,6 @@
         "size": {
           "default": "5Mi",
           "description": "size of volume to create to hold the model",
-          "required": [],
           "title": "size",
           "type": "string"
         },
@@ -733,7 +667,6 @@
     "multinode": {
       "default": false,
       "description": "When true, a LeaderWorkerSet is used instead of a Deployment",
-      "required": [],
       "title": "multinode",
       "type": "boolean"
     },
@@ -747,14 +680,12 @@
           "properties": {
             "labelKey": {
               "default": "",
-              "required": [],
               "title": "labelKey",
               "type": "string"
             },
             "labelValues": {
               "description": " items:   type: string @schema",
               "items": {
-                "required": [],
                 "type": "string"
               },
               "required": [],
@@ -769,7 +700,6 @@
           "properties": {
             "enabled": {
               "default": false,
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             }
@@ -785,13 +715,11 @@
             "required": [],
             "type": "object"
           },
-          "required": [],
           "title": "containers",
           "type": "array"
         },
         "create": {
           "default": true,
-          "required": [],
           "title": "create",
           "type": "boolean"
         },
@@ -801,7 +729,6 @@
             "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container",
             "required": []
           },
-          "required": [],
           "title": "initContainers",
           "type": "array"
         },
@@ -882,40 +809,34 @@
         },
         "parallelism": {
           "additionalProperties": false,
-          "description": "VLLM parallelism configuration",
+          "description": "Set to \"none\" or leave empty to not set a priority class priorityClassName: high-priority VLLM parallelism configuration",
           "properties": {
             "data": {
               "default": 1,
-              "required": [],
               "title": "data",
               "type": "integer"
             },
             "dataLocal": {
               "default": 1,
-              "required": [],
               "title": "dataLocal",
               "type": "integer"
             },
             "tensor": {
               "default": 1,
-              "required": [],
               "title": "tensor",
               "type": "integer"
             },
             "workers": {
               "default": 1,
-              "required": [],
               "title": "workers",
               "type": "integer"
             }
           },
           "required": [],
-          "title": "parallelism",
-          "type": "object"
+          "title": "parallelism"
         },
         "replicas": {
           "default": 0,
-          "required": [],
           "title": "replicas",
           "type": "integer"
         },
@@ -924,11 +845,9 @@
           "items": {
             "properties": {
               "name": {
-                "required": [],
                 "type": "string"
               },
               "resourceClaimTemplateName": {
-                "required": [],
                 "type": "string"
               }
             },
@@ -938,7 +857,6 @@
             ],
             "type": "object"
           },
-          "required": [],
           "title": "resourceClaims",
           "type": "array"
         },
@@ -949,7 +867,6 @@
             "required": [],
             "type": "object"
           },
-          "required": [],
           "title": "volumes",
           "type": "array"
         }
@@ -963,19 +880,16 @@
       "properties": {
         "adminPort": {
           "default": 8081,
-          "required": [],
           "title": "adminPort",
           "type": "integer"
         },
         "enable": {
           "default": false,
-          "required": [],
           "title": "enable",
           "type": "boolean"
         },
         "image": {
           "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest",
-          "required": [],
           "title": "image",
           "type": "string"
         },
@@ -984,13 +898,11 @@
           "properties": {
             "probes": {
               "default": 8080,
-              "required": [],
               "title": "probes",
               "type": "integer"
             },
             "spi": {
               "default": 8081,
-              "required": [],
               "title": "spi",
               "type": "integer"
             }
@@ -1004,13 +916,11 @@
           "properties": {
             "initialDelaySeconds": {
               "default": 2,
-              "required": [],
               "title": "initialDelaySeconds",
               "type": "integer"
             },
             "periodSeconds": {
               "default": 5,
-              "required": [],
               "title": "periodSeconds",
               "type": "integer"
             }
@@ -1027,19 +937,16 @@
               "properties": {
                 "cpus": {
                   "default": 1,
-                  "required": [],
                   "title": "cpus",
                   "type": "integer"
                 },
                 "gpus": {
                   "default": 1,
-                  "required": [],
                   "title": "gpus",
                   "type": "integer"
                 },
                 "memory": {
                   "default": "250Mi",
-                  "required": [],
                   "title": "memory",
                   "type": "string"
                 }
@@ -1068,39 +975,33 @@
             "connector": {
               "default": "nixlv2",
               "description": "Specify a conenctor. For example, `nixl`, `nixlv2`",
-              "required": [],
               "title": "connector",
               "type": "string"
             },
             "enabled": {
               "default": true,
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             },
             "image": {
               "default": "ghcr.io/llm-d/llm-d-routing-sidecar:latest",
-              "required": [],
               "title": "image",
               "type": "string"
             },
             "imagePullPolicy": {
               "default": "Always",
-              "required": [],
               "title": "imagePullPolicy",
               "type": "string"
             },
             "secure": {
               "default": false,
               "description": "Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.",
-              "required": [],
               "title": "secure",
               "type": "boolean"
             },
             "targetPort": {
               "default": 8200,
               "description": "target port on which VLLM should listen",
-              "required": [],
               "title": "targetPort",
               "type": "integer"
             },

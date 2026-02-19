@@ -1,6 +1,8 @@
+# @schema.root
+# additionalProperties: true
+# @schema.root
 # yaml-language-server: $schema=values.schema.json
 # This values.yaml file is a default values file. It can be overridden using another.
-
 # @schema
 # additionalProperties: true
 # @schema
@@ -16,6 +18,9 @@ fullnameOverride: ""
 # -- Override to default pod serviceAccountName
 serviceAccountOverride: ""
 
+# @schema
+# type: string
+# @schema
 # schedulerName -- Name of the scheduler to use for scheduling model pods
 # schedulerName: default-scheduler
 
@@ -248,8 +253,18 @@ decode:
   # additionalProperties: true
   # @schema
   nodeSelector: {}
+  # @schema
+  # type: string
+  # @schema
   # schedulerName -- Name of the scheduler to use for scheduling decode pods (overrides global schedulerName)
   # schedulerName: decode-scheduler
+
+  # @schema
+  # type: string
+  # @schema
+  # priorityClassName -- Kubernetes PriorityClass name for decode pods
+  # -- Set to "none" or leave empty to not set a priority class
+  # priorityClassName: high-priority
 
   # VLLM parallelism configuration
   parallelism:
@@ -470,8 +485,18 @@ prefill:
   # additionalProperties: true
   # @schema
   nodeSelector: {}
+  # @schema
+  # type: string
+  # @schema
   # schedulerName -- Name of the scheduler to use for scheduling prefill pods (overrides global schedulerName)
   # schedulerName: prefill-scheduler
+
+  # @schema
+  # type: string
+  # @schema
+  # priorityClassName -- Kubernetes PriorityClass name for prefill pods
+  # -- Set to "none" or leave empty to not set a priority class
+  # priorityClassName: high-priority
 
   # VLLM parallelism configuration
   parallelism:
