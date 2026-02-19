@@ -1,0 +1,83 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - resource-claim-template.yaml
+
+#Add resourceClaims, remove standard GPU limits
+patches:
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: add
+        path: /spec/template/spec/resourceClaims
+        value:
+          - name: gpu-claim
+            source:
+              resourceClaimTemplateName: gpu-claim-template
+      - op: add
+        path: /spec/template/spec/containers/0/resources/claims
+        value:
+          - name: gpu-claim
+      - op: remove
+        path: /spec/template/spec/containers/0/resources/limits/nvidia.com~1gpu
+      - op: remove
+        path: /spec/template/spec/containers/0/resources/requests/nvidia.com~1gpu
+
+  - target:
+      kind: Deployment
+      name: modelservice-prefill
+    patch: |-
+      - op: add
+        path: /spec/template/spec/resourceClaims
+        value:
+          - name: gpu-claim
+            source:
+              resourceClaimTemplateName: gpu-claim-template
+      - op: add
+        path: /spec/template/spec/containers/0/resources/claims
+        value:
+          - name: gpu-claim
+      - op: remove
+        path: /spec/template/spec/containers/0/resources/limits/nvidia.com~1gpu
+      - op: remove
+        path: /spec/template/spec/containers/0/resources/requests/nvidia.com~1gpu
+
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-decode-lws
+    patch: |-
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/resourceClaims
+        value:
+          - name: gpu-claim
+            source:
+              resourceClaimTemplateName: gpu-claim-template
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/claims
+        value:
+          - name: gpu-claim
+      - op: remove
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/limits/nvidia.com~1gpu
+      - op: remove
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/requests/nvidia.com~1gpu
+
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-prefill-lws
+    patch: |-
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/resourceClaims
+        value:
+          - name: gpu-claim
+            source:
+              resourceClaimTemplateName: gpu-claim-template
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/claims
+        value:
+          - name: gpu-claim
+      - op: remove
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/limits/nvidia.com~1gpu
+      - op: remove
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/requests/nvidia.com~1gpu

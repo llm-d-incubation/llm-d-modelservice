@@ -1,0 +1,46 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+resources:
+  - ../../../accelerators/nvidia
+
+components:
+  - ../../../components/multinode
+
+configMapGenerator:
+  - name: model-config
+    behavior: merge
+    literals:
+      - modelName=facebook/opt-125m
+      - modelUri=hf://facebook/opt-125m
+      - modelSize=20Gi
+
+patches:
+  # Configure LWS for decode
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-decode-lws
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: replace
+        path: /spec/leaderWorkerTemplate/size
+        value: 4
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/limits/memory
+        value: "16Gi"
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/limits/cpu
+        value: "16"
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/requests/memory
+        value: "16Gi"
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/requests/cpu
+        value: "16"
+      - op: replace
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/env/1/value
+        value: "2"
