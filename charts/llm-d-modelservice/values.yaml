@@ -1,6 +1,8 @@
+# @schema.root
+# additionalProperties: true
+# @schema.root
 # yaml-language-server: $schema=values.schema.json
 # This values.yaml file is a default values file. It can be overridden using another.
-
 # @schema
 # additionalProperties: true
 # @schema
@@ -16,6 +18,9 @@ fullnameOverride: ""
 # -- Override to default pod serviceAccountName
 serviceAccountOverride: ""
 
+# @schema
+# type: string
+# @schema
 # schedulerName -- Name of the scheduler to use for scheduling model pods
 # schedulerName: default-scheduler
 
@@ -248,8 +253,18 @@ decode:
   # additionalProperties: true
   # @schema
   nodeSelector: {}
+  # @schema
+  # type: string
+  # @schema
   # schedulerName -- Name of the scheduler to use for scheduling decode pods (overrides global schedulerName)
   # schedulerName: decode-scheduler
+
+  # @schema
+  # type: string
+  # @schema
+  # priorityClassName -- Kubernetes PriorityClass name for decode pods
+  # -- Set to "none" or leave empty to not set a priority class
+  # priorityClassName: high-priority
 
   # VLLM parallelism configuration
   parallelism:
@@ -269,24 +284,6 @@ decode:
   #   # Override DRA (Dynamic Resource Allocation) mode for decode pods
   #   # When not specified, falls back to accelerator.dra
   #   dra: false
-
-  # @schema
-  # type: array
-  # items:
-  #   type: object
-  #   required: [name, resourceClaimTemplateName]
-  #   properties:
-  #     name:
-  #       type: string
-  #     resourceClaimTemplateName:
-  #       type: string
-  # @schema
-  # Additional resource claims for non-accelerator resources (e.g., IMEX channels)
-  # These will be merged with accelerator claims when accelerator.dra is enabled
-  resourceClaims: []
-  # Example:
-  # - name: llm-d-imex-channel-0
-  #   resourceClaimTemplateName: llm-d-imex-channel-0
 
   # @schema
   # type: array
@@ -470,8 +467,18 @@ prefill:
   # additionalProperties: true
   # @schema
   nodeSelector: {}
+  # @schema
+  # type: string
+  # @schema
   # schedulerName -- Name of the scheduler to use for scheduling prefill pods (overrides global schedulerName)
   # schedulerName: prefill-scheduler
+
+  # @schema
+  # type: string
+  # @schema
+  # priorityClassName -- Kubernetes PriorityClass name for prefill pods
+  # -- Set to "none" or leave empty to not set a priority class
+  # priorityClassName: high-priority
 
   # VLLM parallelism configuration
   parallelism:
@@ -491,24 +498,6 @@ prefill:
   #   # Override DRA (Dynamic Resource Allocation) mode for prefill pods
   #   # When not specified, falls back to accelerator.dra
   #   dra: false
-
-  # @schema
-  # type: array
-  # items:
-  #   type: object
-  #   required: [name, resourceClaimTemplateName]
-  #   properties:
-  #     name:
-  #       type: string
-  #     resourceClaimTemplateName:
-  #       type: string
-  # @schema
-  # Additional resource claims for non-accelerator resources (e.g., IMEX channels)
-  # These will be merged with accelerator claims when accelerator.dra is enabled
-  resourceClaims: []
-  # Example:
-  # - name: llm-d-imex-channel-0
-  #   resourceClaimTemplateName: llm-d-imex-channel-0
 
   # @schema
   # type: array

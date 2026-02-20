@@ -425,6 +425,9 @@ context is a pdSpec
   {{- if or .pdSpec.schedulerName .Values.schedulerName }}
   schedulerName: {{ .pdSpec.schedulerName | default .Values.schedulerName }}
   {{- end }}
+  {{- if and .pdSpec.priorityClassName (ne (.pdSpec.priorityClassName | lower) "none") }}
+  priorityClassName: {{ .pdSpec.priorityClassName }}
+  {{- end }}
   {{- /* DEPRECATED; use extraConfig.securityContext instead */ -}}
   {{- with .pdSpec.podSecurityContext }}
   securityContext:
