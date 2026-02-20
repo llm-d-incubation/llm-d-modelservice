@@ -1,4 +1,45 @@
 {{- if and .Values.requester.enable (and .Values.decode.create (not .Values.multinode)) }}
+---
+apiVersion: fma.llm-d.ai/v1alpha1
+kind: LauncherConfig
+metadata:
+  name: {{ .Values.requester.launcherConfig | required "requester.launcherConfig is required when requester is enabled" }}
+spec:
+  maxSleepingInstances: {{ .Values.requester.launcherConfigSpec.maxSleepingInstances | default 3 }}
+  podTemplate:
+    {{- with .Values.requester.launcherConfigSpec.podTemplate.metadata }}
+    metadata:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    spec:
+      {{- with .Values.requester.launcherConfigSpec.podTemplate.spec }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+---
+apiVersion: fma.llm-d.ai/v1alpha1
+kind: InferenceServerConfig
+metadata:
+  name: {{ .Values.requester.inferenceServerConfig }}
+spec:
+  launcherConfigName: {{ .Values.requester.launcherConfig }}
+  modelServerConfig:
+    {{- with .Values.requester.modelServerConfig.annotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.requester.modelServerConfig.labels }}
+    labels:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.requester.modelServerConfig.env_vars }}
+    env_vars:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- if .Values.requester.modelServerConfig.options }}
+    options: {{ .Values.requester.modelServerConfig.options | quote }}
+    {{- end }}
+    port: {{ .Values.requester.modelServerConfig.port | default 8005 }}
+---
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
@@ -13,28 +54,9 @@ spec:
       labels:
         app: dp-app
       annotations:
-        dual-pod.llm-d.ai/admin-port: "{{ .Values.requester.adminPort }}"
-        dual-pod.llm-d.ai/server-patch: |
-          metadata:
-            labels: {
-              {{- $modelParts := split "/" .Values.modelArtifacts.name -}}
-              "model-reg": {{ index $modelParts._1 | quote }},
-              "model-repo": {{ index $modelParts._0 | quote }},
-              "app": null}
-          spec:
-            {{- if or (.Values.decode.initContainers) (eq .Values.routing.proxy.enabled true) }}
-            initContainers:
-            {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" .Values.routing.proxy "servicePort" .Values.routing.servicePort "Values" .Values)) | nindent 12 }}
-            {{- if .Values.decode.initContainers }}
-            {{- toYaml .Values.decode.initContainers | nindent 12 }}
-            {{- end }}
-            {{- end }}
-            {{- with .Values.decode.containers }}
-            containers:
-              {{- range . }}
-              {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.decode)) | nindent 14 }}
-              {{- end }}
-            {{- end }}
+        dual-pods.llm-d.ai/admin-port: "{{ .Values.requester.adminPort }}"
+        dual-pods.llm-d.ai/accelerators: {{ .Values.requester.accelerators | quote }}
+        dual-pods.llm-d.ai/inference-server-config: {{ .Values.requester.inferenceServerConfig | required "requester.inferenceServerConfig is required" }}
     spec:
       containers:
         - name: inference-server
@@ -42,11 +64,8 @@ spec:
           imagePullPolicy: Always
           command:
           - /app/requester
-          env:
-          - name: PROBES_PORT
-            value: {{ .Values.requester.port.probes | quote }}
-          - name: SPI_PORT
-            value: {{ .Values.requester.port.spi | quote }}
+          - --logtostderr=false
+          - --log_file=/tmp/requester.log
           ports:
           - name: probes
             containerPort: {{ .Values.requester.port.probes }}
