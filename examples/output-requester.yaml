@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: requester-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -25,89 +25,9 @@ spec:
       labels:
         app: dp-app
       annotations:
-        dual-pod.llm-d.ai/admin-port: "8081"
-        dual-pod.llm-d.ai/server-patch: |
-          metadata:
-            labels: {"model-reg": "opt-125m",
-              "model-repo": "facebook",
-              "app": null}
-          spec:
-            initContainers:
-            - name: routing-proxy
-              args:
-                - --port=8000
-                - --vllm-port=8200
-                - --connector=nixlv2
-                - --zap-encoder=json
-                - --zap-log-level=debug
-                - --secure-proxy=false
-              image: ghcr.io/llm-d/llm-d-routing-sidecar:latest
-              imagePullPolicy: Always
-              env:
-              ports:
-                - containerPort: 8000
-              resources: {}
-              restartPolicy: Always
-              securityContext:
-                allowPrivilegeEscalation: false
-                runAsNonRoot: true
-            containers:
-              - name: vllm
-                image: ghcr.io/llm-d/llm-d-cuda:latest
-                
-                command: ["vllm", "serve"]
-                args:
-                  - "facebook/opt-125m"
-                  - --port
-                  - "8200"
-                  - --served-model-name
-                  - "facebook/opt-125m"
-                  
-                  
-                  - --enforce-eager
-                  - --kv-transfer-config
-                  - '{"kv_connector":"NixlConnector", "kv_role":"kv_both"}'
-                env:
-                - name: CUDA_VISIBLE_DEVICES
-                  value: "0"
-                - name: UCX_TLS
-                  value: cuda_ipc,cuda_copy,tcp
-                - name: VLLM_NIXL_SIDE_CHANNEL_HOST
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: status.podIP
-                - name: VLLM_NIXL_SIDE_CHANNEL_PORT
-                  value: "5600"
-                - name: VLLM_LOGGING_LEVEL
-                  value: DEBUG
-                - name: DP_SIZE
-                  value: "1"
-                - name: TP_SIZE
-                  value: "1"
-                - name: DP_SIZE_LOCAL
-                  value: "1"
-                
-                - name: HF_HOME
-                  value: /model-cache
-                
-                ports:
-                - containerPort: 8200
-                  protocol: TCP
-                - containerPort: 5600
-                  protocol: TCP
-                resources:
-                  limits:
-                    cpu: "16"
-                    memory: 16Gi
-                    nvidia.com/gpu: "1"
-                  requests:
-                    cpu: "16"
-                    memory: 16Gi
-                    nvidia.com/gpu: "1"
-                
-                volumeMounts:
-                  - name: model-storage
-                    mountPath: /model-cache
+        dual-pods.llm-d.ai/admin-port: "8081"
+        dual-pods.llm-d.ai/accelerators: "GPU-0"
+        dual-pods.llm-d.ai/inference-server-config: inference-server-config-example
     spec:
       containers:
         - name: inference-server
@@ -115,11 +35,8 @@ spec:
           imagePullPolicy: Always
           command:
           - /app/requester
-          env:
-          - name: PROBES_PORT
-            value: "8080"
-          - name: SPI_PORT
-            value: "8081"
+          - --logtostderr=false
+          - --log_file=/tmp/requester.log
           ports:
           - name: probes
             containerPort: 8080
@@ -143,7 +60,7 @@ kind: Deployment
 metadata:
   name: requester-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -229,3 +146,47 @@ spec:
           volumeMounts:
             - name: model-storage
               mountPath: /model-cache
+---
+# Source: llm-d-modelservice/templates/decode-requester-replicaset.yaml
+apiVersion: fma.llm-d.ai/v1alpha1
+kind: InferenceServerConfig
+metadata:
+  name: inference-server-config-example
+spec:
+  launcherConfigName: launcher-config-example
+  modelServerConfig:
+    labels:
+      component: inference
+    env_vars:
+      CUDA_VISIBLE_DEVICES: "0"
+      DP_SIZE: "1"
+      DP_SIZE_LOCAL: "1"
+      HF_HOME: /model-cache
+      TP_SIZE: "1"
+      UCX_TLS: cuda_ipc,cuda_copy,tcp
+      VLLM_LOGGING_LEVEL: DEBUG
+      VLLM_NIXL_SIDE_CHANNEL_PORT: "5600"
+      VLLM_SERVER_DEV_MODE: "1"
+      VLLM_USE_V1: "1"
+    options: "--model facebook/opt-125m --served-model-name facebook/opt-125m --enforce-eager --kv-transfer-config {\"kv_connector\":\"NixlConnector\", \"kv_role\":\"kv_both\"}"
+    port: 8005
+---
+# Source: llm-d-modelservice/templates/decode-requester-replicaset.yaml
+apiVersion: fma.llm-d.ai/v1alpha1
+kind: LauncherConfig
+metadata:
+  name: launcher-config-example
+spec:
+  maxSleepingInstances: 3
+  podTemplate:
+    spec:
+      containers:
+      - args:
+        - |
+          uvicorn launcher:app --host 0.0.0.0 --log-level info --port 8001
+        command:
+        - /bin/bash
+        - -c
+        image: ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest
+        imagePullPolicy: IfNotPresent
+        name: inference-server
