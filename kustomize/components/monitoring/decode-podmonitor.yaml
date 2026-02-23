@@ -9,7 +9,7 @@ spec:
     matchLabels:
       llm-d.ai/role: decode
   podMetricsEndpoints:
-  - port: metrics
+  - port: vllm
     path: /metrics
     interval: 30s
     scrapeTimeout: 10s
