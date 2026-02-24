@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+resources:
+  - ../../../accelerators/nvidia
+
+components:
+  - ../../../components/monitoring
+
+configMapGenerator:
+  - name: model-config
+    behavior: merge
+    literals:
+      - modelName=meta-llama/Llama-2-7b-hf
+      - modelUri=hf://meta-llama/Llama-2-7b-hf
+      - modelSize=50Gi
+
+patches:
+  # Enable decode deployment
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "64Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "32"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "64Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "32"

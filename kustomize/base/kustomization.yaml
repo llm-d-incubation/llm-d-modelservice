@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Base resources
+resources:
+  - resources/serviceaccount.yaml
+  - resources/decode-deployment.yaml
+  - resources/prefill-deployment.yaml
+  - resources/decode-lws.yaml
+  - resources/prefill-lws.yaml
+
+# ConfigMap generators for configuration
+configMapGenerator:
+  - name: model-config
+    files:
+      - config/model-config.yaml
+  - name: parallelism-config
+    files:
+      - config/parallelism-config.yaml
+  - name: routing-config
+    files:
+      - config/routing-config.yaml
+
+# Common labels applied to all resources
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: llm-d-modelservice
+      app.kubernetes.io/managed-by: kustomize

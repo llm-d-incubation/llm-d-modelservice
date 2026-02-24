@@ -1,0 +1,61 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference base
+resources:
+  - ../../base
+
+# Nvidia-specific patches
+patches:
+  # Add GPU resources to decode deployment
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits
+        value:
+          nvidia.com/gpu: "1"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests
+        value:
+          nvidia.com/gpu: "1"
+  # Add GPU to prefill if enabled
+  - target:
+      kind: Deployment
+      name: modelservice-prefill
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits
+        value:
+          nvidia.com/gpu: "1"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests
+        value:
+          nvidia.com/gpu: "1"
+  # LeaderWorkerSet resources
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-decode-lws
+    patch: |-
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/limits
+        value:
+          nvidia.com/gpu: "1"
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/requests
+        value:
+          nvidia.com/gpu: "1"
+
+  - target:
+      kind: LeaderWorkerSet
+      name: modelservice-prefill-lws
+    patch: |-
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/limits
+        value:
+          nvidia.com/gpu: "1"
+      - op: add
+        path: /spec/leaderWorkerTemplate/workerTemplate/spec/containers/0/resources/requests
+        value:
+          nvidia.com/gpu: "1"
