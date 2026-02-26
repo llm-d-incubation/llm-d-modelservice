@@ -889,9 +889,27 @@
           "type": "boolean"
         },
         "image": {
-          "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest",
+          "additionalProperties": false,
+          "properties": {
+            "registry": {
+              "default": "ghcr.io",
+              "title": "registry",
+              "type": "string"
+            },
+            "repository": {
+              "default": "llm-d-incubation/llm-d-fast-model-actuation/requester",
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "latest",
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
           "title": "image",
-          "type": "string"
+          "type": "object"
         },
         "port": {
           "additionalProperties": false,
@@ -984,14 +1002,32 @@
               "type": "boolean"
             },
             "image": {
-              "default": "ghcr.io/llm-d/llm-d-routing-sidecar:latest",
+              "additionalProperties": false,
+              "properties": {
+                "imagePullPolicy": {
+                  "default": "Always",
+                  "title": "imagePullPolicy",
+                  "type": "string"
+                },
+                "registry": {
+                  "default": "ghcr.io",
+                  "title": "registry",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "llm-d/llm-d-routing-sidecar",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "latest",
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
               "title": "image",
-              "type": "string"
-            },
-            "imagePullPolicy": {
-              "default": "Always",
-              "title": "imagePullPolicy",
-              "type": "string"
+              "type": "object"
             },
             "secure": {
               "default": false,

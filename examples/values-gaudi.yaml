@@ -28,7 +28,9 @@ decode:
   containers:
   - name: "vllm"
     # Use custom vLLM image for Gaudi for now
-    image: "opea/vllm-gaudi:1.22.0"
+    image:
+      repository: opea/vllm-gaudi
+      tag: 1.22.0
 
     # Use imageDefault mode - chart will generate basic vLLM command automatically
     modelCommand: "imageDefault"

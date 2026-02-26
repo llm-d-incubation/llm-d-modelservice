@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
         - name: inference-server
-          image: {{ .Values.requester.image }}
+          image: {{ include "common.images.image" ( dict "imageRoot" .Values.requester.image "global" .Values.global) }}
           imagePullPolicy: Always
           command:
           - /app/requester

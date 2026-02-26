@@ -29,7 +29,10 @@ decode:
   replicas: 1
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d-cuda:latest"
+    image:
+      registry: ghcr.io
+      repository: llm-d/llm-d-cuda
+      tag: latest
     modelCommand: vllmServe
     args:
       - "--enforce-eager"
@@ -71,7 +74,10 @@ prefill:
   replicas: 1
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d-cuda:latest"
+    image:
+      registry: ghcr.io
+      repository: llm-d/llm-d-cuda
+      tag: latest
     modelCommand: vllmServe
     args:
       - "--enforce-eager"

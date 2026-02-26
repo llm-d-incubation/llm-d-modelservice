@@ -29,7 +29,10 @@ routing:
 # -- Requester configuration part of the dual-pod solution for FMA
 requester:
   enable: true
-  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
+  image:
+    registry: ghcr.io
+    repository: llm-d-incubation/llm-d-fast-model-actuation/requester
+    tag: latest
   port:
     probes: 8080
     spi: 8081
@@ -48,7 +51,10 @@ decode:
   replicas: 1
   containers:
     - name: "vllm"
-      image: "ghcr.io/llm-d/llm-d-cuda:latest"
+      image:
+        registry: ghcr.io
+        repository: llm-d/llm-d-cuda
+        tag: latest
       modelCommand: vllmServe
       args:
         - "--enforce-eager"
@@ -89,7 +95,10 @@ prefill:
   replicas: 1
   containers:
     - name: "vllm"
-      image: "ghcr.io/llm-d/llm-d-cuda:latest"
+      image:
+        registry: ghcr.io
+        repository: llm-d/llm-d-cuda
+        tag: latest
       modelCommand: vllmServe
       args:
         - "--enforce-eager"
