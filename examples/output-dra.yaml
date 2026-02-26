@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: dra-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: dra-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -52,6 +52,7 @@ spec:
       containers:
         - name: vllm
           image: intel/vllm:0.10.0-xpu
+          imagePullPolicy: Always
           
           command: ["vllm", "serve"]
           args:
@@ -115,7 +116,7 @@ kind: ResourceClaimTemplate
 metadata:
   name: intel-gaudi-claim-template-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/role: decode
