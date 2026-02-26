@@ -47,7 +47,10 @@ decode:
 
   containers:
   - name: "vllm"
-    image: "ghcr.io/llm-d/llm-d:v0.2.0"
+    image:
+      registry: ghcr.io
+      repository: llm-d/llm-d
+      tag: v0.2.0
     modelCommand: vllmServe
     args:
       - "--enforce-eager"
@@ -100,7 +103,10 @@ prefill:
   containers:
   - name: "vllm"
     # Using Intel-optimized vLLM image for Gaudi
-    image: "vault.habana.ai/gaudi-docker/1.18.0/ubuntu22.04/habanalabs/pytorch-installer-2.4.0:latest"
+    image:
+      registry: vault.habana.ai
+      repository: gaudi-docker/1.18.0/ubuntu22.04/habanalabs/pytorch-installer-2.4.0
+      tag: latest
     modelCommand: vllmServe
     args:
       - "--enforce-eager"
