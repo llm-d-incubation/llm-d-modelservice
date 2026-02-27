@@ -37,12 +37,9 @@ spec:
       nodeSelector:
         {{- toYaml .Values.decode.nodeSelector | nindent 8 }}
       {{- end }}
-      {{- if or (.Values.decode.initContainers) (eq .Values.routing.proxy.enabled true) }}
-      initContainers:
-      {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" .Values.routing.proxy "servicePort" .Values.routing.servicePort "Values" .Values)) | nindent 8 }}
       {{- if .Values.decode.initContainers }}
+      initContainers:
       {{- toYaml .Values.decode.initContainers | nindent 8 }}
-      {{- end }}
       {{- end }}
       {{- if hasKey .Values.decode "enableServiceLinks" }}
       enableServiceLinks: {{ .Values.decode.enableServiceLinks }}
@@ -51,8 +48,9 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.decode.terminationGracePeriodSeconds }}
       {{- end }}
       {{- (include "llm-d-modelservice.modelPod" (dict "role" "decode" "pdSpec" .Values.decode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 4 }}
-      {{- with .Values.decode.containers }}
       containers:
+      {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" .Values.routing.proxy "servicePort" .Values.routing.servicePort "Values" .Values)) | nindent 8 }}
+      {{- with .Values.decode.containers }}
         {{- range . }}
         {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.decode)) | nindent 8 }}
         {{- end }}

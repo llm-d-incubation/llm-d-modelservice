@@ -91,7 +91,7 @@ affinity:
             {{- end }}
 {{- end }}
 {{- end }}
-{{/* Create the init container for the routing proxy/sidecar for decode pods */}}
+{{/* Create the container for the routing proxy/sidecar for decode pods */}}
 {{- define "llm-d-modelservice.routingProxy" -}}
 {{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) -}}
 - name: routing-proxy
@@ -141,7 +141,6 @@ affinity:
   ports:
     - containerPort: {{ default 8000 .servicePort }}
   resources: {}
-  restartPolicy: Always
   securityContext:
     allowPrivilegeEscalation: false
     runAsNonRoot: true

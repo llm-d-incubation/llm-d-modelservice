@@ -14,7 +14,7 @@ Active scenarios supported:
 Integration with `llm-d` components:
 - Quickstart guide in `llm-d-infra` depends on ModelService
 - Flexible configuration of `llm-d-inference-scheduler` for routing
-- Features `llm-d-routing-sidecar` in P/D disaggregation
+- Features `llm-d-routing-sidecar` as a sidecar container in P/D disaggregation
 - Utilized in benchmarking experiments in `llm-d-benchmark`
 - Effortless use of `llm-d-inference-sim` for CPU-only workloads
 - Allows to use `llm-d-fast-model-actuation`. More information about the fast model loading techniques [here](https://github.com/llm-d-incubation/llm-d-fast-model-actuation)
@@ -83,7 +83,7 @@ Below are the values you can set.
 | `decode.containers[*].command`         | List of commands for the decode container.                                                                        | List[string]    | []                                          |
 | `decode.containers[*].ports`           | List of ports for the decode container.                                                                           | List[Port]      | []                                          |
 | `decode.containers[*].extraConfig`     | Extra container configuration                                                                                     | dict            | {}                                          |
-| `decode.initContainers`.               | List of initContainers that should be added (in addition to routing proxy if enabled)                             | List[Container] | N/A                                         |
+| `decode.initContainers`.               | List of initContainers that should be added to the decode pod                                                     | List[Container] | N/A                                         |
 | `decode.parallelism.tensor`            | Amount of tensor parallelism                                                                                      | int             | 1                                           |
 | `decode.parallelism.data`              | Amount of data parallelism                                                                                        | int             | 1                                           |
 | `decode.parallelism.dataLocal`         | Amount of data local parallelism                                                                                  | int             | 1                                           |
