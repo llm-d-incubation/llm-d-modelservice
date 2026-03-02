@@ -8,6 +8,8 @@ resources:
   - resources/prefill-deployment.yaml
   - resources/decode-lws.yaml
   - resources/prefill-lws.yaml
+  - monitoring/decode-podmonitor.yaml
+  - monitoring/prefill-podmonitor.yaml
 
 # ConfigMap generators for configuration
 configMapGenerator:

@@ -1,0 +1,62 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+resources:
+  - ../../../accelerators/intel-xe
+
+configMapGenerator:
+  - name: model-config
+    behavior: merge
+    literals:
+      - modelName=deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+      - modelUri=hf://deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+      - modelSize=10Gi
+
+patches:
+  # Enable and configure decode deployment
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "32Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "16"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "32Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "16"
+
+  # Enable and configure prefill deployment
+  - target:
+      kind: Deployment
+      name: modelservice-prefill
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "32Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "16"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "32Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "16"
+
+  # Routing proxy init containers
+  - path: patches/decode-init-container.yaml
+  - path: patches/prefill-init-container.yaml
