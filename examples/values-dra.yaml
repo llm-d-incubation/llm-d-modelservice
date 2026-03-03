@@ -41,7 +41,9 @@ decode:
     dataLocal: 1
   containers:
   - name: vllm
-    image: intel/vllm:0.10.0-xpu
+    image:
+      repository: intel/vllm
+      tag: 0.10.0-xpu
     modelCommand: "vllmServe"
     args:
     - --dtype=float16

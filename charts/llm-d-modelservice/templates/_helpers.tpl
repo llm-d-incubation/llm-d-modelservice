@@ -123,8 +123,8 @@ affinity:
     {{- if hasKey .proxy "certPath" }}
     - --cert-path={{ .proxy.certPath }}
     {{- end }}
-  image: {{ required "routing.proxy.image must be specified" .proxy.image }}
-  imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
+  image: {{ required "routing.proxy.image must be specified" (include "common.images.image" (dict "imageRoot" .proxy.image "global" .Values.global)) }}
+  imagePullPolicy: {{ default "Always" .proxy.image.imagePullPolicy }}
   env:
 {{- if and .Values.tracing .Values.tracing.enabled }}
     - name: OTEL_SERVICE_NAME
@@ -246,7 +246,7 @@ Context is helm root context plus key "role" ("decode" or "prefill")
 {{/* Get accelerator resource name based on type */}}
 {{- define "llm-d-modelservice.acceleratorResource" -}}
 {{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
-{{- if and .container .container.image (contains "llm-d-inference-sim" .container.image) -}}
+{{- if and .container .container.image (contains "llm-d-inference-sim" .container.image.repository) -}}
 {{/* No resource name for llm-d-inference-sim */}}
 {{- else if eq $acceleratorType "cpu" -}}
 {{/* No resource name for CPU */}}
@@ -465,7 +465,7 @@ context is a dict with helm root context plus:
 */}}
 {{- define "llm-d-modelservice.container" -}}
 - name: {{ default "vllm" .container.name }}
-  image: {{ required "image of container is required" .container.image }}
+  image: {{ required "image of container is required" (include "common.images.image" (dict "imageRoot" .container.image "global" .Values.global)) }}
   {{- with .container.extraConfig }}
     {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
@@ -475,7 +475,7 @@ context is a dict with helm root context plus:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- /* DEPRECATED; use extraConfig.imagePullPolicy instead */ -}}
-  {{- with .container.imagePullPolicy }}
+  {{- with .container.image.imagePullPolicy }}
   imagePullPolicy: {{ . }}
   {{- end }}
   {{- /* handle command and args */}}
