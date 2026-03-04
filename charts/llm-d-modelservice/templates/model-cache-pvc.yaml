@@ -1,0 +1,25 @@
+{{/*
+PVC for model cache storage when using hf:// protocol with PVC storage enabled
+*/}}
+{{- $parsedArtifacts := regexSplit "://" .Values.modelArtifacts.uri -1 -}}
+{{- $protocol := first $parsedArtifacts -}}
+{{- if and (eq $protocol "hf") .Values.modelArtifacts.usePVC -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "llm-d-modelservice.fullname" . }}-model-cache
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    {{- with .Values.modelArtifacts.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.modelArtifacts.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.modelArtifacts.size | default "100Gi" }}
+  {{- with .Values.modelArtifacts.storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
+{{- end }}

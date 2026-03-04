@@ -364,8 +364,13 @@ Context is .Values.modelArtifacts
 {{- $path := last $parsedArtifacts -}}
 {{- if eq $protocol "hf" -}}
 - name: model-storage
+{{- if .usePVC }}
+  persistentVolumeClaim:
+    claimName: {{ .pvcName }}
+{{- else }}
   emptyDir:
     sizeLimit: {{ default "0" .size }}
+{{- end -}}
 {{/* supports pvc or pvc+hf prefixes */}}
 {{- else if hasPrefix "pvc" $protocol }}
 {{- $parsedArtifacts := regexSplit "/" $path -1 -}}
@@ -450,7 +455,8 @@ context is a pdSpec
     {{- end -}}
   {{- end -}}
   {{- if $hasModelVolume }}
-  {{ include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 4}}
+  {{- $modelArtifactsWithPVC := merge (dict "pvcName" (printf "%s-model-cache" (include "llm-d-modelservice.fullname" .))) .Values.modelArtifacts }}
+  {{ include "llm-d-modelservice.mountModelVolumeVolumes" $modelArtifactsWithPVC | nindent 4}}
   {{- end -}}
   {{- /* Add resourceClaims for DRA (new and old API) */}}
   {{- include "llm-d-modelservice.podResourceClaims" . | nindent 2 }}

@@ -1972,6 +1972,12 @@
                     "description": "   hf://model/name - model as defined on Hugging Face   pvc://pvc_name/path/to/model - model on existing persistant storage volume   oci:// not yet supported",
                     "required": [],
                     "title": "uri"
+                },
+                "usePVC": {
+                    "default": false,
+                    "description": "Use a PersistentVolumeClaim instead of emptyDir for model storage (hf:// protocol only). Set to true for large models that exceed node's ephemeral storage capacity",
+                    "title": "usePVC",
+                    "type": "boolean"
                 }
             },
             "required": [],
