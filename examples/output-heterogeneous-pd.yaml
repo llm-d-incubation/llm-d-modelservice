@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: heterogeneous-pd-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: heterogeneous-pd-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -62,7 +62,6 @@ spec:
         - name: model-storage
           emptyDir:
             sizeLimit: 20Gi
-        
       resourceClaims:
         - name: nvidia-decode-claim
           resourceClaimTemplateName: nvidia-claim-template-decode
@@ -132,7 +131,7 @@ kind: Deployment
 metadata:
   name: heterogeneous-pd-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -159,7 +158,6 @@ spec:
         - name: model-storage
           emptyDir:
             sizeLimit: 20Gi
-        
       
       containers:
         - name: vllm
@@ -225,7 +223,7 @@ kind: ResourceClaimTemplate
 metadata:
   name: nvidia-claim-template-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
     llm-d.ai/role: decode

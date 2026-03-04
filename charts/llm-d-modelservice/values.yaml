@@ -72,6 +72,23 @@ modelArtifacts:
   uri: "hf://{{ .Values.modelArtifacts.name }}"
   # size of volume to create to hold the model
   size: 5Mi
+  # @schema
+  # type: boolean
+  # @schema
+  # usePVC -- Use a PersistentVolumeClaim instead of emptyDir for model storage (hf:// protocol only).
+  # Set to true for large models that exceed node's ephemeral storage capacity
+  usePVC: false
+  # @schema
+  # type: string
+  # @schema
+  # storageClassName -- Storage class for the PVC. Only used when usePVC: true (uses cluster default if not specified)
+  # storageClassName: ""
+  # @schema
+  # type: string
+  # @schema
+  # accessMode -- Access mode for the PVC. Only used when usePVC: true (default: ReadWriteOnce)
+  # accessMode: ReadWriteOnce
+
   # name of secret containing credentials for accessing the model (e.g., HF_TOKEN)
   authSecretName: ""
   # location where model volume will be mounted (used when mountModelVolume: true)

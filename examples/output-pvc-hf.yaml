@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: pvc-hf-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: pvc-hf-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -128,7 +128,7 @@ kind: Deployment
 metadata:
   name: pvc-hf-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
