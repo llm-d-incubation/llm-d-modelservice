@@ -56,7 +56,7 @@ tracing:
 requester:
   enable: true
   image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
-  accelerators: "GPU-0"
+  adminPort: 8081
   inferenceServerConfig: "inference-server-config-example"
   launcherConfig: "launcher-config-example"
   port:
@@ -78,10 +78,25 @@ requester:
     maxSleepingInstances: 3
     podTemplate:
       spec:
+        runtimeClassName: nvidia-legacy
         containers:
           - name: inference-server
             image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest"
             imagePullPolicy: IfNotPresent
+            mountModelVolume: true
+            env:
+              - name: HOME
+                value: "/model-cache"
+              - name: VLLM_CACHE_ROOT
+                value: "/model-cache/vllm"
+              - name: FLASHINFER_WORKSPACE_DIR
+                value: "/model-cache/flashinfer"
+              - name: TRITON_CACHE_DIR
+                value: "/model-cache/triton"
+              - name: XDG_CACHE_HOME
+                value: "/model-cache"
+              - name: XDG_CONFIG_HOME
+                value: "/model-cache/config"
             command:
               - /bin/bash
               - -c
