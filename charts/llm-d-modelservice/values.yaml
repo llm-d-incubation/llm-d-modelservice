@@ -99,6 +99,7 @@ accelerator:
     intel-gaudi: "habana.ai/gaudi"
     amd: "amd.com/gpu"
     google: "google.com/tpu"
+    rdma: "rdma.network.io/rdmadev"
   # Environment variables specific to accelerator types
   env:
     intel-i915:
@@ -148,6 +149,11 @@ accelerator:
     google:
       name: google-claim-template
       class: tpu.google.com
+      match: "exactly"
+      selectors: []
+    rdma:
+      name: rdma-claim-template
+      class: rdma-dranet
       match: "exactly"
       selectors: []
 
