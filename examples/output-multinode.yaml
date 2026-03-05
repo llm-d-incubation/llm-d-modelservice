@@ -1,0 +1,351 @@
+---
+# Source: llm-d-modelservice/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: llm-d-modelservice
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.4.8
+    app.kubernetes.io/version: "v0.4.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: llm-d-modelservice/templates/decode-lws.yaml
+apiVersion: leaderworkerset.x-k8s.io/v1
+kind: LeaderWorkerSet
+metadata:
+  name: llm-d-modelservice-decode
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.4.8
+    app.kubernetes.io/version: "v0.4.0"
+    app.kubernetes.io/managed-by: Helm
+    llm-d.ai/inference-serving: "true"
+    llm-d.ai/model: deepseek-ai-deepSeek-r1-distill-qwen-1-5B
+    llm-d.ai/role: decode
+spec:
+  replicas: 1
+  leaderWorkerTemplate:
+    size: 2
+    leaderTemplate:
+      metadata:
+        labels:
+          llm-d.ai/inference-serving: "true"
+          llm-d.ai/model: deepseek-ai-deepSeek-r1-distill-qwen-1-5B
+          llm-d.ai/role: decode
+      spec:
+        initContainers:
+          - name: routing-proxy
+            args:
+              - --port=8000
+              - --vllm-port=8200
+              - --connector=nixlv2
+              - --zap-encoder=json
+              - --zap-log-level=debug
+              - --secure-proxy=false
+            image: ghcr.io/llm-d/llm-d-routing-sidecar:latest
+            imagePullPolicy: Always
+            env:
+            ports:
+              - containerPort: 8000
+            resources: {}
+            restartPolicy: Always
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsNonRoot: true
+        
+      
+        serviceAccountName: llm-d-modelservice
+        
+        volumes:
+          - emptyDir: {}
+            name: metrics-volume
+        
+          - name: model-storage
+            emptyDir:
+              sizeLimit: 10Gi
+          
+        
+        containers:
+        - name: vllm
+          image: ghcr.io/llm-d/llm-d-cuda:latest
+          
+          command:
+            - /bin/bash
+            - -c
+          args:
+            - |
+              ray start --head --port=6379 && vllm serve deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
+              --port 8200 \
+              --tensor-parallel-size 1 \
+              --pipeline-parallel-size 2 \
+              --distributed-executor-backend ray
+          env:
+          - name: VLLM_LOGGING_LEVEL
+            value: DEBUG
+          - name: DP_SIZE
+            value: "1"
+          - name: TP_SIZE
+            value: "1"
+          - name: DP_SIZE_LOCAL
+            value: "1"
+          
+          - name: HF_HOME
+            value: /model-cache
+          
+          ports:
+          - containerPort: 8200
+            name: vllm
+            protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8200
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: "16"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+            requests:
+              cpu: "16"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+          
+          volumeMounts:
+            - mountPath: /.config
+              name: metrics-volume
+            - mountPath: /dev/shm
+              name: shm
+            - mountPath: /.cache
+              name: torch-compile-cache
+            - name: model-storage
+              mountPath: /model-cache
+    workerTemplate:
+      metadata:
+        labels:
+          llm-d.ai/inference-serving: "true"
+          llm-d.ai/model: deepseek-ai-deepSeek-r1-distill-qwen-1-5B
+          llm-d.ai/role: decode
+      spec:
+        
+      
+        serviceAccountName: llm-d-modelservice
+        
+        volumes:
+          - emptyDir: {}
+            name: metrics-volume
+        
+          - name: model-storage
+            emptyDir:
+              sizeLimit: 10Gi
+          
+        
+        containers:
+        - name: vllm
+          image: ghcr.io/llm-d/llm-d-cuda:latest
+          
+          command:
+            - /bin/bash
+            - -c
+            - ray start --address=$(LWS_LEADER_ADDRESS):6379 --block
+          env:
+          - name: VLLM_LOGGING_LEVEL
+            value: DEBUG
+          - name: DP_SIZE
+            value: "1"
+          - name: TP_SIZE
+            value: "1"
+          - name: DP_SIZE_LOCAL
+            value: "1"
+          
+          - name: HF_HOME
+            value: /model-cache
+          
+          ports:
+          - containerPort: 8200
+            name: vllm
+            protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                pgrep -f "ray" || exit 1
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: "16"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+            requests:
+              cpu: "16"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+          
+          volumeMounts:
+            - mountPath: /.config
+              name: metrics-volume
+            - mountPath: /dev/shm
+              name: shm
+            - mountPath: /.cache
+              name: torch-compile-cache
+            - name: model-storage
+              mountPath: /model-cache
+---
+# Source: llm-d-modelservice/templates/prefill-lws.yaml
+apiVersion: leaderworkerset.x-k8s.io/v1
+kind: LeaderWorkerSet
+metadata:
+  name: llm-d-modelservice-prefill
+  labels:
+    helm.sh/chart: llm-d-modelservice-v0.4.8
+    app.kubernetes.io/version: "v0.4.0"
+    app.kubernetes.io/managed-by: Helm
+    llm-d.ai/inference-serving: "true"
+    llm-d.ai/model: deepseek-ai-deepSeek-r1-distill-qwen-1-5B
+    llm-d.ai/role: prefill
+spec:
+  replicas: 1
+  leaderWorkerTemplate:
+    size: 2
+    leaderTemplate:
+      metadata:
+        labels:
+          llm-d.ai/inference-serving: "true"
+          llm-d.ai/model: deepseek-ai-deepSeek-r1-distill-qwen-1-5B
+          llm-d.ai/role: prefill
+      spec:
+      
+        serviceAccountName: llm-d-modelservice
+        
+        volumes:
+          - emptyDir: {}
+            name: metrics-volume
+        
+          - name: model-storage
+            emptyDir:
+              sizeLimit: 10Gi
+          
+        
+        containers:
+        - name: vllm
+          image: ghcr.io/llm-d/llm-d-cuda:latest
+          
+          command:
+            - /bin/bash
+            - -c
+          args:
+            - |
+              ray start --head --port=6380 && vllm serve deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
+              --port 8100 \
+              --tensor-parallel-size 1 \
+              --pipeline-parallel-size 2 \
+              --distributed-executor-backend ray
+          env:
+          - name: DP_SIZE
+            value: "1"
+          - name: TP_SIZE
+            value: "1"
+          - name: DP_SIZE_LOCAL
+            value: "1"
+          
+          - name: HF_HOME
+            value: /model-cache
+          
+          ports:
+          - containerPort: 8100
+            name: vllm
+            protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8100
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: "16"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+            requests:
+              cpu: "16"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+          
+          volumeMounts:
+            - mountPath: /.config
+              name: metrics-volume
+            - name: model-storage
+              mountPath: /model-cache
+    workerTemplate:
+      metadata:
+        labels:
+          llm-d.ai/inference-serving: "true"
+          llm-d.ai/model: deepseek-ai-deepSeek-r1-distill-qwen-1-5B
+          llm-d.ai/role: prefill
+      spec:
+      
+        serviceAccountName: llm-d-modelservice
+        
+        volumes:
+          - emptyDir: {}
+            name: metrics-volume
+        
+          - name: model-storage
+            emptyDir:
+              sizeLimit: 10Gi
+          
+        
+        containers:
+        - name: vllm
+          image: ghcr.io/llm-d/llm-d-cuda:latest
+          
+          command:
+            - /bin/bash
+            - -c
+            - ray start --address=$(LWS_LEADER_ADDRESS):6380 --block
+          env:
+          - name: DP_SIZE
+            value: "1"
+          - name: TP_SIZE
+            value: "1"
+          - name: DP_SIZE_LOCAL
+            value: "1"
+          
+          - name: HF_HOME
+            value: /model-cache
+          
+          ports:
+          - containerPort: 8100
+            name: vllm
+            protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                pgrep -f "ray" || exit 1
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: "16"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+            requests:
+              cpu: "16"
+              memory: 16Gi
+              nvidia.com/gpu: "1"
+          
+          volumeMounts:
+            - mountPath: /.config
+              name: metrics-volume
+            - name: model-storage
+              mountPath: /model-cache
