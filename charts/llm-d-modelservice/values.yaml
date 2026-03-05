@@ -166,7 +166,6 @@ requester:
   enable: false
   image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
   adminPort: 8081
-  accelerators: "GPU-0"
   # Name of the InferenceServerConfig resource (required when requester is enabled)
   inferenceServerConfig: ""
   # Name of the LauncherConfig resource (required when requester is enabled)
@@ -194,7 +193,14 @@ requester:
       # additionalProperties: true
       # @schema
       metadata: {}
+      # @schema
+      # additionalProperties: true
+      # @schema
       spec:
+        # @schema
+        # items:
+        #   additionalProperties: true
+        # @schema
         containers:
           - name: inference-server
             image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest"

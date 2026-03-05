@@ -889,11 +889,6 @@
       "additionalProperties": true,
       "description": "Requester configuration part of the dual-pod solution for FMA",
       "properties": {
-        "accelerators": {
-          "default": "GPU-0",
-          "title": "accelerators",
-          "type": "string"
-        },
         "adminPort": {
           "default": 8081,
           "title": "adminPort",
@@ -940,70 +935,21 @@
                   "title": "metadata"
                 },
                 "spec": {
-                  "additionalProperties": false,
+                  "additionalProperties": true,
+                  "description": " additionalProperties: true @schema",
                   "properties": {
                     "containers": {
+                      "description": " items:   additionalProperties: true @schema",
                       "items": {
-                        "anyOf": [
-                          {
-                            "additionalProperties": false,
-                            "properties": {
-                              "args": {
-                                "items": {
-                                  "anyOf": [
-                                    {
-                                      "type": "string"
-                                    }
-                                  ],
-                                  "required": []
-                                },
-                                "title": "args",
-                                "type": "array"
-                              },
-                              "command": {
-                                "items": {
-                                  "anyOf": [
-                                    {
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "string"
-                                    }
-                                  ],
-                                  "required": []
-                                },
-                                "title": "command",
-                                "type": "array"
-                              },
-                              "image": {
-                                "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest",
-                                "title": "image",
-                                "type": "string"
-                              },
-                              "imagePullPolicy": {
-                                "default": "IfNotPresent",
-                                "title": "imagePullPolicy",
-                                "type": "string"
-                              },
-                              "name": {
-                                "default": "inference-server",
-                                "title": "name",
-                                "type": "string"
-                              }
-                            },
-                            "required": [],
-                            "type": "object"
-                          }
-                        ],
+                        "additionalProperties": true,
                         "required": []
                       },
-                      "title": "containers",
-                      "type": "array"
+                      "required": [],
+                      "title": "containers"
                     }
                   },
                   "required": [],
-                  "title": "spec",
-                  "type": "object"
+                  "title": "spec"
                 }
               },
               "required": [],

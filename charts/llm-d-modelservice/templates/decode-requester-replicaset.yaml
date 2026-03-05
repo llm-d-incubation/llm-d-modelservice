@@ -12,8 +12,24 @@ spec:
       {{- toYaml . | nindent 6 }}
     {{- end }}
     spec:
-      {{- with .Values.requester.launcherConfigSpec.podTemplate.spec }}
+      {{- $podSpec := omit .Values.requester.launcherConfigSpec.podTemplate.spec "containers" "volumes" }}
+      {{- with $podSpec }}
       {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.requester.launcherConfigSpec.podTemplate.spec.containers }}
+      containers:
+        {{- range . }}
+        {{- (include "llm-d-modelservice.container" (dict "role" "launcher" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.requester.launcherConfigSpec)) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- if or .Values.requester.launcherConfigSpec.podTemplate.spec.volumes .Values.modelArtifacts }}
+      volumes:
+      {{- with .Values.requester.launcherConfigSpec.podTemplate.spec.volumes }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- if .Values.modelArtifacts }}
+      {{- include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 6 }}
+      {{- end }}
       {{- end }}
 ---
 apiVersion: fma.llm-d.ai/v1alpha1
@@ -55,7 +71,6 @@ spec:
         app: dp-app
       annotations:
         dual-pods.llm-d.ai/admin-port: "{{ .Values.requester.adminPort }}"
-        dual-pods.llm-d.ai/accelerators: {{ .Values.requester.accelerators | quote }}
         dual-pods.llm-d.ai/inference-server-config: {{ .Values.requester.inferenceServerConfig | required "requester.inferenceServerConfig is required" }}
     spec:
       containers:
