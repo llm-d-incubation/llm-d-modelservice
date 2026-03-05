@@ -75,6 +75,79 @@ llm-d.ai/role: prefill
 llm-d.ai/role: decode
 {{- end }}
 
+{{/* Generic split-template switch for decode/prefill */}}
+{{- define "llm-d-modelservice.pdUseSplitTemplates" -}}
+{{- $pdSpec := index .Values .role -}}
+{{- if and .Values.multinodeEnableLeader (index $pdSpec "workerTemplate") -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end }}
+
+{{/* Generic worker container inheritance/override for decode/prefill */}}
+{{- define "llm-d-modelservice.pdWorkerContainers" -}}
+{{- $pdSpec := index .Values .role -}}
+{{- $workerTemplate := default (dict) $pdSpec.workerTemplate -}}
+{{- $baseContainers := default (list) $pdSpec.containers -}}
+{{- if not (hasKey $workerTemplate "containers") -}}
+{{- toYaml $baseContainers -}}
+{{- else -}}
+  {{- $overrideContainers := default (list) $workerTemplate.containers -}}
+  {{- $mergedContainers := list -}}
+  {{- $baseLen := len $baseContainers -}}
+  {{- $overrideLen := len $overrideContainers -}}
+  {{- range $i, $baseContainer := $baseContainers -}}
+    {{- if lt $i $overrideLen -}}
+      {{- $overrideContainer := index $overrideContainers $i -}}
+      {{- $mergedContainer := deepCopy $baseContainer -}}
+      {{- range $key, $value := $overrideContainer -}}
+        {{- $_ := set $mergedContainer $key (deepCopy $value) -}}
+      {{- end -}}
+      {{- $mergedContainers = append $mergedContainers $mergedContainer -}}
+    {{- else -}}
+      {{- $mergedContainers = append $mergedContainers (deepCopy $baseContainer) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if gt $overrideLen $baseLen -}}
+    {{- range $i, $overrideContainer := $overrideContainers -}}
+      {{- if ge $i $baseLen -}}
+        {{- $mergedContainers = append $mergedContainers (deepCopy $overrideContainer) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- toYaml $mergedContainers -}}
+{{- end -}}
+{{- end }}
+
+{{/* Generic worker pdSpec inheritance/override for decode/prefill */}}
+{{- define "llm-d-modelservice.pdWorkerPdSpec" -}}
+{{- $pdSpec := index .Values .role -}}
+{{- $workerTemplate := default (dict) $pdSpec.workerTemplate -}}
+{{- $base := deepCopy $pdSpec -}}
+{{- $overrides := deepCopy $workerTemplate -}}
+{{- $merged := mergeOverwrite $base $overrides -}}
+{{- if hasKey $workerTemplate "containers" -}}
+  {{- $mergedContainers := include "llm-d-modelservice.pdWorkerContainers" . | fromYamlArray -}}
+  {{- $_ := set $merged "containers" $mergedContainers -}}
+{{- end -}}
+{{- toYaml $merged -}}
+{{- end }}
+
+{{/* Backward-compatible wrappers */}}
+{{- define "llm-d-modelservice.decodeUseSplitTemplates" -}}
+{{- include "llm-d-modelservice.pdUseSplitTemplates" (dict "Values" .Values "role" "decode") -}}
+{{- end }}
+{{- define "llm-d-modelservice.prefillUseSplitTemplates" -}}
+{{- include "llm-d-modelservice.pdUseSplitTemplates" (dict "Values" .Values "role" "prefill") -}}
+{{- end }}
+{{- define "llm-d-modelservice.decodeWorkerPdSpec" -}}
+{{- include "llm-d-modelservice.pdWorkerPdSpec" (dict "Values" .Values "role" "decode") -}}
+{{- end }}
+{{- define "llm-d-modelservice.prefillWorkerPdSpec" -}}
+{{- include "llm-d-modelservice.pdWorkerPdSpec" (dict "Values" .Values "role" "prefill") -}}
+{{- end }}
+
 {{/* Create node affinity from acceleratorTypes in Values */}}
 {{- define "llm-d-modelservice.acceleratorTypes" -}}
 {{- if .labelKey }}
