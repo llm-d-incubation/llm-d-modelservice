@@ -64,6 +64,40 @@ spec:
           selectors:
           {{- toYaml $selectors | nindent 10 }}
           {{- end }}
+
+        {{- /* Optional Intel RDMA net template generated only when enabled and selectors are set */ -}}
+        {{- if and (hasKey $config "rdmaNet") $config.rdmaNet -}}
+          {{- $rdmaNet := $config.rdmaNet -}}
+          {{- $rdmaEnabled := and $rdmaNet.enabled (hasKey $rdmaNet "selectors") (gt (len $rdmaNet.selectors) 0) -}}
+          {{- if $rdmaEnabled -}}
+            {{- $baseTemplateName := $config.name | default (printf "%s-claim-template" $acceleratorType) -}}
+            {{- $rdmaTemplateBaseName := $rdmaNet.name | default (printf "%s-rdma-claim-template" (trimSuffix "-claim-template" $baseTemplateName)) -}}
+            {{- $rdmaTemplateName := printf "%s-%s" $rdmaTemplateBaseName $role.name -}}
+            {{- $rdmaRequestName := $rdmaNet.requestName | default "rdma-dranet" -}}
+            {{- $rdmaClass := $rdmaNet.class | default "rdma-dranet" -}}
+            {{- $rdmaMatch := $rdmaNet.match | default "exactly" -}}
+            {{- $rdmaCount := $rdmaNet.count | default 1 -}}
+            {{- $rdmaSelectors := $rdmaNet.selectors | default list }}
+---
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: {{ $rdmaTemplateName }}
+  labels:
+    {{- include "llm-d-modelservice.labels" $ | nindent 4 }}
+    llm-d.ai/role: {{ $role.name }}
+spec:
+  spec:
+    devices:
+      requests:
+      - name: {{ $rdmaRequestName }}
+        {{ $rdmaMatch }}:
+          deviceClassName: {{ $rdmaClass }}
+          count: {{ $rdmaCount }}
+          selectors:
+          {{- toYaml $rdmaSelectors | nindent 10 }}
+          {{- end -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

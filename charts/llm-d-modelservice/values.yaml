@@ -99,7 +99,6 @@ accelerator:
     intel-gaudi: "habana.ai/gaudi"
     amd: "amd.com/gpu"
     google: "google.com/tpu"
-    rdma: "rdma.network.io/rdmadev"
   # Environment variables specific to accelerator types
   env:
     intel-i915:
@@ -126,6 +125,18 @@ accelerator:
       class: gpu.intel.com
       match: "exactly"
       selectors: []
+      # Optional: add a secondary RDMA claim for Intel workloads.
+      # Default behavior remains unchanged (only gpu.intel.com claim generated).
+      # RDMA claim is generated only when enabled=true and selectors are provided.
+      rdmaNet:
+        enabled: false
+        name: intel-rdma-claim-template
+        claimName: intel-rdma-claim
+        requestName: rdma-dranet
+        class: rdma-dranet
+        match: "exactly"
+        count: 1
+        selectors: []
     intel-i915: # deprecated, use intel instead
       name: intel-claim-template
       class: gpu.intel.com
@@ -149,11 +160,6 @@ accelerator:
     google:
       name: google-claim-template
       class: tpu.google.com
-      match: "exactly"
-      selectors: []
-    rdma:
-      name: rdma-claim-template
-      class: rdma-dranet
       match: "exactly"
       selectors: []
 
