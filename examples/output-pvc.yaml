@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: pvc-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: pvc-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -62,7 +62,7 @@ spec:
         - name: model-storage
           persistentVolumeClaim:
             claimName: pvc-name
-            readOnly: true
+            readOnly: false
       
       containers:
         - name: vllm
@@ -119,7 +119,7 @@ spec:
           volumeMounts:
             - name: model-storage
               mountPath: /model-cache
-              readOnly: true
+              readOnly: false
 ---
 # Source: llm-d-modelservice/templates/prefill-deployment.yaml
 apiVersion: apps/v1
@@ -127,7 +127,7 @@ kind: Deployment
 metadata:
   name: pvc-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.4.8
+    helm.sh/chart: llm-d-modelservice-v0.4.9
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -154,7 +154,7 @@ spec:
         - name: model-storage
           persistentVolumeClaim:
             claimName: pvc-name
-            readOnly: true
+            readOnly: false
       
       containers:
         - name: vllm
@@ -211,4 +211,4 @@ spec:
           volumeMounts:
             - name: model-storage
               mountPath: /model-cache
-              readOnly: true
+              readOnly: false
