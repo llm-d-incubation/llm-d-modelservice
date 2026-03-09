@@ -138,7 +138,8 @@ false
         {{- $rdmaClaimBaseName := $rdmaNet.claimName | default (printf "%s-rdma-claim" (trimSuffix "-claim-template" ($template.name | default (printf "%s-claim-template" $acceleratorType)))) -}}
         {{- $rdmaClaimName := $rdmaClaimBaseName -}}
         {{- if $role -}}
-          {{- $rdmaClaimName = printf "%s-%s" $rdmaClaimBaseName $role -}}
+          {{- $rdmaClaimBaseOnly := trimSuffix "-claim" $rdmaClaimBaseName -}}
+          {{- $rdmaClaimName = printf "%s-%s-claim" $rdmaClaimBaseOnly $role -}}
         {{- end -}}
 
         {{- $claims = append $claims (dict "name" $rdmaClaimName "resourceClaimTemplateName" $rdmaTemplateName) -}}

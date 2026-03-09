@@ -65,7 +65,7 @@ spec:
           {{- toYaml $selectors | nindent 10 }}
           {{- end }}
 
-        {{- /* Optional Intel RDMA net template generated only when enabled and selectors are set */ -}}
+        {{- /* Optional RDMA net template generated only when enabled and selectors are set */ -}}
         {{- if and (hasKey $config "rdmaNet") $config.rdmaNet -}}
           {{- $rdmaNet := $config.rdmaNet -}}
           {{- $rdmaEnabled := and $rdmaNet.enabled (hasKey $rdmaNet "selectors") (gt (len $rdmaNet.selectors) 0) -}}
