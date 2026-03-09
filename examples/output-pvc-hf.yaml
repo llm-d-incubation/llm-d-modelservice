@@ -62,7 +62,7 @@ spec:
         - name: model-storage
           persistentVolumeClaim:
             claimName: pvc-name
-            readOnly: true
+            readOnly: false
       
       containers:
         - name: vllm
@@ -155,7 +155,7 @@ spec:
         - name: model-storage
           persistentVolumeClaim:
             claimName: pvc-name
-            readOnly: true
+            readOnly: false
       
       containers:
         - name: vllm
