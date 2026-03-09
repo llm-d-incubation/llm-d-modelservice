@@ -1,0 +1,9 @@
+modelName: "sample/model"
+modelUri: "hf://sample/model"
+modelSize: "5Mi"
+authSecretName: ""
+mountPath: "/model-cache"
+# Labels to be applied to pods
+modelLabels:
+  llm-d.ai/inferenceServing: "true"
+  llm-d.ai/model: "sample_model"

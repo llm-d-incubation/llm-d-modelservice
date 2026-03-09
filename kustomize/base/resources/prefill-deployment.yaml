@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: modelservice-prefill
+  labels:
+    llm-d.ai/role: prefill
+spec:
+  replicas: 0  # Disabled by default
+  selector:
+    matchLabels:
+      llm-d.ai/role: prefill
+  template:
+    metadata:
+      labels:
+        llm-d.ai/role: prefill
+        llm-d.ai/inferenceServing: "true"
+        llm-d.ai/model: sample_model
+    spec:
+      serviceAccountName: modelservice
+      containers:
+      - name: vllm
+        image: ghcr.io/llm-d/llm-d-cuda:latest
+        args: []
+        env: []
+        ports:
+          - containerPort: 8000
+            name: metrics
+            protocol: TCP
+        volumeMounts:
+          - name: metrics-volume
+            mountPath: /.config
+          - name: model-storage
+            mountPath: /model-cache
+        resources:
+          limits: {}
+          requests: {}
+      volumes:
+        - name: metrics-volume
+          emptyDir: {}
+        - name: model-storage
+          emptyDir:
+            sizeLimit: 5Mi
