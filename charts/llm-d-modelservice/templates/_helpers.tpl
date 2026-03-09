@@ -373,7 +373,7 @@ Context is .Values.modelArtifacts
 - name: model-storage
   persistentVolumeClaim:
     claimName: {{ $claim }}
-    readOnly: true
+    readOnly: false
 {{- else if eq $protocol "oci" }}
 - name: model-storage
   image:
@@ -403,7 +403,7 @@ volumeMounts:
 {{- $protocol := first $parsedArtifacts -}}
 {{- $path := last $parsedArtifacts -}}
 {{- if or (eq $protocol "oci") (eq $protocol "pvc") }}
-    readOnly: true
+    readOnly: false
 {{- end -}}
 {{- end }}
 {{- end }}
