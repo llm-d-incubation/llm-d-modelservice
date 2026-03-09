@@ -1,0 +1,162 @@
+# This values.yaml file creates the resources for a P/D disaggregation scenario
+# Uses a small model: facebook/opt-125m
+# See also defaults in chart values.yaml
+modelArtifacts:
+  name: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+  labels:
+    llm-d.ai/inference-serving: "true"
+    llm-d.ai/model: deepseek-ai-deepSeek-r1-distill-qwen-1-5B
+  uri: "hf://deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+  size: 10Gi
+
+# Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
+# also describes elements for Gateway API Inference Extension configuration
+routing:
+  proxy:
+    enabled: true
+
+# When true, LeaderWorkerSet is used instead of Deployment
+multinode: true
+# When false, only workerTemplate is used (leader and workers share same template)
+# When true, LeaderWorkerSet will use separate leaderTemplate and workerTemplate
+multinodeEnableLeader: true
+
+# Decode pod configuation
+decode:
+  create: true
+  replicas: 1
+  parallelism:
+    tensor: 1
+    data: 1
+    workers: 2
+  containers:
+    - name: "vllm"
+      image: "ghcr.io/llm-d/llm-d-cuda:latest"
+      modelCommand: custom
+      command:
+        - /bin/bash
+        - '-c'
+      args:
+        - |
+          ray start --head --port=6379 && vllm serve deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
+          --port 8200 \
+          --tensor-parallel-size 1 \
+          --pipeline-parallel-size 2 \
+          --distributed-executor-backend ray
+      env:
+        - name: VLLM_LOGGING_LEVEL
+          value: DEBUG
+      ports:
+        - name: vllm
+          containerPort: 8200
+          protocol: TCP
+      resources:
+        limits:
+          memory: 16Gi
+          cpu: "16"
+        requests:
+          cpu: "16"
+          memory: 16Gi
+      mountModelVolume: true
+      volumeMounts:
+        - mountPath: /.config
+          name: metrics-volume
+        - mountPath: /dev/shm
+          name: shm
+        - mountPath: /.cache
+          name: torch-compile-cache
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /health
+          port: 8200
+        periodSeconds: 10
+        timeoutSeconds: 5
+  # workerTemplate Required when multinodeEnableLeader is "true"
+  # If not set, it will inherit the leader template; otherwise, it will be overridden 
+  workerTemplate:
+    containers:
+      - name: "vllm"
+        image: "ghcr.io/llm-d/llm-d-cuda:latest"
+        command:
+          - /bin/bash
+          - '-c'
+          - "ray start --address=$(LWS_LEADER_ADDRESS):6379 --block"
+        args: []
+        livenessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - |
+                pgrep -f "ray" || exit 1
+          failureThreshold: 3
+          periodSeconds: 10
+          timeoutSeconds: 5
+  
+# Prefill pod configuation
+prefill:
+  create: true
+  replicas: 1
+  parallelism:
+    tensor: 1
+    data: 1
+    workers: 2
+  containers:
+    - name: "vllm"
+      image: "ghcr.io/llm-d/llm-d-cuda:latest"
+      modelCommand: custom
+      command:
+        - /bin/bash
+        - '-c'
+      args:
+        - |
+          ray start --head --port=6380 && vllm serve deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
+          --port 8100 \
+          --tensor-parallel-size 1 \
+          --pipeline-parallel-size 2 \
+          --distributed-executor-backend ray
+      ports:
+        - name: vllm
+          containerPort: 8100
+          protocol: TCP
+      resources:
+        limits:
+          memory: 16Gi
+          cpu: "16"
+        requests:
+          cpu: "16"
+          memory: 16Gi
+      mountModelVolume: true
+      volumeMounts:
+        - mountPath: /.config
+          name: metrics-volume
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /health
+          port: 8100
+        periodSeconds: 10
+        timeoutSeconds: 5
+  # workerTemplate Required when multinodeEnableLeader is "true"
+  # If not set, it will inherit the leader template; otherwise, it will be overridden
+  workerTemplate:
+    containers:
+      - name: "vllm"
+        image: "ghcr.io/llm-d/llm-d-cuda:latest"
+        command:
+          - /bin/bash
+          - '-c'
+          - "ray start --address=$(LWS_LEADER_ADDRESS):6380 --block"
+        args: []
+        livenessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - |
+                pgrep -f "ray" || exit 1
+          failureThreshold: 3
+          periodSeconds: 10
+          timeoutSeconds: 5
+

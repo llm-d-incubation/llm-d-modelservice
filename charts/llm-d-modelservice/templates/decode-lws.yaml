@@ -24,6 +24,7 @@ metadata:
   {{- end }}
   {{- end }}
 spec:
+  {{- $useSplitTemplates := eq (include "llm-d-modelservice.decodeUseSplitTemplates" .) "true" }}
   {{- if not .Values.decode.autoscaling.enabled }}
   replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
   {{- end }}
@@ -33,54 +34,58 @@ spec:
     subGroupPolicy:
     {{- toYaml .Values.decode.subGroupPolicy | nindent 6 }}
     {{- end }}
-    workerTemplate:
+    {{- $templateSpecs := list }}
+    {{- if $useSplitTemplates }}
+    {{- $workerPdSpec := include "llm-d-modelservice.decodeWorkerPdSpec" . | fromYaml }}
+    {{- $templateSpecs = list (dict "name" "leaderTemplate" "pdSpec" .Values.decode) (dict "name" "workerTemplate" "pdSpec" $workerPdSpec) }}
+    {{- else }}
+    {{- $templateSpecs = list (dict "name" "workerTemplate" "pdSpec" .Values.decode) }}
+    {{- end }}
+    {{- range $template := $templateSpecs }}
+    {{ $template.name }}:
+      {{- $pdSpec := $template.pdSpec }}
       metadata:
         labels:
-          {{- include "llm-d-modelservice.decodelabels" . | nindent 10 }}
-        {{- if or .Values.decode.subGroupExclusiveTopology .Values.decode.podAnnotations }}
+          {{- include "llm-d-modelservice.decodelabels" $ | nindent 10 }}
+        {{- if or $pdSpec.subGroupExclusiveTopology $pdSpec.podAnnotations }}
         annotations:
-        {{- if .Values.decode.subGroupExclusiveTopology }}
+        {{- if $pdSpec.subGroupExclusiveTopology }}
           leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
         {{- end }}
-        {{- if .Values.decode.podAnnotations }}
-          {{ toYaml .Values.decode.podAnnotations | nindent 10 }}
-          {{- end }}
+        {{- if $pdSpec.podAnnotations }}
+          {{ toYaml $pdSpec.podAnnotations | nindent 10 }}
+        {{- end }}
         {{- end }}
       spec:
-        {{- /* DEPRECATED; use extraConfig.hostIPC instead */ -}}
-        {{- if hasKey .Values.decode "hostIPC" }}
-        hostIPC: {{ .Values.decode.hostIPC }}
+        {{- range $field := list "hostIPC" "hostPID" "enableServiceLinks" "terminationGracePeriodSeconds" }}
+        {{- if hasKey $pdSpec $field }}
+          {{- toYaml (dict $field (index $pdSpec $field)) | nindent 8 }}
         {{- end }}
-        {{- /* DEPRECATED; use extraConfig.hostPID instead */ -}}
-        {{- if hasKey .Values.decode "hostPID" }}
-        hostPID: {{ .Values.decode.hostPID }}
         {{- end }}
-        {{- if or (.Values.decode.initContainers) (eq .Values.routing.proxy.enabled true) }}
+        {{- $addRoutingProxy := and (eq $.Values.routing.proxy.enabled true) (or (not $useSplitTemplates) (eq $template.name "leaderTemplate")) }}
+        {{- if or $pdSpec.initContainers $addRoutingProxy }}
         initContainers:
-        {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" .Values.routing.proxy "servicePort" .Values.routing.servicePort "Values" .Values)) | nindent 8 }}
-        {{- if .Values.decode.initContainers }}
-        {{- toYaml .Values.decode.initContainers | nindent 10 }}
+        {{- if $addRoutingProxy }}
+        {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" $.Values.routing.proxy "servicePort" $.Values.routing.servicePort "Values" $.Values)) | nindent 10 }}
+        {{- end }}
+        {{- if $pdSpec.initContainers }}
+        {{- toYaml $pdSpec.initContainers | nindent 10 }}
         {{- end }}
         {{- end }}
-        {{- if hasKey .Values.decode "enableServiceLinks" }}
-        enableServiceLinks: {{ .Values.decode.enableServiceLinks }}
-        {{- end }}
-        {{- if hasKey .Values.decode "terminationGracePeriodSeconds" }}
-        terminationGracePeriodSeconds: {{ .Values.decode.terminationGracePeriodSeconds }}
-        {{- end }}
-        {{ (include "llm-d-modelservice.modelPod" (dict "role" "decode" "pdSpec" .Values.decode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
-        {{- with .Values.decode.containers }}
+        {{ (include "llm-d-modelservice.modelPod" (dict "role" "decode" "pdSpec" $pdSpec "Values" $.Values "Release" $.Release "Chart" $.Chart "Template" $.Template)) | nindent 6 }}
+        {{- with $pdSpec.containers }}
         containers:
           {{- range . }}
-        {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.decode)) | nindent 8 }}
+        {{- (include "llm-d-modelservice.container" (dict "role" "decode" "container" . "parallelism" $pdSpec.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "Template" $.Template "pdSpec" $pdSpec)) | nindent 8 }}
           {{- end }}
         {{- end }}
-        {{- if .Values.decode.nodeSelector }}
+        {{- if $pdSpec.nodeSelector }}
         nodeSelector:
-          {{- toYaml .Values.decode.nodeSelector | nindent 10 }}
+          {{- toYaml $pdSpec.nodeSelector | nindent 10 }}
         {{- end }}
-        {{- if .Values.decode.tolerations }}
+        {{- if $pdSpec.tolerations }}
         tolerations:
-          {{- toYaml .Values.decode.tolerations | nindent 10 }}
+          {{- toYaml $pdSpec.tolerations | nindent 10 }}
         {{- end }}
+    {{- end }}
 {{- end }}
