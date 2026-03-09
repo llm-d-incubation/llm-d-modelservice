@@ -189,6 +189,56 @@
                                     "title": "name",
                                     "type": "string"
                                 },
+                                "rdmaNet": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "class": {
+                                            "default": "rdma-dranet",
+                                            "title": "class",
+                                            "type": "string"
+                                        },
+                                        "claimName": {
+                                            "default": "intel-rdma-claim",
+                                            "title": "claimName",
+                                            "type": "string"
+                                        },
+                                        "count": {
+                                            "default": 1,
+                                            "title": "count",
+                                            "type": "integer"
+                                        },
+                                        "enabled": {
+                                            "default": false,
+                                            "title": "enabled",
+                                            "type": "boolean"
+                                        },
+                                        "match": {
+                                            "default": "exactly",
+                                            "title": "match",
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "default": "intel-rdma-claim-template",
+                                            "title": "name",
+                                            "type": "string"
+                                        },
+                                        "requestName": {
+                                            "default": "rdma-dranet",
+                                            "title": "requestName",
+                                            "type": "string"
+                                        },
+                                        "selectors": {
+                                            "items": {
+                                                "required": []
+                                            },
+                                            "title": "selectors",
+                                            "type": "array"
+                                        }
+                                    },
+                                    "required": [],
+                                    "title": "rdmaNet",
+                                    "type": "object"
+                                },
                                 "selectors": {
                                     "items": {
                                         "required": []

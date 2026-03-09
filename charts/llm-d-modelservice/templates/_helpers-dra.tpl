@@ -120,6 +120,32 @@ false
   {{- $claimName := include "llm-d-modelservice.acceleratorClaimName" . -}}
   {{- $templateName := include "llm-d-modelservice.acceleratorClaimTemplateName" . -}}
   {{- $claims = append $claims (dict "name" $claimName "resourceClaimTemplateName" $templateName) -}}
+
+  {{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
+  {{- if hasKey .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
+    {{- $template := index .Values.accelerator.resourceClaimTemplates $acceleratorType -}}
+    {{- if and (hasKey $template "rdmaNet") $template.rdmaNet -}}
+      {{- $rdmaNet := $template.rdmaNet -}}
+      {{- $rdmaEnabled := and $rdmaNet.enabled (hasKey $rdmaNet "selectors") (gt (len $rdmaNet.selectors) 0) -}}
+      {{- if $rdmaEnabled -}}
+        {{- $role := .role | default "" -}}
+        {{- $rdmaTemplateBaseName := $rdmaNet.name | default (printf "%s-rdma-claim-template" (trimSuffix "-claim-template" ($template.name | default (printf "%s-claim-template" $acceleratorType)))) -}}
+        {{- $rdmaTemplateName := $rdmaTemplateBaseName -}}
+        {{- if $role -}}
+          {{- $rdmaTemplateName = printf "%s-%s" $rdmaTemplateBaseName $role -}}
+        {{- end -}}
+
+        {{- $rdmaClaimBaseName := $rdmaNet.claimName | default (printf "%s-rdma-claim" (trimSuffix "-claim-template" ($template.name | default (printf "%s-claim-template" $acceleratorType)))) -}}
+        {{- $rdmaClaimName := $rdmaClaimBaseName -}}
+        {{- if $role -}}
+          {{- $rdmaClaimBaseOnly := trimSuffix "-claim" $rdmaClaimBaseName -}}
+          {{- $rdmaClaimName = printf "%s-%s-claim" $rdmaClaimBaseOnly $role -}}
+        {{- end -}}
+
+        {{- $claims = append $claims (dict "name" $rdmaClaimName "resourceClaimTemplateName" $rdmaTemplateName) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 {{- if .pdSpec.resourceClaims -}}
   {{- $claims = concat $claims .pdSpec.resourceClaims -}}

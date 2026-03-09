@@ -125,6 +125,19 @@ accelerator:
       class: gpu.intel.com
       match: "exactly"
       selectors: []
+      # Optional: add a secondary RDMA claim for Intel workloads.
+      # NOTE: RDMA support requires using accelerator.type: intel (not the deprecated intel-i915/intel-xe types).
+      # Default behavior remains unchanged (only gpu.intel.com claim generated).
+      # RDMA claim is generated only when enabled=true and selectors are provided.
+      rdmaNet:
+        enabled: false
+        name: intel-rdma-claim-template
+        claimName: intel-rdma-claim
+        requestName: rdma-dranet
+        class: rdma-dranet
+        match: "exactly"
+        count: 1
+        selectors: []
     intel-i915: # deprecated, use intel instead
       name: intel-claim-template
       class: gpu.intel.com
