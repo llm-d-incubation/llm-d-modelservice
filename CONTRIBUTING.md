@@ -1,25 +1,31 @@
 # Contributing to `llm-d-modelservice`
 
-Thank you for your interest in contributing to llm-d-modelservice. This document provides guidelines and instructions for contributing to this project.
+Thank you for your interest in contributing to llm-d-modelservice! Community involvement is highly valued and crucial for the project's growth and success. This project accepts contributions via GitHub pull requests. This document outlines the process to help get your contribution accepted.
 
-To ensure a clear direction and cohesive vision for the project, the project leads have the final decision on all contributions. However, these guidelines outline how you can contribute effectively to llm-d-modelservice.
+To ensure a clear direction and cohesive vision for the project, the project leads have the final decision on all contributions. However, these guidelines outline how you can contribute effectively.
 
 ## How You Can Contribute
 
-There are several ways you can contribute to llm-d-modelservice:
+There are several ways you can contribute:
 
 * **Reporting Issues:** Help us identify and fix bugs by reporting them clearly and concisely.
 * **Suggesting Features:** Share your ideas for new features or improvements.
 * **Improving Documentation:** Help make the project more accessible by enhancing the documentation.
-* **Submitting Code Contributions (with consideration):** While the project leads maintain final say, code contributions that align with the project's vision are always welcome.
+* **Submitting Code Contributions:** Code contributions that align with the project's vision are always welcome.
 
 ## Code of Conduct
 
-This project adheres to the llm-d [Code of Conduct](https://github.com/llm-d/llm-d/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+This project adheres to the [Code of Conduct and Covenant](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+
+## Community and Communication
+
+* **Developer Slack:** [Join our developer Slack workspace](https://llm-d.ai/slack) to connect with the core maintainers and other contributors, ask questions, and participate in discussions.
+* **Weekly Meetings:** Project updates, ongoing work discussions, and Q&A will be covered in our weekly project meetings. Please join by [adding the shared calendar](https://red.ht/llm-d-public-calendar). You can also [join our Google Group](https://groups.google.com/g/llm-d-contributors) for access to shared content.
+* **Code:** Hosted in the [llm-d](https://github.com/llm-d) GitHub organization
+* **Issues:** Project-scoped bugs or issues should be reported in this repo or in [llm-d/llm-d](https://github.com/llm-d/llm-d)
+* **Mailing List:** [llm-d-contributors@googlegroups.com](mailto:llm-d-contributors@googlegroups.com)
 
 ## Local Development Setup
-
-We welcome contributions to the llm-d-modelservice chart! If you have a bug fix, feature request, or improvement, please submit a pull request (PR) to the repository.
 
 Before submitting a pull request, please make sure you have the following tools installed:
 
@@ -75,14 +81,62 @@ You can also run pre-commit manually on all files:
 make pre-commit-run
 ```
 
+## Contributing Process
+
+We follow a **lazy consensus** approach: changes proposed by people with responsibility for a problem, without disagreement from others, within a bounded time window of review by their peers, should be accepted.
+
+### Types of Contributions
+
+#### 1. Features with Public APIs or New Components
+
+All features involving public APIs, behavior between core components, or new core subsystems must be accompanied by an **approved project proposal**.
+
+**Process:**
+
+1. Create a pull request adding a proposal document under `./docs/proposals/` with a descriptive name
+2. Include these sections: Summary, Motivation (Goals/Non-Goals), Proposal, Design Details, Alternatives
+3. Get review from impacted component maintainers
+4. Get approval from project maintainers
+
+#### 2. Fixes, Issues, and Bugs
+
+For changes that fix broken code or add small changes within a component:
+
+* All bugs and commits must have a clear description of the bug, how to reproduce, and how the change is made
+* Any other changes can be proposed in a pull request — a maintainer must approve the change
+* For moderate size changes, create an RFC issue in GitHub, then engage in Slack
+
+## Code Review Requirements
+
+* **All code changes** must be submitted as pull requests (no direct pushes)
+* **All changes** must be reviewed and approved by a maintainer other than the author
+* **All repositories** must gate merges on compilation and passing tests
+* **All experimental features** must be off by default and require explicit opt-in
+
+## Commit and Pull Request Style
+
+* **Pull requests** should describe the problem succinctly
+* **Rebase and squash** before merging
+* **Use minimal commits** and break large changes into distinct commits
+* **Commit messages** should have:
+  * Short, descriptive titles
+  * Description of why the change was needed
+  * Enough detail for someone reviewing git history to understand the scope
+* **DCO Sign-off**: All commits must include a valid DCO sign-off line (`Signed-off-by: Name <email@domain.com>`)
+  * Add automatically with `git commit -s`
+  * See [PR_SIGNOFF.md](PR_SIGNOFF.md) for configuration details
+  * Required for all contributions per [Developer Certificate of Origin](https://developercertificate.org/)
+
 ## Submitting a Pull Request
 
 For every Pull Request submitted, ensure the following steps have been done:
 
 1. [Sign your commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
 2. [Sign-off your commits](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---signoff)
-3. Ensure that the `make lint`, `make verify` command runs successfully to validate your changes
-4. Update the version number in the [`charts/llm-d-modelservice/Chart.yaml`](charts/llm-d-modelservice/Chart.yaml) file using
+3. Run pre-commit hooks to ensure code quality and schema validation: `make pre-commit-run`
+4. Ensure that `make lint` passes to validate your changes
+5. Ensure that `make verify` passes to confirm generated examples are in sync
+6. Update the version number in the [`charts/llm-d-modelservice/Chart.yaml`](charts/llm-d-modelservice/Chart.yaml) file using
    [semantic versioning](https://semver.org/). Follow the `X.Y.Z` format so the nature of the changes is reflected in the
    chart.
    - `X` (major) is incremented for breaking changes,
@@ -90,9 +144,25 @@ For every Pull Request submitted, ensure the following steps have been done:
    - `Z` (patch) is incremented for bug fixes, minor improvements, or non-breaking changes.
 
    If you modify the chart, please bump the chart version. You can run `make bump-chart-version-patch` to automatically increment the patch version. After updating the chart, run `make lint` to validate your changes.
-5. Run pre-commit hooks to ensure code quality and schema validation: `make pre-commit-run`
-6. Lint tests have been run for the Chart using the [Chart Testing](https://github.com/helm/chart-testing) tool and the `make lint` command.
-<!-- TODO after the helm-docs supported: 7. Make sure that [helm-docs](https://github.com/norwoodj/helm-docs) has been run to generate/update the `README.md` documentation. To preview the content, use `helm-docs --dry-run`. -->
+7. Lint tests have been run for the Chart using the [Chart Testing](https://github.com/helm/chart-testing) tool and the `make lint` command.
+<!-- TODO after the helm-docs supported: 8. Make sure that [helm-docs](https://github.com/norwoodj/helm-docs) has been run to generate/update the `README.md` documentation. To preview the content, use `helm-docs --dry-run`. -->
+
+## Code Organization and Ownership
+
+* **Components** are the primary unit of code organization
+* **Maintainers** own components and approve changes
+* **Contributors** can become maintainers through sufficient evidence of contribution
+* Code ownership is reflected in [OWNERS files](https://go.k8s.io/owners) consistent with Kubernetes project conventions
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for our vulnerability disclosure process.
+
+## API Changes and Deprecation
+
+* **No breaking changes**: Once an API/protocol is in GA release, it cannot be removed or behavior changed
+* **Versioning**: All protocols and APIs should be versionable with clear compatibility requirements
+* **Documentation**: All APIs must have documented specs describing expected behavior
 
 ## FAQ and Troubleshooting
 
