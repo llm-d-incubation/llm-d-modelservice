@@ -23,42 +23,17 @@ routing:
   proxy:
     secure: false
 
-# OpenTelemetry distributed tracing configuration
-# When enabled, vLLM and routing-proxy containers will export traces to the OTLP endpoint
-tracing:
-  # -- Enable distributed tracing
-  enabled: false
-  # -- OTLP gRPC endpoint for trace export (OTel Collector in the same namespace)
-  otlpEndpoint: "http://otel-collector:4317"
-  # -- Trace sampling configuration
-  sampling:
-    # -- OpenTelemetry sampler type (e.g., "parentbased_traceidratio", "always_on", "always_off")
-    sampler: "parentbased_traceidratio"
-    # -- Sampling ratio (0.0 to 1.0). Use 1.0 for 100% sampling (demo/debug), 0.1 for 10% (production)
-    samplerArg: "1.0"
-  # -- Service name overrides for different components
-  serviceNames:
-    # -- Service name for vLLM decode instances
-    vllmDecode: "vllm-decode"
-    # -- Service name for vLLM prefill instances
-    vllmPrefill: "vllm-prefill"
-    # -- Service name for routing proxy sidecar
-    routingProxy: "routing-proxy"
-  # -- vLLM-specific tracing options
-  vllm:
-    # -- Level of trace detail collection (e.g., "all", "model", "scheduler")
-    collectDetailedTraces: "all"
-
 # @schema
 # additionalProperties: true
 # @schema
 # -- Requester configuration part of the dual-pod solution for FMA
 requester:
   enable: true
-  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
+  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:v0.5.1-alpha.4"
   adminPort: 8081
   inferenceServerConfig: "inference-server-config-example"
   launcherConfig: "launcher-config-example"
+  LauncherPopulationPolicy: "launcher-population-policy-example"
   port:
     probes: 8080
     spi: 8081
@@ -81,7 +56,7 @@ requester:
         runtimeClassName: nvidia-legacy
         containers:
           - name: inference-server
-            image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest"
+            image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:v0.5.1-alpha.4"
             imagePullPolicy: IfNotPresent
             mountModelVolume: true
             env:
@@ -98,12 +73,24 @@ requester:
               - name: XDG_CONFIG_HOME
                 value: "/model-cache/config"
             command:
-              - /bin/bash
-              - -c
-            args:
-              - |
-                uvicorn launcher:app --host 0.0.0.0 --log-level info --port 8001
+              - /app/launcher.py
+              - --host=0.0.0.0
+              - --log-level=info
+              - --port=8001
 
+  # @schema
+  # additionalProperties: true
+  # @schema
+  launcherPopulationPolicySpec:
+    enhancedNodeSelector:
+      labelSelector:
+        matchLabels:
+          nvidia.com/gpu.present: "true"
+    launcherCount: 1
+
+  # @schema
+  # additionalProperties: true
+  # @schema
   modelServerConfig:
     # @schema
     # additionalProperties: true
@@ -114,16 +101,13 @@ requester:
     # @schema
     labels:
       component: inference
+    # @schema
+    # additionalProperties: true
+    # @schema
     env_vars:
       VLLM_SERVER_DEV_MODE: "1"
       VLLM_USE_V1: "1"
       VLLM_LOGGING_LEVEL: "DEBUG"
-      CUDA_VISIBLE_DEVICES: "0"
-      UCX_TLS: "cuda_ipc,cuda_copy,tcp"
-      VLLM_NIXL_SIDE_CHANNEL_PORT: "5600"
-      DP_SIZE: "1"
-      TP_SIZE: "1"
-      DP_SIZE_LOCAL: "1"
       HF_HOME: "/model-cache"
     options: "--model facebook/opt-125m --served-model-name facebook/opt-125m --enforce-eager --kv-transfer-config {\"kv_connector\":\"NixlConnector\", \"kv_role\":\"kv_both\"}"
     port: 8005

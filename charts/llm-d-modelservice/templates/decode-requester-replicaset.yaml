@@ -19,7 +19,7 @@ spec:
       {{- with .Values.requester.launcherConfigSpec.podTemplate.spec.containers }}
       containers:
         {{- range . }}
-        {{- (include "llm-d-modelservice.container" (dict "role" "launcher" "container" . "parallelism" $.Values.decode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.requester.launcherConfigSpec)) | nindent 8 }}
+        {{- (include "llm-d-modelservice.container" (dict "role" "launcher" "container" . "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.requester.launcherConfigSpec)) | nindent 8 }}
         {{- end }}
       {{- end }}
       {{- if or .Values.requester.launcherConfigSpec.podTemplate.spec.volumes .Values.modelArtifacts }}
@@ -31,6 +31,18 @@ spec:
       {{- include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 6 }}
       {{- end }}
       {{- end }}
+---
+apiVersion: fma.llm-d.ai/v1alpha1
+kind: LauncherPopulationPolicy
+metadata:
+  name: {{ .Values.requester.LauncherPopulationPolicy | required "requester.LauncherPopulationPolicy is required when requester is enabled" }}
+spec:
+  {{- with .Values.requester.launcherPopulationPolicySpec.enhancedNodeSelector }}
+  enhancedNodeSelector: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  countForLauncher:
+    - launcherConfigName: {{ .Values.requester.launcherConfig | required "requester.launcherConfig is required when requester is enabled" }}
+      launcherCount: {{ .Values.requester.launcherPopulationPolicySpec.launcherCount }}
 ---
 apiVersion: fma.llm-d.ai/v1alpha1
 kind: InferenceServerConfig
@@ -60,15 +72,19 @@ apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
   name: {{ include "llm-d-modelservice.decodeName" . }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
 spec:
   replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
   selector:
     matchLabels:
       app: dp-app
+      {{- include "llm-d-modelservice.decodelabels" . | nindent 6 }}
   template:
     metadata:
       labels:
         app: dp-app
+        {{- include "llm-d-modelservice.decodelabels" . | nindent 8 }}
       annotations:
         dual-pods.llm-d.ai/admin-port: "{{ .Values.requester.adminPort }}"
         dual-pods.llm-d.ai/inference-server-config: {{ .Values.requester.inferenceServerConfig | required "requester.inferenceServerConfig is required" }}
@@ -79,8 +95,6 @@ spec:
           imagePullPolicy: Always
           command:
           - /app/requester
-          - --logtostderr=false
-          - --log_file=/tmp/requester.log
           ports:
           - name: probes
             containerPort: {{ .Values.requester.port.probes }}
