@@ -199,11 +199,10 @@ requester:
             image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest"
             imagePullPolicy: IfNotPresent
             command:
-              - /bin/bash
-              - -c
-            args:
-              - |
-                uvicorn launcher:app --host 0.0.0.0 --log-level info --port 8001
+              - /app/launcher.py
+              - --host=0.0.0.0
+              - --log-level=info
+              - --port=8001
 
   # @schema
   # additionalProperties: true
