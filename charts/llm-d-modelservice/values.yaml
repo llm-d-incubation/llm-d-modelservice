@@ -164,12 +164,14 @@ accelerator:
 # -- Requester configuration part of the dual-pod solution for FMA
 requester:
   enable: false
-  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
+  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:v0.5.1-alpha.4"
   adminPort: 8081
   # Name of the InferenceServerConfig resource (required when requester is enabled)
   inferenceServerConfig: ""
   # Name of the LauncherConfig resource (required when requester is enabled)
   launcherConfig: ""
+  # Name of the LauncherPopulationPolicy resource (required when requester is enabled)
+  LauncherPopulationPolicy: ""
   port:
     probes: 8080
     spi: 8081
@@ -201,15 +203,40 @@ requester:
         # items:
         #   additionalProperties: true
         # @schema
+        runtimeClassName: nvidia-legacy
         containers:
           - name: inference-server
-            image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:latest"
+            image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:v0.5.1-alpha.4"
             imagePullPolicy: IfNotPresent
+            mountModelVolume: true
+            env:
+              - name: HF_HOME
+                value: "/model-cache"
+              - name: VLLM_CACHE_ROOT
+                value: "/model-cache"
+              - name: FLASHINFER_WORKSPACE_BASE
+                value: "/model-cache"
+              - name: TRITON_CACHE_DIR
+                value: "/tmmodel-cachep"
+              - name: XDG_CACHE_HOME
+                value: "/model-cache"
+              - name: XDG_CONFIG_HOME
+                value: "/model-cache"
             command:
               - /app/launcher.py
               - --host=0.0.0.0
               - --log-level=info
               - --port=8001
+
+  # @schema
+  # additionalProperties: true
+  # @schema
+  launcherPopulationPolicySpec:
+    enhancedNodeSelector:
+      labelSelector:
+        matchLabels:
+          nvidia.com/gpu.present: "true"
+    launcherCount: 1
 
   # @schema
   # additionalProperties: true
@@ -222,12 +249,16 @@ requester:
     # @schema
     # additionalProperties: true
     # @schema
-    labels: {}
+    labels:
+      component: inference
     # @schema
     # additionalProperties: true
     # @schema
-    env_vars: {}
-    options: ""
+    env_vars:
+      VLLM_SERVER_DEV_MODE: "1"
+      VLLM_USE_V1: "1"
+      VLLM_LOGGING_LEVEL: "DEBUG"
+    options: "--model facebook/opt-125m --served-model-name facebook/opt-125m --enforce-eager --kv-transfer-config {\"kv_connector\":\"NixlConnector\", \"kv_role\":\"kv_both\"}"
     port: 8005
 
 # Describe routing requirements. In addition to service level routing (OpenAI model name, service port)
