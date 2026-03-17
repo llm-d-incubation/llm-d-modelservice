@@ -57,7 +57,7 @@ spec:
         {{- end }}
         {{- if .Values.prefill.initContainers }}
         initContainers:
-        {{- toYaml .Values.prefill.initContainers | nindent 10 }}
+        {{- toYaml .Values.prefill.initContainers | nindent 8 }}
         {{- end }}
         {{- if hasKey .Values.prefill "enableServiceLinks" }}
         enableServiceLinks: {{ .Values.prefill.enableServiceLinks }}
