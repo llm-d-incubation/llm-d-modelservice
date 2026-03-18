@@ -246,8 +246,8 @@ Context is helm root context plus key "role" ("decode" or "prefill")
 {{/* Get accelerator resource name based on type */}}
 {{- define "llm-d-modelservice.acceleratorResource" -}}
 {{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
-{{- if and .container .container.image (contains "llm-d-inference-sim" .container.image) -}}
-{{/* No resource name for llm-d-inference-sim */}}
+{{- if and .container .container.image (or (contains "llm-d-inference-sim" .container.image) (contains "vllm-cpu" .container.image)) -}}
+{{/* No resource name for llm-d-inference-sim or vllm-cpu*/}}
 {{- else if eq $acceleratorType "cpu" -}}
 {{/* No resource name for CPU */}}
 {{- else if hasKey .Values.accelerator.resources $acceleratorType -}}
