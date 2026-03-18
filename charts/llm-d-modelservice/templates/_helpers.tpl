@@ -373,7 +373,7 @@ Context is .Values.modelArtifacts
 - name: model-storage
   persistentVolumeClaim:
     claimName: {{ $claim }}
-    readOnly: true
+    readOnly: false
 {{- else if eq $protocol "oci" }}
 - name: model-storage
   image:
@@ -403,7 +403,7 @@ volumeMounts:
 {{- $protocol := first $parsedArtifacts -}}
 {{- $path := last $parsedArtifacts -}}
 {{- if or (eq $protocol "oci") (eq $protocol "pvc") }}
-    readOnly: true
+    readOnly: false
 {{- end -}}
 {{- end }}
 {{- end }}
@@ -485,7 +485,9 @@ context is a dict with helm root context plus:
   {{- with .container.env }}
     {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
+  {{- if .parallelism }}
   {{- (include "llm-d-modelservice.parallelismEnv" .) | nindent 2 }}
+  {{- end }}
   {{- /* insert envs based on what modelArtifact prefix */}}
   {{- (include "llm-d-modelservice.hfEnv" .) | nindent 2 }}
   {{- /* Add accelerator-specific environment variables */}}

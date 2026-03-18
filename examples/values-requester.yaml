@@ -29,7 +29,11 @@ routing:
 # -- Requester configuration part of the dual-pod solution for FMA
 requester:
   enable: true
-  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest"
+  image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:v0.5.1-alpha.4"
+  adminPort: 8081
+  inferenceServerConfig: "inference-server-config-example"
+  launcherConfig: "launcher-config-example"
+  LauncherPopulationPolicy: "launcher-population-policy-example"
   port:
     probes: 8080
     spi: 8081
@@ -41,6 +45,72 @@ requester:
       gpus: 1
       cpus: 1
       memory: 250Mi
+
+  # @schema
+  # additionalProperties: true
+  # @schema
+  launcherConfigSpec:
+    maxSleepingInstances: 3
+    podTemplate:
+      spec:
+        runtimeClassName: nvidia-legacy
+        containers:
+          - name: inference-server
+            image: "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:v0.5.1-alpha.4"
+            imagePullPolicy: IfNotPresent
+            mountModelVolume: true
+            env:
+              - name: HOME
+                value: "/model-cache"
+              - name: VLLM_CACHE_ROOT
+                value: "/model-cache/vllm"
+              - name: FLASHINFER_WORKSPACE_DIR
+                value: "/model-cache/flashinfer"
+              - name: TRITON_CACHE_DIR
+                value: "/model-cache/triton"
+              - name: XDG_CACHE_HOME
+                value: "/model-cache"
+              - name: XDG_CONFIG_HOME
+                value: "/model-cache/config"
+            command:
+              - /app/launcher.py
+              - --host=0.0.0.0
+              - --log-level=info
+              - --port=8001
+
+  # @schema
+  # additionalProperties: true
+  # @schema
+  launcherPopulationPolicySpec:
+    enhancedNodeSelector:
+      labelSelector:
+        matchLabels:
+          nvidia.com/gpu.present: "true"
+    launcherCount: 1
+
+  # @schema
+  # additionalProperties: true
+  # @schema
+  modelServerConfig:
+    # @schema
+    # additionalProperties: true
+    # @schema
+    annotations: {}
+    # @schema
+    # additionalProperties: true
+    # @schema
+    labels:
+      component: inference
+    # @schema
+    # additionalProperties: true
+    # @schema
+    env_vars:
+      VLLM_SERVER_DEV_MODE: "1"
+      VLLM_USE_V1: "1"
+      VLLM_LOGGING_LEVEL: "DEBUG"
+      HF_HOME: "/model-cache"
+    options: "--model facebook/opt-125m --served-model-name facebook/opt-125m --enforce-eager --kv-transfer-config {\"kv_connector\":\"NixlConnector\", \"kv_role\":\"kv_both\"}"
+    port: 8005
 
 # Decode pod configuation
 decode:
