@@ -52,6 +52,7 @@ spec:
       containers:
         - name: vllm
           image: intel/vllm:0.10.0-xpu
+          imagePullPolicy: Always
           
           command: ["vllm", "serve"]
           args:

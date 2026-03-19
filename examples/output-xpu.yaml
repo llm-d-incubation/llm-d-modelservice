@@ -58,6 +58,7 @@ spec:
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d-xpu:latest
+          imagePullPolicy: Always
           
           args:
             - --model

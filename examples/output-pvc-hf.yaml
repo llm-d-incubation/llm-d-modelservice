@@ -67,6 +67,7 @@ spec:
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d-cuda:latest
+          imagePullPolicy: Always
           
           command: ["vllm", "serve"]
           args:
@@ -160,6 +161,7 @@ spec:
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d-cuda:latest
+          imagePullPolicy: Always
           
           command: ["vllm", "serve"]
           args:

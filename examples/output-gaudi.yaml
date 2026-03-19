@@ -48,6 +48,7 @@ spec:
       containers:
         - name: vllm
           image: opea/vllm-gaudi:1.22.0
+          imagePullPolicy: Always
           
           args:
             - --model

@@ -76,7 +76,7 @@ spec:
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d-xpu:latest
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           
           command:
             - python3
@@ -200,6 +200,7 @@ spec:
       containers:
         - name: vllm
           image: ghcr.io/llm-d/llm-d-xpu:latest
+          imagePullPolicy: Always
           
           command:
             - python3

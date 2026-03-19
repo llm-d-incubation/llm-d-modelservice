@@ -38,7 +38,8 @@ spec:
     spec:
       containers:
         - name: inference-server
-          image: {{ .Values.requester.image }}
+          {{- $containerImage := required "image of requester container is required" .Values.requester.image }}
+          image: {{ include "llm-d-modelservice.containerImage" (dict "image" $containerImage "global" .Values.global) }}
           imagePullPolicy: Always
           command:
           - /app/requester
