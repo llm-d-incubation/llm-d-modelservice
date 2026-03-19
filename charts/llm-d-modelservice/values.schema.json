@@ -191,15 +191,16 @@
                                 },
                                 "rdmaNet": {
                                     "additionalProperties": false,
+                                    "description": " NOTE: RDMA support requires using accelerator.type: intel (not the deprecated intel-i915/intel-xe types). Default behavior remains unchanged (only gpu.intel.com claim generated). RDMA claim is generated only when enabled=true and selectors are provided.",
                                     "properties": {
-                                        "class": {
-                                            "default": "rdma-dranet",
-                                            "title": "class",
-                                            "type": "string"
-                                        },
                                         "claimName": {
                                             "default": "intel-rdma-claim",
                                             "title": "claimName",
+                                            "type": "string"
+                                        },
+                                        "class": {
+                                            "default": "rdma-dranet",
+                                            "title": "class",
                                             "type": "string"
                                         },
                                         "count": {
