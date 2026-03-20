@@ -9,6 +9,12 @@
 # -- Common configuration values
 common: {}
 
+# -- Global values shared with subcharts
+global:
+  # -- Override the registry for built-in chart workload images while preserving repository path and tag or digest
+  # Example: "registry.example.com" or "registry.example.com/team-cache"
+  imageRegistry: ""
+
 # -- Usually used when using llm-d-modelservice as a subchart
 enabled: true
 
