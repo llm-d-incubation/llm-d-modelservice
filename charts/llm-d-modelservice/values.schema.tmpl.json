@@ -607,10 +607,18 @@
       "title": "fullnameOverride"
     },
     "global": {
-      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "additionalProperties": false,
+      "description": "Global values shared with subcharts",
+      "properties": {
+        "imageRegistry": {
+          "default": "",
+          "description": "Override the registry for built-in chart workload images while preserving repository path and tag or digest Example: \"registry.example.com\" or \"registry.example.com/team-cache\"",
+          "required": [],
+          "title": "imageRegistry"
+        }
+      },
       "required": [],
-      "title": "global",
-      "type": "object"
+      "title": "global"
     },
     "modelArtifacts": {
       "additionalProperties": false,
