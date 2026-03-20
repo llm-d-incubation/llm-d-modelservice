@@ -39,7 +39,7 @@ spec:
     spec:
       {{- if .Values.prefill.initContainers }}
       initContainers:
-      {{- toYaml .Values.prefill.initContainers | nindent 8 }}
+      {{- include "llm-d-modelservice.renderContainerList" (dict "containers" .Values.prefill.initContainers "Values" .Values) | nindent 8 }}
       {{- end }}
       {{- if hasKey .Values.prefill "enableServiceLinks" }}
       enableServiceLinks: {{ .Values.prefill.enableServiceLinks }}
