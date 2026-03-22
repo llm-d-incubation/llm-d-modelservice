@@ -111,8 +111,16 @@ accelerator:
     intel-xe:
       - name: VLLM_WORKER_MULTIPROC_METHOD
         value: "spawn"
+  # Additional DRA resource claim templates to include alongside the primary accelerator.
+  # Each entry references a key in accelerator.resourceClaimTemplates below.
+  # This allows composing multiple device types (e.g., GPU + RDMA) for a single workload.
+  # Example:
+  #   additionalResourceClaimTemplates:
+  #     - rdma
+  additionalResourceClaimTemplates: []
   # ResourceClaimTemplate configurations for DRA (used when dra: true)
-  # Each accelerator type can have its own claim template configuration
+  # Each accelerator type can have its own claim template configuration.
+  # Custom entries can be added here and referenced via additionalResourceClaimTemplates.
   resourceClaimTemplates:
     nvidia:
       name: nvidia-claim-template
@@ -149,6 +157,12 @@ accelerator:
       name: google-claim-template
       class: tpu.google.com
       match: "exactly"
+      selectors: []
+    rdma:
+      name: rdma-claim-template
+      class: rdma-dranet
+      match: "exactly"
+      count: 1
       selectors: []
 
 # @schema
