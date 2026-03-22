@@ -112,7 +112,33 @@ false
 {{- $count -}}
 {{- end }}
 
-{{/* Generate resourceClaims Variable (merges accelerator + user-defined claims) */}}
+{{/* Get claim name for an additional resource claim template */}}
+{{- define "llm-d-modelservice.additionalClaimName" -}}
+{{- $templateKey := .templateKey -}}
+{{- $role := .role | default "" -}}
+{{- $config := .config -}}
+{{- $baseName := $config.name | default (printf "%s-claim-template" $templateKey) -}}
+{{- if $role -}}
+  {{- printf "%s-%s-claim" (trimSuffix "-claim-template" $baseName) $role -}}
+{{- else -}}
+  {{- printf "%s-claim" (trimSuffix "-claim-template" $baseName) -}}
+{{- end -}}
+{{- end }}
+
+{{/* Get claim template name for an additional resource claim template */}}
+{{- define "llm-d-modelservice.additionalClaimTemplateName" -}}
+{{- $templateKey := .templateKey -}}
+{{- $role := .role | default "" -}}
+{{- $config := .config -}}
+{{- $baseName := $config.name | default (printf "%s-claim-template" $templateKey) -}}
+{{- if $role -}}
+  {{- printf "%s-%s" $baseName $role -}}
+{{- else -}}
+  {{- $baseName -}}
+{{- end -}}
+{{- end }}
+
+{{/* Generate resourceClaims Variable (merges accelerator + additional + user-defined claims) */}}
 {{- define "llm-d-modelservice.resourceClaimsBase" -}}
 {{- $claims := list -}}
 {{- $draEnabled := eq (include "llm-d-modelservice.draEnabled" .) "true" -}}
@@ -120,6 +146,18 @@ false
   {{- $claimName := include "llm-d-modelservice.acceleratorClaimName" . -}}
   {{- $templateName := include "llm-d-modelservice.acceleratorClaimTemplateName" . -}}
   {{- $claims = append $claims (dict "name" $claimName "resourceClaimTemplateName" $templateName) -}}
+
+  {{- /* Add claims for additional resource claim templates (e.g., RDMA) */}}
+  {{- $additionalTemplates := .Values.accelerator.additionalResourceClaimTemplates | default list -}}
+  {{- range $templateKey := $additionalTemplates -}}
+    {{- if hasKey $.Values.accelerator.resourceClaimTemplates $templateKey -}}
+      {{- $config := index $.Values.accelerator.resourceClaimTemplates $templateKey -}}
+      {{- $ctx := dict "templateKey" $templateKey "role" $.role "config" $config -}}
+      {{- $addClaimName := include "llm-d-modelservice.additionalClaimName" $ctx -}}
+      {{- $addTemplateName := include "llm-d-modelservice.additionalClaimTemplateName" $ctx -}}
+      {{- $claims = append $claims (dict "name" $addClaimName "resourceClaimTemplateName" $addTemplateName) -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 {{- if .pdSpec.resourceClaims -}}
   {{- $claims = concat $claims .pdSpec.resourceClaims -}}

@@ -65,6 +65,42 @@ spec:
           {{- toYaml $selectors | nindent 10 }}
           {{- end }}
       {{- end -}}
+
+      {{- /* Generate ResourceClaimTemplates for additional resources (e.g., RDMA) */}}
+      {{- $additionalTemplates := $.Values.accelerator.additionalResourceClaimTemplates | default list -}}
+      {{- range $templateKey := $additionalTemplates -}}
+        {{- if hasKey $.Values.accelerator.resourceClaimTemplates $templateKey -}}
+          {{- $addConfig := index $.Values.accelerator.resourceClaimTemplates $templateKey -}}
+          {{- $addCtx := dict "templateKey" $templateKey "role" $role.name "config" $addConfig -}}
+          {{- $addTemplateName := include "llm-d-modelservice.additionalClaimTemplateName" $addCtx -}}
+
+          {{- $addCount := $addConfig.count | default 1 -}}
+          {{- $addClass := $addConfig.class | default $templateKey -}}
+          {{- $addMatch := $addConfig.match | default "exactly" -}}
+          {{- $addSelectors := $addConfig.selectors | default list -}}
+          {{- $addRequestName := $addConfig.requestName | default $templateKey }}
+---
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: {{ $addTemplateName }}
+  labels:
+    {{- include "llm-d-modelservice.labels" $ | nindent 4 }}
+    llm-d.ai/role: {{ $role.name }}
+spec:
+  spec:
+    devices:
+      requests:
+      - name: {{ $addRequestName }}
+        {{ $addMatch }}:
+          deviceClassName: {{ $addClass }}
+          count: {{ $addCount }}
+          {{- if $addSelectors }}
+          selectors:
+          {{- toYaml $addSelectors | nindent 10 }}
+          {{- end }}
+        {{- end -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end }}
