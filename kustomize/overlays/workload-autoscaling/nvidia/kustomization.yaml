@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+resources:
+  - ../../../accelerators/nvidia
+  - decode-requester-replicaset.yaml
+
+configMapGenerator:
+  - name: model-config
+    behavior: merge
+    literals:
+      - modelName=Qwen/Qwen3-32B
+      - modelUri=hf://Qwen/Qwen3-32B
+      - modelSize=70Gi
+
+patches:
+  # Disable regular decode deployment (FMA requester manages it)
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 0
+
+  # Configure requester ReplicaSet
+  - target:
+      kind: ReplicaSet
+      name: modelservice-decode-requester
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "512Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "2"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "512Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "2"

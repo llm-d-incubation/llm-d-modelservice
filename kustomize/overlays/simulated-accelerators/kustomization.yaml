@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+# No accelerator needed - uses inference-sim image from base
+resources:
+  - ../../base
+
+configMapGenerator:
+  - name: model-config
+    behavior: merge
+    literals:
+      - modelName=simulated-model
+      - modelUri=simulated
+      - modelSize=5Mi
+
+patches:
+  # Enable decode deployment (no GPU resources needed)
+  - target:
+      kind: Deployment
+      name: modelservice-decode
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 4
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "2Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "4"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "2Gi"
+      - op: add
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "4"
