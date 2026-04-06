@@ -21,6 +21,10 @@ metadata:
   {{- end }}
 spec:
   replicas: {{ ternary .Values.prefill.replicas 1 (hasKey .Values.prefill "replicas") }}
+  {{- if .Values.prefill.strategy }}
+  strategy:
+    {{- toYaml .Values.prefill.strategy | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "llm-d-modelservice.prefilllabels" . | nindent 6 }}
