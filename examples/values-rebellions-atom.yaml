@@ -1,9 +1,9 @@
-# Rebellions ATOM NPU configuration using imageDefault mode
-# This configuration is for single-node ATOM NPU setup without prefill.
+# Rebellions ATOM configuration using imageDefault mode
+# This configuration is for single-node ATOM setup without prefill.
 # Models are downloaded directly from Hugging Face Hub.
 #
 # Prerequisites:
-# - Rebellions ATOM NPU hardware
+# - Rebellions ATOM hardware
 # - Rebellions NPU Operator installed on the cluster
 #   Documentation: https://docs.rbln.ai/latest/software/system_management/kubernetes/about_npu_operator.html
 
@@ -24,7 +24,7 @@ routing:
   proxy:
     enabled: false
 
-# Decode pod configuration for Rebellions ATOM NPU - simplified with imageDefault
+# Decode pod configuration for Rebellions ATOM - simplified with imageDefault
 decode:
   create: true
   replicas: 1
@@ -53,9 +53,9 @@ decode:
 
 # NOTE: Tensor Parallelism with VLLM_RBLN_TP_SIZE
 # When using VLLM_RBLN_TP_SIZE environment variable (tensor parallelism > 1),
-# the number of required ATOM NPU resources does NOT equal parallelism.tensor.
+# the number of required ATOM resources does NOT equal parallelism.tensor.
 # You MUST override the resource count manually in resources.limits.
-# Example for tensor parallelism = 4 (requires 16 ATOM NPU resources):
+# Example for tensor parallelism = 4 (requires 16 ATOM resources):
 #
 #   decode:
 #     parallelism:
@@ -73,9 +73,9 @@ decode:
 #           memory: 96Gi
 #           cpu: "32"
 
-# Disable prefill for simple ATOM NPU example
+# Disable prefill for simple ATOM example
 prefill:
   create: false
 
-# When true, use LeaderWorkerSet for multi-node ATOM NPU setups
+# When true, use LeaderWorkerSet for multi-node ATOM setups
 multinode: false
