@@ -48,3 +48,6 @@ generate_output "pvc" "examples/values-pd.yaml" "examples/output-pvc.yaml" '--se
 
 # Generate output-pvc-hf.yaml (PVC HuggingFace model deployment)
 generate_output "pvc-hf" "examples/values-pd.yaml" "examples/output-pvc-hf.yaml" '--set modelArtifacts.uri=pvc+hf://pvc-name/path/to/hf_hub_cache/facebook/opt-125m'
+
+# Generate output-rebellion-atom.yaml (Rebellions ATOM NPU deployment)
+generate_output "rebellion-atom" "examples/values-rebellion-atom.yaml" "examples/output-rebellion-atom.yaml"
