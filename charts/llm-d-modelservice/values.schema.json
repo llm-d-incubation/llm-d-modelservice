@@ -1833,7 +1833,7 @@
                 },
                 "nodeSelector": {
                     "additionalProperties": true,
-                    "description": " additionalProperties: true @schema",
+                    "description": "maxUnavailable: 1 strategy: {} @schema additionalProperties: true @schema",
                     "required": [],
                     "title": "nodeSelector"
                 },
@@ -3436,7 +3436,7 @@
                 },
                 "nodeSelector": {
                     "additionalProperties": true,
-                    "description": " additionalProperties: true @schema",
+                    "description": "maxUnavailable: 1 strategy: {} @schema additionalProperties: true @schema",
                     "required": [],
                     "title": "nodeSelector"
                 },

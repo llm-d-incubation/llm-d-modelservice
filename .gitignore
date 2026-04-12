@@ -16,3 +16,4 @@ bin
 *.tmp
 *.orig
 *~
+charts/llm-d-modelservice/charts/
