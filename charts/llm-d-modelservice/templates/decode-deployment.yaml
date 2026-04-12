@@ -21,10 +21,6 @@ metadata:
   {{- end }}
 spec:
   replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
-  {{- if .Values.decode.strategy }}
-  strategy:
-    {{- toYaml .Values.decode.strategy | nindent 4 }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "llm-d-modelservice.decodelabels" . | nindent 6 }}
