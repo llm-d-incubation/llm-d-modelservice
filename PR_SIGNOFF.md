@@ -14,9 +14,9 @@ In order to get a pull request approved, you must first complete a DCO
 sign-off for each commit that the request is asking to add to the
 repository. This process is defined by the CNCF, and there are two
 cases: individual contributors and contributors that work for a
-corporate CNCF member. Both mean consent with the terms stated in [the
-`DCO` file at the root of this Git
-repository](https://github.com/llm-d/llm-d/blob/main/DCO). In
+corporate CNCF member. Both mean consent with the terms stated in the
+llm-d project's [Developer Certificate of Origin
+(`DCO`)](https://github.com/llm-d/llm-d/blob/main/DCO). In
 the case of an individual, DCO sign-off is accomplished by doing a Git
 "sign-off" on the commit.
 
@@ -25,7 +25,7 @@ GitHub verified, but this is not strictly necessary or enforced.
 
 ## Commit Sign-off
 
-Your submitted PR must pass the automated checks in order to be merged. One of these checks that each commit that you propose to contribute is signed-off. If you use the `git` shell command, this involves passing the `-s` flag on the command line. For example, the following command will create a signed-off commit but _not_ sign it.
+Your submitted PR must pass the automated checks in order to be merged. One of these checks verifies that each commit that you propose to contribute is signed-off. If you use the `git` shell command, this involves passing the `-s` flag on the command line. For example, the following command will create a signed-off commit but _not_ sign it.
 
 ```shell
 git commit -s
@@ -41,15 +41,15 @@ For other tools, consult their documentation.
 
 ## Signing Commits
 
-Before signing any commits, you must have a GPG or SSH key. Basic setup instructions can be found below (For more detailed instructions, refer to the Github [GPG](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) and [SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key) setup pages.)
+Before signing any commits, you must have a GPG or SSH key. Basic setup instructions can be found below (For more detailed instructions, refer to the GitHub [GPG](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) and [SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key) setup pages.)
 
 To sign a particular commit, you must either include `-S` on the `git commit` command line (see the command exhibited above for an example) or have configured automatic signing (see ["Everyone Must Sign" in the Git Book](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work#_everyone_must_sign) for a hint about that).
 
-Before starting, make sure that your user email is verified on Github. To check for this:
+Before starting, make sure that your user email is verified on GitHub. To check for this:
 
-1. Login to Github and navigate to your Github **Settings** page
+1. Login to GitHub and navigate to your GitHub **Settings** page
 2. In the sidebar, open the **Emails** tab
-3. Emails associated with Github should be listed at the top of the page under the "Emails" label
+3. Emails associated with GitHub should be listed at the top of the page under the "Emails" label
 4. An unverified email would have an "Unverified" label under it in orange text
 5. To verify, click **Resend verification email** and follow its prompts
 6. Navigate back to your **Emails** page, if the "Unverified" label is no longer there, then you're good to go!
@@ -76,7 +76,7 @@ For Windows users, **Git Bash** is also highly recommended.
 
 3. If prompted to specify the size, type, and duration of the key that you want, press `Enter` to select the default option.
 4. Once prompted, enter your user info and a passphrase:
-    - Make sure to list your email as the same one that's verified by Github
+    - Make sure to list your email as the same one that's verified by GitHub
 5. Use the following command to list the long form of your generated GPG keys:
 
    ```shell
@@ -84,7 +84,7 @@ For Windows users, **Git Bash** is also highly recommended.
    ```
 
     - Your GPG key ID should be the characters on the output line starting with `sec`, beginning directly after the `/` and ending before the listed date.
-    - For example, in the output below (from the Github [GPG](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) setup page), the GPG key ID would be `3AA5C34371567BD2`
+    - For example, in the output below (from the GitHub [GPG](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) setup page), the GPG key ID would be `3AA5C34371567BD2`
 
         ```shell
         $ gpg --list-secret-keys --keyid-format=long
@@ -102,7 +102,7 @@ For Windows users, **Git Bash** is also highly recommended.
     ```
 
 7. This should generate an output with your GPG key. Copy the characters starting from `-----BEGIN PGP PUBLIC KEY BLOCK-----` and ending at `--END PGP PUBLIC KEY BLOCK-----` (inclusive) to your clipboard.
-8. After copying or saving your GPG key, navigate to **Settings** in your Github
+8. After copying or saving your GPG key, navigate to **Settings** in your GitHub
 9. Navigate to the **SSH and GPG keys** page under the Access section in the sidebar
 10. Under GPG keys, select **New GPG key**
     - Enter a suitable name for your key under "Title" and paste your GPG key that you copied/saved in **Step 7** under "Key".
@@ -113,7 +113,7 @@ For Windows users, **Git Bash** is also highly recommended.
 
 ## Setting up the SSH Key
 
-1. Open Git Bash (or your CLI of choice) and use the following command to generate your new SSH key (make sure to replace `your_email` with your Github-verified email address):
+1. Open Git Bash (or your CLI of choice) and use the following command to generate your new SSH key (make sure to replace `your_email` with your GitHub-verified email address):
 
     ```shell
     ssh-keygen -t ed25519 -C "your_email"
@@ -133,7 +133,7 @@ For Windows users, **Git Bash** is also highly recommended.
    clip.exe < ~/.ssh/id_ed25519.pub
    ```
 
-4. After copying or saving your SSH key, navigate to **Settings** in your Github.
+4. After copying or saving your SSH key, navigate to **Settings** in your GitHub.
 5. Navigate to the **SSH and GPG keys** page under the Access section in the sidebar.
 6. Under SSH keys, select **New SSH key**.
     - Enter a suitable name for your key under "Title" (it'll pick up the email address if left empty)
@@ -141,7 +141,7 @@ For Windows users, **Git Bash** is also highly recommended.
     - Paste your SSH public key that you copied/saved in **Step 3** under "Key"
 7. Your new SSH key should now be displayed under SSH keys, in the **Signing Key** section.
 8. **Optional**: If you want to use the same SSH or GPG key for authentication as well, repeat steps above, selecting **Authentication** as the "Key type".
-9. **Optional**: To test if your SSH key is connecting properly or not, run the following command in your CLI (more specific instructions can be found in the [Github documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection)):
+9. **Optional**: To test if your SSH key is connecting properly or not, run the following command in your CLI (more specific instructions can be found in the [GitHub documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection)):
 
     ```shell
     ssh -T git@github.com
@@ -160,7 +160,7 @@ For Windows users, **Git Bash** is also highly recommended.
 
 This is not recommended for individual contributors, because the commits that it produces are not "signed-off" (as defined by Git) and thus do not carry assent to the DCO; see [Repairing commits](#repairing-commits) below for a way to recover if you have inadvertently made such a PR. For corporate contributors the DCO assent is indicated differently.
 
-Whether it's editing files from llm-d.ai or directly from the llm-d Github, there are a couple steps to follow that streamlines the workflow of your PR:
+Whether it's editing files from llm-d.ai or directly from the llm-d GitHub, there are a couple steps to follow that streamlines the workflow of your PR:
 
 1. Changes made to any file are automatically committed to a new branch in your fork.
     - After clicking **Commit changes...**, write your commit message summary line and any extended description that you want. Then click **Propose changes**, review your changes, and then create the PR.
@@ -183,7 +183,7 @@ revised series of commits one-by-one.
 
 The following instructions provide a basic walk-through if you have already created your own fork of the repository but yet not made a clone on your workstation.
 
-1. Navigate to the **Code** page of the llm-d github.
+1. Navigate to the **Code** page of the llm-d GitHub.
 
 2. Click the **Fork** dropdown in the top right corner of the page.
     - Under "Existing Forks" click your fork (should look something like "your_username/llm-d")
@@ -199,5 +199,5 @@ The following instructions provide a basic walk-through if you have already crea
     - The commit will also be signed if either you have set up automatic signing or both include the `-S` flag on that command and have set up your SSH or GPG key.
     - You may extend that command with `-m` followed by a quoted commit message if you desire. Otherwise `git` will pop up an editor for you to use in making any desired adjustment to the commit message. After making any desired changes, save and exit the editor. FYI: in `vi` (which GitBash uses), when it is in Command mode (which is the normal mode, and contrasts with Insert mode) the keystrokes `:wq!` will attempt to save and then will exit no matter what.
 9. Type `git push -f origin [branch_name]`, replacing `[branch_name]` with the actual name of your branch.
-10. Navigate back to your PR github page.
+10. Navigate back to your PR GitHub page.
     - A green `dco-signoff: yes` label indicates that your PR is successfully signed

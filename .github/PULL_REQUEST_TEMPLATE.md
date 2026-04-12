@@ -14,8 +14,8 @@
 
 ## Checklist
 
-- [ ] Commits are signed off (`git commit -s`) per [DCO](PR_SIGNOFF.md)
-- [ ] Code follows project [contributing guidelines](CONTRIBUTING.md)
+- [ ] Commits are signed off (`git commit -s`) per [DCO](../PR_SIGNOFF.md)
+- [ ] Code follows project [contributing guidelines](../CONTRIBUTING.md)
 - [ ] Pre-commit hooks pass (`make pre-commit-run`)
 - [ ] Linters pass (`make lint`)
 - [ ] Generated examples are in sync (`make verify`)
