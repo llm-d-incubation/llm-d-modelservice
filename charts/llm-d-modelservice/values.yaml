@@ -250,6 +250,21 @@ decode:
     enabled: false
 
   replicas: 1
+
+  # @schema
+  # type: object
+  # additionalProperties: true
+  # @schema
+  # -- Deployment strategy configuration for decode pods.
+  # -- Defaults to Kubernetes default if not specified.
+  # -- Example:
+  # --   strategy:
+  # --     type: RollingUpdate
+  # --     rollingUpdate:
+  # --       maxSurge: 0
+  # --       maxUnavailable: 1
+  # strategy: {}
+
   # @schema
   # additionalProperties: true
   # @schema
@@ -464,6 +479,21 @@ prefill:
     enabled: false
 
   replicas: 0
+
+  # @schema
+  # type: object
+  # additionalProperties: true
+  # @schema
+  # -- Deployment strategy configuration for prefill pods.
+  # -- Defaults to Kubernetes default if not specified.
+  # -- Example:
+  # --   strategy:
+  # --     type: RollingUpdate
+  # --     rollingUpdate:
+  # --       maxSurge: 0
+  # --       maxUnavailable: 1
+  # strategy: {}
+
   # @schema
   # additionalProperties: true
   # @schema
