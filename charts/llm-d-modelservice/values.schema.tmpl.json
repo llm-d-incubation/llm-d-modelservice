@@ -4,7 +4,7 @@
   "properties": {
     "accelerator": {
       "additionalProperties": false,
-      "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu",
+      "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom",
       "properties": {
         "dra": {
           "default": false,
@@ -359,6 +359,11 @@
               "default": "nvidia.com/gpu",
               "title": "nvidia",
               "type": "string"
+            },
+            "rebellions-atom": {
+              "default": "rebellions.ai/ATOM",
+              "title": "rebellions-atom",
+              "type": "string"
             }
           },
           "required": [],
@@ -552,7 +557,7 @@
           "type": "integer"
         },
         "resourceClaims": {
-          "description": "   # Optional: Override global accelerator configuration for decode pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for decode pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu   type: nvidia    # Override DRA (Dynamic Resource Allocation) mode for decode pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+          "description": "   # Optional: Override global accelerator configuration for decode pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for decode pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom   type: nvidia    # Override DRA (Dynamic Resource Allocation) mode for decode pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
           "items": {
             "properties": {
               "name": {
@@ -841,7 +846,7 @@
           "type": "integer"
         },
         "resourceClaims": {
-          "description": "   # Optional: Override global accelerator configuration for prefill pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for prefill pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu   type: intel-gaudi    # Override DRA (Dynamic Resource Allocation) mode for prefill pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+          "description": "   # Optional: Override global accelerator configuration for prefill pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for prefill pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom   type: intel-gaudi    # Override DRA (Dynamic Resource Allocation) mode for prefill pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
           "items": {
             "properties": {
               "name": {

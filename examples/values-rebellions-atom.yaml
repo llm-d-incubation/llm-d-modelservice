@@ -1,0 +1,81 @@
+# Rebellions ATOM configuration using imageDefault mode
+# This configuration is for single-node ATOM setup without prefill.
+# Models are downloaded directly from Hugging Face Hub.
+#
+# Prerequisites:
+# - Rebellions ATOM hardware
+# - Rebellions NPU Operator installed on the cluster
+#   Documentation: https://docs.rbln.ai/latest/software/system_management/kubernetes/about_npu_operator.html
+
+modelArtifacts:
+  name: Qwen/Qwen3-0.6B
+  uri: "hf://Qwen/Qwen3-0.6B"
+  size: 10Gi
+  authSecretName: "llm-d-hf-token"
+  labels:
+    llm-d.ai/inference-serving: "true"
+    llm-d.ai/model: qwen3-0-6B
+
+accelerator:
+  type: "rebellions-atom"
+
+# Routing configuration
+routing:
+  proxy:
+    enabled: false
+
+# Decode pod configuration for Rebellions ATOM - simplified with imageDefault
+decode:
+  create: true
+  replicas: 1
+  containers:
+  - name: "vllm"
+    # Use Rebellions ATOM vLLM image
+    image: "repo.rebellions.ai/rebellions/vllm-rbln-rhel9:3.3"
+
+    # Use imageDefault mode - chart will generate basic vLLM command automatically
+    modelCommand: "imageDefault"
+
+    ports:
+      - containerPort: 8000
+        protocol: TCP
+
+    resources:
+      limits:
+        # rebellions.ai/ATOM: '1' # added automatically from 'parallelism' (tensor * dataLocal)
+        memory: 24Gi
+        cpu: "8"
+      requests:
+        cpu: "4"
+        memory: 12Gi
+
+    mountModelVolume: true
+
+# NOTE: Tensor Parallelism with VLLM_RBLN_TP_SIZE
+# When using VLLM_RBLN_TP_SIZE environment variable (tensor parallelism > 1),
+# the number of required ATOM resources does NOT equal parallelism.tensor.
+# You MUST override the resource count manually in resources.limits.
+# Example for tensor parallelism = 4 (requires 16 ATOM resources):
+#
+#   decode:
+#     parallelism:
+#       tensor: 4
+#       data: 1
+#       dataLocal: 1
+#     containers:
+#     - name: "vllm"
+#       env:
+#       - name: VLLM_RBLN_TP_SIZE
+#         value: "4"
+#       resources:
+#         limits:
+#           rebellions.ai/ATOM: "16"  # Must be set manually: tensor * tensor = 4 * 4 = 16
+#           memory: 96Gi
+#           cpu: "32"
+
+# Disable prefill for simple ATOM example
+prefill:
+  create: false
+
+# When true, use LeaderWorkerSet for multi-node ATOM setups
+multinode: false
