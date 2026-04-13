@@ -86,8 +86,8 @@ Note that the path after the `<pvc-name>` is the path on the PVC which the downl
 Make sure that for the container of your interst in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pd.yaml#L87)) for the volume mounts to be created correctly.
 
 ### Behavior
-- A read-only PVC volume with the name `model-storage` is created for the deployment
-- A read-only volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true`
+- A PVC volume with the name `model-storage` is created for the deployment (read-only by default)
+- A volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true` (read-only by default; set `modelArtifacts.readOnly: false` to allow writes)
 - `--model` arg for that container is set to `model-cache/<path/to/model>` where `mountModelVolume: true`
 
 ⚠️ You do **not** need to configure volumeMounts for containers where  `mountModelVolume: true`. ModelService will automatically populate the pod specification and mount the model files.
@@ -96,7 +96,7 @@ However, if you want to add your own volume specifications, you may do so under 
 
 💡 You may optionally set the `--served-model-name`  in your container to be used for the OpenAI request, otherwise the request name must be a long string like `"model": "model-cache/<path/to/model>"`. Note that this argument is added automatically using the option `modelCommand: vllmServe` or `imageDefault`, using `routing.modelName` as the value to the `--served-model-name` argument.
 
-> For security purposes, a read-only volume is mounted to the pods to prevent a pod from deleting the model files in case another model service installation uses the same PVC. If you would like to write to the PVC, you should not do so through ModelService, but rather through your own pod like the download-model/pvc-debugger without the read-only restriction.
+> For security purposes, the default is a read-only volume mount to the pods to prevent a pod from deleting the model files in case another model service installation uses the same PVC. If you would like to write to the PVC, you should not do so through ModelService, but rather through your own pod like the download-model/pvc-debugger without the read-only restriction. Alternatively, set `modelArtifacts.readOnly: false` if write access is required (for example, Hugging Face cache lock files with `pvc+hf://`).
 
 
 ## Use HF-downloaded models with PVCs
@@ -121,7 +121,15 @@ helm install pvc-hf-example llm-d-modelservice/llm-d-modelservice \
 Make sure that for the container of your interst in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pd.yaml#L87)) for the volume mounts to be created correctly.
 
 ### Behavior
-- A read-only PVC volume with the name `model-storage` is created for the deployment
-- A read-only volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true`
+- A PVC volume with the name `model-storage` is created for the deployment (read-only by default)
+- A volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true` (read-only by default; set `modelArtifacts.readOnly: false` to allow writes)
 - `HF_HUB_CACHE` environment variable for that container is set to `model-cache/path/to/hf_hub_cache` where `mountModelVolume: true`
 - `--model` arugment is set to `facebook/opt-125m`
+
+> **Note:** Hugging Face Hub needs to write `.lock` files and cache metadata. Set `modelArtifacts.readOnly: false` to allow writes:
+>
+> ```yaml
+> modelArtifacts:
+>   uri: pvc+hf://pvc-name/path/to/hf_hub_cache/namespace/modelID
+>   readOnly: false
+> ```
