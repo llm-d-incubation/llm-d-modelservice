@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: pd-mnnvl-llm-d-modelservice
+  name: img-override-llm-d-modelservice
   labels:
     helm.sh/chart: llm-d-modelservice-v0.4.12
     app.kubernetes.io/version: "v0.4.0"
@@ -14,7 +14,7 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pd-mnnvl-llm-d-modelservice-decode
+  name: img-override-llm-d-modelservice-decode
   labels:
     helm.sh/chart: llm-d-modelservice-v0.4.12
     app.kubernetes.io/version: "v0.4.0"
@@ -42,7 +42,7 @@ spec:
             - --zap-encoder=json
             - --zap-log-level=debug
             - --secure-proxy=false
-          image: ghcr.io/llm-d/llm-d-routing-sidecar:latest
+          image: registry.example.com/llm-d/llm-d-routing-sidecar:latest
           imagePullPolicy: Always
           env:
           ports:
@@ -52,8 +52,13 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
+        - command:
+          - echo
+          - init
+          image: registry.example.com/llm-d/init-helper:latest
+          name: init-download
     
-      serviceAccountName: pd-mnnvl-llm-d-modelservice
+      serviceAccountName: img-override-llm-d-modelservice
       
       volumes:
         - emptyDir: {}
@@ -63,12 +68,10 @@ spec:
           emptyDir:
             sizeLimit: 20Gi
         
-      resourceClaims:
-        - name: llm-d-imex-channel-0
-          resourceClaimTemplateName: llm-d-imex-channel-0
+      
       containers:
         - name: vllm
-          image: ghcr.io/llm-d/llm-d-cuda:latest
+          image: registry.example.com/llm-d/llm-d-cuda:latest
           
           command: ["vllm", "serve"]
           args:
@@ -119,8 +122,6 @@ spec:
               cpu: "16"
               memory: 16Gi
               nvidia.com/gpu: "1"
-            claims:
-              - name: llm-d-imex-channel-0
           
           volumeMounts:
             - name: model-storage
@@ -130,7 +131,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pd-mnnvl-llm-d-modelservice-prefill
+  name: img-override-llm-d-modelservice-prefill
   labels:
     helm.sh/chart: llm-d-modelservice-v0.4.12
     app.kubernetes.io/version: "v0.4.0"
@@ -149,8 +150,14 @@ spec:
         llm-d.ai/model: facebook-opt-125m
         llm-d.ai/role: prefill
     spec:
+      initContainers:
+        - command:
+          - echo
+          - init
+          image: registry.example.com/library/busybox:latest
+          name: init-download
     
-      serviceAccountName: pd-mnnvl-llm-d-modelservice
+      serviceAccountName: img-override-llm-d-modelservice
       
       volumes:
         - emptyDir: {}
@@ -160,12 +167,10 @@ spec:
           emptyDir:
             sizeLimit: 20Gi
         
-      resourceClaims:
-        - name: llm-d-imex-channel-0
-          resourceClaimTemplateName: llm-d-imex-channel-0
+      
       containers:
         - name: vllm
-          image: ghcr.io/llm-d/llm-d-cuda:latest
+          image: registry.example.com/llm-d/llm-d-cuda:latest
           
           command: ["vllm", "serve"]
           args:
@@ -216,8 +221,6 @@ spec:
               cpu: "16"
               memory: 16Gi
               nvidia.com/gpu: "1"
-            claims:
-              - name: llm-d-imex-channel-0
           
           volumeMounts:
             - name: model-storage

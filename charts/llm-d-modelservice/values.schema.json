@@ -1926,14 +1926,14 @@
             "title": "fullnameOverride"
         },
         "global": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "Global values shared with subcharts",
             "properties": {
                 "imageRegistry": {
                     "default": "",
                     "description": "Override the registry for built-in chart workload images while preserving repository path and tag or digest Example: \"registry.example.com\" or \"registry.example.com/team-cache\"",
-                    "required": [],
-                    "title": "imageRegistry"
+                    "title": "imageRegistry",
+                    "type": "string"
                 }
             },
             "required": [],

@@ -26,7 +26,7 @@ spec:
             initContainers:
             {{- (include "llm-d-modelservice.routingProxy" (dict "proxy" .Values.routing.proxy "servicePort" .Values.routing.servicePort "Values" .Values)) | nindent 12 }}
             {{- if .Values.decode.initContainers }}
-            {{- include "llm-d-modelservice.renderContainerList" (dict "containers" .Values.decode.initContainers "Values" .Values) | nindent 12 }}{{- toYaml .Values.decode.initContainers | nindent 12 }}
+            {{- include "llm-d-modelservice.renderContainerList" (dict "containers" .Values.decode.initContainers "Values" .Values) | nindent 12 }}
             {{- end }}
             {{- end }}
             {{- with .Values.decode.containers }}
