@@ -3517,6 +3517,12 @@
             "additionalProperties": true,
             "description": "Requester configuration part of the dual-pod solution for FMA",
             "properties": {
+                "LauncherPopulationPolicy": {
+                    "default": "",
+                    "description": "Name of the LauncherPopulationPolicy resource (required when requester is enabled)",
+                    "title": "LauncherPopulationPolicy",
+                    "type": "string"
+                },
                 "adminPort": {
                     "default": 8081,
                     "title": "adminPort",
@@ -3528,9 +3534,336 @@
                     "type": "boolean"
                 },
                 "image": {
-                    "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:latest",
+                    "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/requester:v0.5.1-alpha.4",
                     "title": "image",
                     "type": "string"
+                },
+                "inferenceServerConfig": {
+                    "default": "",
+                    "description": "Name of the InferenceServerConfig resource (required when requester is enabled)",
+                    "title": "inferenceServerConfig",
+                    "type": "string"
+                },
+                "launcherConfig": {
+                    "default": "",
+                    "description": "Name of the LauncherConfig resource (required when requester is enabled)",
+                    "title": "launcherConfig",
+                    "type": "string"
+                },
+                "launcherConfigSpec": {
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema",
+                    "properties": {
+                        "maxSleepingInstances": {
+                            "default": 3,
+                            "title": "maxSleepingInstances",
+                            "type": "integer"
+                        },
+                        "podTemplate": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "metadata": {
+                                    "additionalProperties": true,
+                                    "description": " additionalProperties: true @schema",
+                                    "required": [],
+                                    "title": "metadata"
+                                },
+                                "spec": {
+                                    "additionalProperties": true,
+                                    "description": " additionalProperties: true @schema",
+                                    "properties": {
+                                        "containers": {
+                                            "items": {
+                                                "anyOf": [
+                                                    {
+                                                        "additionalProperties": false,
+                                                        "properties": {
+                                                            "command": {
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "string"
+                                                                        },
+                                                                        {
+                                                                            "type": "string"
+                                                                        }
+                                                                    ],
+                                                                    "required": []
+                                                                },
+                                                                "title": "command",
+                                                                "type": "array"
+                                                            },
+                                                            "env": {
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "additionalProperties": false,
+                                                                            "properties": {
+                                                                                "name": {
+                                                                                    "default": "HF_HOME",
+                                                                                    "title": "name",
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "value": {
+                                                                                    "default": "/model-cache",
+                                                                                    "title": "value",
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [],
+                                                                            "type": "object"
+                                                                        },
+                                                                        {
+                                                                            "additionalProperties": false,
+                                                                            "properties": {
+                                                                                "name": {
+                                                                                    "default": "VLLM_CACHE_ROOT",
+                                                                                    "title": "name",
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "value": {
+                                                                                    "default": "/model-cache",
+                                                                                    "title": "value",
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [],
+                                                                            "type": "object"
+                                                                        },
+                                                                        {
+                                                                            "additionalProperties": false,
+                                                                            "properties": {
+                                                                                "name": {
+                                                                                    "default": "FLASHINFER_WORKSPACE_BASE",
+                                                                                    "title": "name",
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "value": {
+                                                                                    "default": "/model-cache",
+                                                                                    "title": "value",
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [],
+                                                                            "type": "object"
+                                                                        },
+                                                                        {
+                                                                            "additionalProperties": false,
+                                                                            "properties": {
+                                                                                "name": {
+                                                                                    "default": "TRITON_CACHE_DIR",
+                                                                                    "title": "name",
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "value": {
+                                                                                    "default": "/tmmodel-cachep",
+                                                                                    "title": "value",
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [],
+                                                                            "type": "object"
+                                                                        },
+                                                                        {
+                                                                            "additionalProperties": false,
+                                                                            "properties": {
+                                                                                "name": {
+                                                                                    "default": "XDG_CACHE_HOME",
+                                                                                    "title": "name",
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "value": {
+                                                                                    "default": "/model-cache",
+                                                                                    "title": "value",
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [],
+                                                                            "type": "object"
+                                                                        },
+                                                                        {
+                                                                            "additionalProperties": false,
+                                                                            "properties": {
+                                                                                "name": {
+                                                                                    "default": "XDG_CONFIG_HOME",
+                                                                                    "title": "name",
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "value": {
+                                                                                    "default": "/model-cache",
+                                                                                    "title": "value",
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [],
+                                                                            "type": "object"
+                                                                        }
+                                                                    ],
+                                                                    "required": []
+                                                                },
+                                                                "title": "env",
+                                                                "type": "array"
+                                                            },
+                                                            "image": {
+                                                                "default": "ghcr.io/llm-d-incubation/llm-d-fast-model-actuation/launcher:v0.5.1-alpha.4",
+                                                                "title": "image",
+                                                                "type": "string"
+                                                            },
+                                                            "imagePullPolicy": {
+                                                                "default": "IfNotPresent",
+                                                                "title": "imagePullPolicy",
+                                                                "type": "string"
+                                                            },
+                                                            "mountModelVolume": {
+                                                                "default": true,
+                                                                "title": "mountModelVolume",
+                                                                "type": "boolean"
+                                                            },
+                                                            "name": {
+                                                                "default": "inference-server",
+                                                                "title": "name",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [],
+                                                        "type": "object"
+                                                    }
+                                                ],
+                                                "required": []
+                                            },
+                                            "title": "containers",
+                                            "type": "array"
+                                        },
+                                        "runtimeClassName": {
+                                            "default": "nvidia-legacy",
+                                            "description": " items:   additionalProperties: true @schema",
+                                            "items": {
+                                                "additionalProperties": true,
+                                                "required": []
+                                            },
+                                            "required": [],
+                                            "title": "runtimeClassName"
+                                        }
+                                    },
+                                    "required": [],
+                                    "title": "spec"
+                                }
+                            },
+                            "required": [],
+                            "title": "podTemplate",
+                            "type": "object"
+                        }
+                    },
+                    "required": [],
+                    "title": "launcherConfigSpec"
+                },
+                "launcherPopulationPolicySpec": {
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema",
+                    "properties": {
+                        "enhancedNodeSelector": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "labelSelector": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "matchLabels": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "nvidia.com/gpu.present": {
+                                                    "default": "true",
+                                                    "title": "nvidia.com/gpu.present",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [],
+                                            "title": "matchLabels",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [],
+                                    "title": "labelSelector",
+                                    "type": "object"
+                                }
+                            },
+                            "required": [],
+                            "title": "enhancedNodeSelector",
+                            "type": "object"
+                        },
+                        "launcherCount": {
+                            "default": 1,
+                            "title": "launcherCount",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [],
+                    "title": "launcherPopulationPolicySpec"
+                },
+                "modelServerConfig": {
+                    "additionalProperties": true,
+                    "description": " additionalProperties: true @schema",
+                    "properties": {
+                        "annotations": {
+                            "additionalProperties": true,
+                            "description": " additionalProperties: true @schema",
+                            "required": [],
+                            "title": "annotations"
+                        },
+                        "env_vars": {
+                            "additionalProperties": true,
+                            "description": " additionalProperties: true @schema",
+                            "properties": {
+                                "VLLM_LOGGING_LEVEL": {
+                                    "default": "DEBUG",
+                                    "title": "VLLM_LOGGING_LEVEL",
+                                    "type": "string"
+                                },
+                                "VLLM_SERVER_DEV_MODE": {
+                                    "default": "1",
+                                    "title": "VLLM_SERVER_DEV_MODE",
+                                    "type": "string"
+                                },
+                                "VLLM_USE_V1": {
+                                    "default": "1",
+                                    "title": "VLLM_USE_V1",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [],
+                            "title": "env_vars"
+                        },
+                        "labels": {
+                            "additionalProperties": true,
+                            "description": " additionalProperties: true @schema",
+                            "properties": {
+                                "component": {
+                                    "default": "inference",
+                                    "title": "component",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [],
+                            "title": "labels"
+                        },
+                        "options": {
+                            "default": "--model facebook/opt-125m --served-model-name facebook/opt-125m --enforce-eager --kv-transfer-config {\"kv_connector\":\"NixlConnector\", \"kv_role\":\"kv_both\"}",
+                            "title": "options",
+                            "type": "string"
+                        },
+                        "port": {
+                            "default": 8005,
+                            "title": "port",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [],
+                    "title": "modelServerConfig"
                 },
                 "port": {
                     "additionalProperties": false,

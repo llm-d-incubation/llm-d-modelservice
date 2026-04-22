@@ -486,7 +486,9 @@ context is a dict with helm root context plus:
   {{- with .container.env }}
     {{- include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
+  {{- if .parallelism }}
   {{- (include "llm-d-modelservice.parallelismEnv" .) | nindent 2 }}
+  {{- end }}
   {{- /* insert envs based on what modelArtifact prefix */}}
   {{- (include "llm-d-modelservice.hfEnv" .) | nindent 2 }}
   {{- /* Add accelerator-specific environment variables */}}
