@@ -1966,6 +1966,12 @@
                     "required": [],
                     "title": "name"
                 },
+                "readOnly": {
+                    "default": true,
+                    "description": " type: boolean @schema Whether PVC-backed model mounts (pvc:// and pvc+hf://) should be read-only. Set to false for pvc+hf:// when Hugging Face cache writes are needed; other URI schemes ignore this setting.",
+                    "title": "readOnly",
+                    "type": "boolean"
+                },
                 "size": {
                     "default": "5Mi",
                     "description": "size of volume to create to hold the model",

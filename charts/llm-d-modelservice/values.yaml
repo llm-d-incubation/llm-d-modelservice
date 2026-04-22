@@ -76,6 +76,12 @@ modelArtifacts:
   authSecretName: ""
   # location where model volume will be mounted (used when mountModelVolume: true)
   mountPath: /model-cache
+  # @schema
+  # type: boolean
+  # @schema
+  # Whether PVC-backed model mounts (pvc:// and pvc+hf://) should be read-only.
+  # Set to false for pvc+hf:// when Hugging Face cache writes are needed; other URI schemes ignore this setting.
+  readOnly: true
 
 # When true, a LeaderWorkerSet is used instead of a Deployment
 multinode: false
