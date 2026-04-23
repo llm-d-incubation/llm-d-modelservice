@@ -91,6 +91,38 @@ affinity:
             {{- end }}
 {{- end }}
 {{- end }}
+
+{{/* Rewrite an image reference to use a global registry override */}}
+{{- define "llm-d-modelservice.resolveImage" -}}
+{{- $image := required "image is required" .image -}}
+{{- $registryOverride := trimSuffix "/" (default "" .Values.global.imageRegistry) -}}
+{{- if not $registryOverride -}}
+{{- $image -}}
+{{- else -}}
+{{- $parts := splitList "/" $image -}}
+{{- $nameParts := $parts -}}
+{{- $first := index $parts 0 -}}
+{{- if and (gt (len $parts) 1) (or (contains "." $first) (contains ":" $first) (eq $first "localhost")) -}}
+{{- $nameParts = slice $parts 1 -}}
+{{- end -}}
+{{- printf "%s/%s" $registryOverride (join "/" $nameParts) -}}
+{{- end -}}
+{{- end }}
+
+{{/* Render a list of container-like objects while applying image resolution */}}
+{{- define "llm-d-modelservice.renderContainerList" -}}
+{{- $renderedContainers := list -}}
+{{- range $container := (.containers | default list) -}}
+{{- $rendered := deepCopy $container -}}
+{{- if hasKey $rendered "image" -}}
+{{- $_ := set $rendered "image" (include "llm-d-modelservice.resolveImage" (dict "image" (index $rendered "image") "Values" $.Values) | trim) -}}
+{{- end -}}
+{{- $renderedContainers = append $renderedContainers $rendered -}}
+{{- end -}}
+{{- toYaml $renderedContainers -}}
+{{- end }}
+
+
 {{/* Create the init container for the routing proxy/sidecar for decode pods */}}
 {{- define "llm-d-modelservice.routingProxy" -}}
 {{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) -}}
@@ -123,7 +155,7 @@ affinity:
     {{- if hasKey .proxy "certPath" }}
     - --cert-path={{ .proxy.certPath }}
     {{- end }}
-  image: {{ required "routing.proxy.image must be specified" .proxy.image }}
+  image: {{ include "llm-d-modelservice.resolveImage" (dict "image" (required "routing.proxy.image must be specified" .proxy.image) "Values" .Values) | trim }}
   imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
   env:
 {{- if and .Values.tracing .Values.tracing.enabled }}
@@ -466,7 +498,7 @@ context is a dict with helm root context plus:
 */}}
 {{- define "llm-d-modelservice.container" -}}
 - name: {{ default "vllm" .container.name }}
-  image: {{ required "image of container is required" .container.image }}
+  image: {{ include "llm-d-modelservice.resolveImage" (dict "image" (required "image of container is required" .container.image) "Values" .Values) | trim }}
   {{- with .container.extraConfig }}
     {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) | nindent 2 }}
   {{- end }}
