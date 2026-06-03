@@ -83,8 +83,13 @@ modelArtifacts:
   # Set to false for pvc+hf:// when Hugging Face cache writes are needed; other URI schemes ignore this setting.
   readOnly: true
 
-# When true, a LeaderWorkerSet is used instead of a Deployment
+# -- DEPRECATED: Use workloadKind: LeaderWorkerSet instead.
+# When true, a LeaderWorkerSet is used instead of a Deployment for both decode and prefill.
 multinode: false
+
+# -- Global workload kind override. Applied to both decode and prefill unless overridden per-role.
+# Supported: Deployment (default), StatefulSet, LeaderWorkerSet
+# workloadKind: StatefulSet
 
 # Global accelerator configuration
 # Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom
@@ -256,6 +261,53 @@ decode:
     enabled: false
 
   replicas: 1
+
+  # -- Workload kind for decode pods. Overrides global workloadKind.
+  # Supported: Deployment (default), StatefulSet, LeaderWorkerSet
+  # workloadKind: StatefulSet
+
+  # @schema
+  # type: object
+  # additionalProperties: true
+  # @schema
+  # -- Update strategy for StatefulSet. Uses updateStrategy (StatefulSet API) instead of
+  # -- strategy (Deployment API). When unset and using StatefulSet, falls back to
+  # -- decode.strategy for backward compatibility.
+  # updateStrategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     partition: 0
+  #     maxUnavailable: 1
+
+  # -- podManagementPolicy for StatefulSet (OrderedReady or Parallel).
+  # -- Only applicable when workloadKind is StatefulSet. Defaults to Parallel.
+  # podManagementPolicy: Parallel
+
+  # -- revisionHistoryLimit for StatefulSet. Only applicable when workloadKind is StatefulSet.
+  # revisionHistoryLimit: 10
+
+  # -- minReadySeconds for StatefulSet. Only applicable when workloadKind is StatefulSet.
+  # minReadySeconds: 0
+
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  # @schema
+  # -- volumeClaimTemplates for StatefulSet. Defines per-pod persistent storage.
+  # -- Only applicable when workloadKind is StatefulSet.
+  # -- When using hf:// modelArtifacts, each pod downloads the model into its own PVC.
+  # -- When using pvc://, reference the existing PVC via volumeClaimTemplates.
+  # -- Example:
+  # --   volumeClaimTemplates:
+  # --     - metadata:
+  # --         name: model-storage
+  # --       spec:
+  # --         accessModes: ["ReadWriteOnce"]
+  # --         resources:
+  # --           requests:
+  # --             storage: 50Gi
+  # volumeClaimTemplates: []
 
   # @schema
   # type: object
@@ -485,6 +537,53 @@ prefill:
     enabled: false
 
   replicas: 0
+
+  # -- Workload kind for prefill pods. Overrides global workloadKind.
+  # Supported: Deployment (default), StatefulSet, LeaderWorkerSet
+  # workloadKind: StatefulSet
+
+  # @schema
+  # type: object
+  # additionalProperties: true
+  # @schema
+  # -- Update strategy for StatefulSet. Uses updateStrategy (StatefulSet API) instead of
+  # -- strategy (Deployment API). When unset and using StatefulSet, falls back to
+  # -- prefill.strategy for backward compatibility.
+  # updateStrategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     partition: 0
+  #     maxUnavailable: 1
+
+  # -- podManagementPolicy for StatefulSet (OrderedReady or Parallel).
+  # -- Only applicable when workloadKind is StatefulSet. Defaults to Parallel.
+  # podManagementPolicy: Parallel
+
+  # -- revisionHistoryLimit for StatefulSet. Only applicable when workloadKind is StatefulSet.
+  # revisionHistoryLimit: 10
+
+  # -- minReadySeconds for StatefulSet. Only applicable when workloadKind is StatefulSet.
+  # minReadySeconds: 0
+
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  # @schema
+  # -- volumeClaimTemplates for StatefulSet. Defines per-pod persistent storage.
+  # -- Only applicable when workloadKind is StatefulSet.
+  # -- When using hf:// modelArtifacts, each pod downloads the model into its own PVC.
+  # -- When using pvc://, reference the existing PVC via volumeClaimTemplates.
+  # -- Example:
+  # --   volumeClaimTemplates:
+  # --     - metadata:
+  # --         name: model-storage
+  # --       spec:
+  # --         accessModes: ["ReadWriteOnce"]
+  # --         resources:
+  # --           requests:
+  # --             storage: 50Gi
+  # volumeClaimTemplates: []
 
   # @schema
   # type: object
