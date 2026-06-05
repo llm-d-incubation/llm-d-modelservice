@@ -125,8 +125,8 @@ affinity:
     {{- end }}
   image: {{ required "routing.proxy.image must be specified" .proxy.image }}
   imagePullPolicy: {{ default "Always" .proxy.imagePullPolicy }}
-  env:
 {{- if and .Values.tracing .Values.tracing.enabled }}
+  env:
     - name: OTEL_SERVICE_NAME
       value: {{ .Values.tracing.serviceNames.routingProxy | quote }}
     - name: OTEL_EXPORTER_OTLP_ENDPOINT
