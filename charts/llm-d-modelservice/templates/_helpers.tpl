@@ -140,7 +140,11 @@ affinity:
 {{- end }}
   ports:
     - containerPort: {{ default 8000 .servicePort }}
+  {{- if .proxy.resources }}
+  resources: {{- toYaml .proxy.resources | nindent 4 }}
+  {{- else }}
   resources: {}
+  {{- end }}
   restartPolicy: Always
   securityContext:
     allowPrivilegeEscalation: false

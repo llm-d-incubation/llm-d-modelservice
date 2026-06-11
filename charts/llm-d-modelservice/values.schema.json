@@ -3632,6 +3632,13 @@
                             "title": "imagePullPolicy",
                             "type": "string"
                         },
+                        "resources": {
+                            "additionalProperties": true,
+                            "description": "Resource requests and limits for the routing proxy sidecar container. When not set, no resource constraints are applied (resources: {}). @schema type: object additionalProperties: true @schema",
+                            "required": [],
+                            "title": "resources",
+                            "type": "object"
+                        },
                         "secure": {
                             "default": false,
                             "description": "Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.",

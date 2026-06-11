@@ -246,6 +246,14 @@ routing:
     # @schema
     # zapTimeEncoding: epoch
 
+    # -- Resource requests and limits for the routing proxy sidecar container.
+    # When not set, no resource constraints are applied (resources: {}).
+    # @schema
+    # type: object
+    # additionalProperties: true
+    # @schema
+    resources: {}
+
 # @schema
 # additionalProperties: true
 # @schema
