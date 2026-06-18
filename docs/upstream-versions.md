@@ -5,8 +5,6 @@
 
 ## Dependencies
 
-<!-- Add your tracked dependencies using the format below. Remove this comment when populated. -->
-
 | Dependency | Current Pin | Pin Type | File Location | Upstream Repo |
 |-----------|-------------|----------|---------------|---------------|
-<!-- | **example-lib** | `v1.2.3` | tag | `go.mod` line 10 | example-org/example-lib | -->
+| **LeaderWorkerSet (LWS)** | `v0.9.0` | tag | CRD doc links in `charts/llm-d-modelservice/values.yaml`; CRD `apiVersion: leaderworkerset.x-k8s.io/v1` in `templates/{decode,prefill}-lws.yaml` | kubernetes-sigs/lws |
