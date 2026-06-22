@@ -261,14 +261,23 @@ nvidia.com/gpu
 {{- end -}}
 {{- end }}
 
-{{/* Get accelerator environment variables based on type */}}
+{{/*
+Get accelerator environment variables based on type.
+Filter out any that are
+*/}}
 {{- define "llm-d-modelservice.acceleratorEnv" -}}
 {{- $acceleratorType := include "llm-d-modelservice.acceleratorType" . -}}
 {{- if and (ne $acceleratorType "cpu") (hasKey .Values.accelerator.env $acceleratorType) -}}
 {{- $envVars := index .Values.accelerator.env $acceleratorType -}}
+{{- $userNames := list -}}
+{{- range (default (list) .container.env) -}}
+  {{- $userNames = append $userNames .name -}}
+{{- end -}}
 {{- range $envVars }}
+{{- if not (has .name $userNames) }}
 - name: {{ .name }}
   value: {{ .value | quote }}
+{{- end }}
 {{- end -}}
 {{- end -}}
 {{- end }}
