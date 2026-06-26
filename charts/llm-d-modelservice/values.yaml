@@ -83,8 +83,7 @@ modelArtifacts:
   # Set to false for pvc+hf:// when Hugging Face cache writes are needed; other URI schemes ignore this setting.
   readOnly: true
 
-# -- DEPRECATED: Use workloadKind: LeaderWorkerSet instead.
-# When true, a LeaderWorkerSet is used instead of a Deployment for both decode and prefill.
+# -- When true, a LeaderWorkerSet is used instead of a Deployment for both decode and prefill.
 multinode: false
 
 # -- Global workload kind override. Applied to both decode and prefill unless overridden per-role.
