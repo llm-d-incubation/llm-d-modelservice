@@ -25,16 +25,12 @@ spec:
   {{- if .Values.decode.updateStrategy }}
   updateStrategy:
     {{- toYaml .Values.decode.updateStrategy | nindent 4 }}
-  {{- else if .Values.decode.strategy }}
-  {{- /* Fall back to strategy for backward compat (may contain Deployment-only fields like maxSurge) */}}
-  updateStrategy:
-    {{- toYaml .Values.decode.strategy | nindent 4 }}
   {{- end }}
   podManagementPolicy: {{ .Values.decode.podManagementPolicy | default "Parallel" }}
-  {{- if .Values.decode.revisionHistoryLimit }}
+  {{- if hasKey .Values.decode "revisionHistoryLimit" }}
   revisionHistoryLimit: {{ .Values.decode.revisionHistoryLimit }}
   {{- end }}
-  {{- if .Values.decode.minReadySeconds }}
+  {{- if hasKey .Values.decode "minReadySeconds" }}
   minReadySeconds: {{ .Values.decode.minReadySeconds }}
   {{- end }}
   {{- if .Values.decode.volumeClaimTemplates }}

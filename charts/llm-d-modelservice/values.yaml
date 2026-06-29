@@ -83,12 +83,18 @@ modelArtifacts:
   # Set to false for pvc+hf:// when Hugging Face cache writes are needed; other URI schemes ignore this setting.
   readOnly: true
 
+# @schema
+# type: boolean
+# @schema
 # -- When true, a LeaderWorkerSet is used instead of a Deployment for both decode and prefill.
 multinode: false
 
-# -- Global workload kind override. Applied to both decode and prefill unless overridden per-role.
-# Supported: Deployment (default), StatefulSet, LeaderWorkerSet
-# workloadKind: StatefulSet
+# @schema
+# type: string
+# enum: ["Deployment", "StatefulSet", "LeaderWorkerSet"]
+# @schema
+# -- Global workload kind for decode and prefill pods. Overridden by multinode, requester.enable (decode only), and per-role workloadKind. Supported: Deployment (default), StatefulSet, LeaderWorkerSet.
+workloadKind: Deployment
 
 # Global accelerator configuration
 # Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom
@@ -270,6 +276,7 @@ decode:
   replicas: 1
 
   # -- Workload kind for decode pods. Overrides global workloadKind.
+  # Precedence: requester.enable > multinode > decode.workloadKind > workloadKind > Deployment.
   # Supported: Deployment (default), StatefulSet, LeaderWorkerSet
   # workloadKind: StatefulSet
 
@@ -277,9 +284,8 @@ decode:
   # type: object
   # additionalProperties: true
   # @schema
-  # -- Update strategy for StatefulSet. Uses updateStrategy (StatefulSet API) instead of
-  # -- strategy (Deployment API). When unset and using StatefulSet, falls back to
-  # -- decode.strategy for backward compatibility.
+  # -- Update strategy for StatefulSet (StatefulSet API). Only applicable when
+  # -- workloadKind is StatefulSet. Use decode.strategy for Deployment workloads.
   # updateStrategy:
   #   type: RollingUpdate
   #   rollingUpdate:
@@ -546,6 +552,7 @@ prefill:
   replicas: 0
 
   # -- Workload kind for prefill pods. Overrides global workloadKind.
+  # Precedence: multinode > prefill.workloadKind > workloadKind > Deployment.
   # Supported: Deployment (default), StatefulSet, LeaderWorkerSet
   # workloadKind: StatefulSet
 
@@ -553,9 +560,8 @@ prefill:
   # type: object
   # additionalProperties: true
   # @schema
-  # -- Update strategy for StatefulSet. Uses updateStrategy (StatefulSet API) instead of
-  # -- strategy (Deployment API). When unset and using StatefulSet, falls back to
-  # -- prefill.strategy for backward compatibility.
+  # -- Update strategy for StatefulSet (StatefulSet API). Only applicable when
+  # -- workloadKind is StatefulSet. Use prefill.strategy for Deployment workloads.
   # updateStrategy:
   #   type: RollingUpdate
   #   rollingUpdate:

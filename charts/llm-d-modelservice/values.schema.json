@@ -4,7 +4,7 @@
     "properties": {
         "accelerator": {
             "additionalProperties": false,
-            "description": "Global workload kind override. Applied to both decode and prefill unless overridden per-role. Supported: Deployment (default), StatefulSet, LeaderWorkerSet workloadKind: StatefulSet Global accelerator configuration Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom",
+            "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom",
             "properties": {
                 "dra": {
                     "default": false,
@@ -1990,10 +1990,10 @@
             "type": "object"
         },
         "multinode": {
-            "default": "false",
+            "default": false,
             "description": "When true, a LeaderWorkerSet is used instead of a Deployment for both decode and prefill.",
-            "required": [],
-            "title": "multinode"
+            "title": "multinode",
+            "type": "boolean"
         },
         "prefill": {
             "additionalProperties": true,
@@ -3770,6 +3770,17 @@
             },
             "required": [],
             "title": "tracing"
+        },
+        "workloadKind": {
+            "default": "Deployment",
+            "description": "Global workload kind for decode and prefill pods. Overridden by multinode, requester.enable (decode only), and per-role workloadKind. Supported: Deployment (default), StatefulSet, LeaderWorkerSet.",
+            "enum": [
+                "Deployment",
+                "StatefulSet",
+                "LeaderWorkerSet"
+            ],
+            "title": "workloadKind",
+            "type": "string"
         }
     },
     "required": [],
