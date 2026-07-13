@@ -90,6 +90,8 @@ Make sure that for the container of your interst in `prefill.containers` or `dec
 - A volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true` (read-only by default; set `modelArtifacts.readOnly: false` to allow writes)
 - `--model` arg for that container is set to `model-cache/<path/to/model>` where `mountModelVolume: true`
 
+> **RWO PVCs across multiple nodes:** if your storage class only provides `ReadWriteOnce` and you run multiple replicas across nodes, set `workloadKind: StatefulSet` and provide a `volumeClaimTemplates` entry named `model-storage`. In that case the chart-managed `model-storage` volume is not added, and each pod gets its own PVC from your template.
+
 ⚠️ You do **not** need to configure volumeMounts for containers where  `mountModelVolume: true`. ModelService will automatically populate the pod specification and mount the model files.
 
 However, if you want to add your own volume specifications, you may do so under `decode.volumes`. If you would like to add more `volumeMounts` to a container, regardless whether if `mountModelVolume` is true, you may do so under `decode.containers`.
