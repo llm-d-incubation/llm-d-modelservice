@@ -290,7 +290,8 @@ decode:
   #   type: RollingUpdate
   #   rollingUpdate:
   #     partition: 0
-  #     maxUnavailable: 1
+  #   note: maxUnavailable is a Deployment field, not supported on StatefulSet
+  #         (alpha MaxUnavailableStatefulSet gate is disabled on this cluster).
 
   # -- podManagementPolicy for StatefulSet (OrderedReady or Parallel).
   # -- Only applicable when workloadKind is StatefulSet. Defaults to Parallel.
@@ -566,7 +567,8 @@ prefill:
   #   type: RollingUpdate
   #   rollingUpdate:
   #     partition: 0
-  #     maxUnavailable: 1
+  #   note: maxUnavailable is a Deployment field, not supported on StatefulSet
+  #         (alpha MaxUnavailableStatefulSet gate is disabled on this cluster).
 
   # -- podManagementPolicy for StatefulSet (OrderedReady or Parallel).
   # -- Only applicable when workloadKind is StatefulSet. Defaults to Parallel.
