@@ -14,7 +14,7 @@ Active scenarios supported:
 Integration with `llm-d` components:
 - Quickstart guide in `llm-d-infra` depends on ModelService
 - Flexible configuration of `llm-d-inference-scheduler` for routing
-- Features `llm-d-routing-sidecar` in P/D disaggregation
+- Features `llm-d-router-disagg-sidecar` in P/D disaggregation
 - Utilized in benchmarking experiments in `llm-d-benchmark`
 - Effortless use of `llm-d-inference-sim` for CPU-only workloads
 - Allows to use `llm-d-fast-model-actuation`. More information about the fast model loading techniques [here](https://github.com/llm-d-incubation/llm-d-fast-model-actuation)
@@ -67,7 +67,7 @@ Below are the values you can set.
 | `modelArtifacts.mountPath`             | Path to mount the volume created to store models                                                                  | string          | /model-cache                                |
 | `multinode`                            | Determines whether to create P/D using Deployments (false) or LeaderWorkerSets (true)                             | bool            | `false`                                     |
 | `routing.servicePort`                  | The port the routing proxy sidecar listens on. <br>If there is no sidecar, this is the port the request goes to.  | int             | N/A                                         |
-| `routing.proxy.image`                  | Image used for the sidecar                                                                                        | string          | `ghcr.io/llm-d/llm-d-routing-sidecar:latest` |
+| `routing.proxy.image`                  | Image used for the sidecar                                                                                        | string          | `ghcr.io/llm-d/llm-d-router-disagg-sidecar:latest` |
 | `routing.proxy.targetPort`             | The port the vLLM decode container listens on. <br>If proxy is present, it will forward request to this port.     | string          | N/A                                         |
 | `routing.proxy.debugLevel`             | Debug level of the routing proxy                                                                                  | int             | 5                                           |
 | `routing.proxy.parentRefs[*].name`     | The name of the inference gateway                                                                                 | string          | N/A                                         |

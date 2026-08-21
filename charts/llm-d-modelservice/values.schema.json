@@ -726,6 +726,10 @@
                                                             }
                                                         ]
                                                     },
+                                                    "protocol": {
+                                                        "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                        "type": "string"
+                                                    },
                                                     "scheme": {
                                                         "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
                                                         "type": "string"
@@ -837,6 +841,10 @@
                                                             }
                                                         ]
                                                     },
+                                                    "protocol": {
+                                                        "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                        "type": "string"
+                                                    },
                                                     "scheme": {
                                                         "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
                                                         "type": "string"
@@ -919,6 +927,10 @@
                                     "grpc": {
                                         "description": "GRPCAction specifies an action involving a GRPC service.",
                                         "properties": {
+                                            "mode": {
+                                                "description": "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+                                                "type": "string"
+                                            },
                                             "port": {
                                                 "description": "Port number of the gRPC service. Number must be in the range 1 to 65535.",
                                                 "format": "int32",
@@ -977,6 +989,10 @@
                                                         "type": "integer"
                                                     }
                                                 ]
+                                            },
+                                            "protocol": {
+                                                "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                "type": "string"
                                             },
                                             "scheme": {
                                                 "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -1110,6 +1126,10 @@
                                     "grpc": {
                                         "description": "GRPCAction specifies an action involving a GRPC service.",
                                         "properties": {
+                                            "mode": {
+                                                "description": "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+                                                "type": "string"
+                                            },
                                             "port": {
                                                 "description": "Port number of the gRPC service. Number must be in the range 1 to 65535.",
                                                 "format": "int32",
@@ -1168,6 +1188,10 @@
                                                         "type": "integer"
                                                     }
                                                 ]
+                                            },
+                                            "protocol": {
+                                                "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                "type": "string"
                                             },
                                             "scheme": {
                                                 "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -1533,6 +1557,10 @@
                                     "grpc": {
                                         "description": "GRPCAction specifies an action involving a GRPC service.",
                                         "properties": {
+                                            "mode": {
+                                                "description": "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+                                                "type": "string"
+                                            },
                                             "port": {
                                                 "description": "Port number of the gRPC service. Number must be in the range 1 to 65535.",
                                                 "format": "int32",
@@ -1591,6 +1619,10 @@
                                                         "type": "integer"
                                                     }
                                                 ]
+                                            },
+                                            "protocol": {
+                                                "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                "type": "string"
                                             },
                                             "scheme": {
                                                 "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -1706,6 +1738,14 @@
                                 "items": {
                                     "description": "VolumeMount describes a mounting of a Volume within a container.",
                                     "properties": {
+                                        "bindMountOptions": {
+                                            "description": "bindMountOptions is the list of additional bind mount options to apply when mounting this volume into the container. Allowed values are noexec, nodev, and nosuid. These are Linux mount options and have no effect on Windows nodes. This field is not supported with image volumes. This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array",
+                                            "x-kubernetes-list-type": "set"
+                                        },
                                         "mountPath": {
                                             "description": "Path within the container at which the volume should be mounted.",
                                             "type": "string"
@@ -2335,6 +2375,10 @@
                                                             }
                                                         ]
                                                     },
+                                                    "protocol": {
+                                                        "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                        "type": "string"
+                                                    },
                                                     "scheme": {
                                                         "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
                                                         "type": "string"
@@ -2446,6 +2490,10 @@
                                                             }
                                                         ]
                                                     },
+                                                    "protocol": {
+                                                        "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                        "type": "string"
+                                                    },
                                                     "scheme": {
                                                         "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
                                                         "type": "string"
@@ -2528,6 +2576,10 @@
                                     "grpc": {
                                         "description": "GRPCAction specifies an action involving a GRPC service.",
                                         "properties": {
+                                            "mode": {
+                                                "description": "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+                                                "type": "string"
+                                            },
                                             "port": {
                                                 "description": "Port number of the gRPC service. Number must be in the range 1 to 65535.",
                                                 "format": "int32",
@@ -2586,6 +2638,10 @@
                                                         "type": "integer"
                                                     }
                                                 ]
+                                            },
+                                            "protocol": {
+                                                "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                "type": "string"
                                             },
                                             "scheme": {
                                                 "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -2719,6 +2775,10 @@
                                     "grpc": {
                                         "description": "GRPCAction specifies an action involving a GRPC service.",
                                         "properties": {
+                                            "mode": {
+                                                "description": "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+                                                "type": "string"
+                                            },
                                             "port": {
                                                 "description": "Port number of the gRPC service. Number must be in the range 1 to 65535.",
                                                 "format": "int32",
@@ -2777,6 +2837,10 @@
                                                         "type": "integer"
                                                     }
                                                 ]
+                                            },
+                                            "protocol": {
+                                                "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                "type": "string"
                                             },
                                             "scheme": {
                                                 "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -3142,6 +3206,10 @@
                                     "grpc": {
                                         "description": "GRPCAction specifies an action involving a GRPC service.",
                                         "properties": {
+                                            "mode": {
+                                                "description": "mode specifies the connection mode for the gRPC health probe. Set to \"TLS\" to use TLS without certificate verification. Set to \"Plaintext\" to use a plaintext (insecure) connection explicitly. If not specified, the probe uses a plaintext (insecure) connection.",
+                                                "type": "string"
+                                            },
                                             "port": {
                                                 "description": "Port number of the gRPC service. Number must be in the range 1 to 65535.",
                                                 "format": "int32",
@@ -3200,6 +3268,10 @@
                                                         "type": "integer"
                                                     }
                                                 ]
+                                            },
+                                            "protocol": {
+                                                "description": "Protocol selects the wire protocol for the probe connection. Nil defaults to HTTP/1.1.",
+                                                "type": "string"
                                             },
                                             "scheme": {
                                                 "description": "Scheme to use for connecting to the host. Defaults to HTTP.",
@@ -3315,6 +3387,14 @@
                                 "items": {
                                     "description": "VolumeMount describes a mounting of a Volume within a container.",
                                     "properties": {
+                                        "bindMountOptions": {
+                                            "description": "bindMountOptions is the list of additional bind mount options to apply when mounting this volume into the container. Allowed values are noexec, nodev, and nosuid. These are Linux mount options and have no effect on Windows nodes. This field is not supported with image volumes. This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array",
+                                            "x-kubernetes-list-type": "set"
+                                        },
                                         "mountPath": {
                                             "description": "Path within the container at which the volume should be mounted.",
                                             "type": "string"
@@ -3609,7 +3689,7 @@
             "properties": {
                 "proxy": {
                     "additionalProperties": true,
-                    "description": " additionalProperties: true @schema Configuration of VLLM routing sidecar cf. https://github.com/llm-d/llm-d-routing-sidecar/",
+                    "description": " additionalProperties: true @schema Configuration of VLLM routing sidecar cf. https://github.com/llm-d/llm-d-router-disagg-sidecar/",
                     "properties": {
                         "connector": {
                             "default": "nixlv2",
@@ -3623,7 +3703,7 @@
                             "type": "boolean"
                         },
                         "image": {
-                            "default": "ghcr.io/llm-d/llm-d-routing-sidecar:latest",
+                            "default": "ghcr.io/llm-d/llm-d-router-disagg-sidecar:latest",
                             "title": "image",
                             "type": "string"
                         },
