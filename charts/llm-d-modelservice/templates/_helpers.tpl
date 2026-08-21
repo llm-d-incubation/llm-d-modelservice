@@ -97,8 +97,8 @@ affinity:
 - name: routing-proxy
   args:
     - --port={{ default 8000 .servicePort }}
-    - --vllm-port={{ default 8200 .proxy.targetPort }}
-    - --connector={{ .proxy.connector | default "nixlv2" }}
+    - --model-server-port={{ default 8200 .proxy.targetPort }}
+    - --kv-connector={{ .proxy.connector | default "nixlv2" }}
     {{- if hasKey .proxy "zapDevel" }}
     - --zap-devel={{ .proxy.zapDevel }}
     {{- end }}
