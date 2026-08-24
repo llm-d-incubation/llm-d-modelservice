@@ -677,7 +677,7 @@
     },
     "multinode": {
       "default": false,
-      "description": "When true, a LeaderWorkerSet is used instead of a Deployment",
+      "description": "When true, a LeaderWorkerSet is used instead of a Deployment for both decode and prefill.",
       "title": "multinode",
       "type": "boolean"
     },
@@ -1142,6 +1142,17 @@
       },
       "required": [],
       "title": "tracing"
+    },
+    "workloadKind": {
+      "default": "Deployment",
+      "description": "Global workload kind for decode and prefill pods. Overridden by multinode, requester.enable (decode only), and per-role workloadKind. Supported: Deployment (default), StatefulSet, LeaderWorkerSet.",
+      "enum": [
+        "Deployment",
+        "StatefulSet",
+        "LeaderWorkerSet"
+      ],
+      "title": "workloadKind",
+      "type": "string"
     }
   },
   "required": [],

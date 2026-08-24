@@ -1,0 +1,17 @@
+{{- if and .Values.decode.create (eq (include "llm-d-modelservice.decodeWorkloadKind" .) "StatefulSet") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "llm-d-modelservice.decodeName" . }}-headless
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    llm-d.ai/role: decode
+spec:
+  clusterIP: None
+  selector:
+    {{- include "llm-d-modelservice.decodelabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.routing.servicePort }}
+      protocol: TCP
+{{- end }}

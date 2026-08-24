@@ -1,0 +1,17 @@
+{{- if and .Values.prefill.create (eq (include "llm-d-modelservice.prefillWorkloadKind" .) "StatefulSet") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "llm-d-modelservice.prefillName" . }}-headless
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    llm-d.ai/role: prefill
+spec:
+  clusterIP: None
+  selector:
+    {{- include "llm-d-modelservice.prefilllabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.routing.servicePort }}
+      protocol: TCP
+{{- end }}

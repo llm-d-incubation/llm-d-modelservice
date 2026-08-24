@@ -1,6 +1,6 @@
-{{- if and .Values.prefill.create (eq (include "llm-d-modelservice.prefillWorkloadKind" .) "Deployment") }}
+{{- if and .Values.prefill.create (eq (include "llm-d-modelservice.prefillWorkloadKind" .) "StatefulSet") }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "llm-d-modelservice.prefillName" . }}
   labels:
@@ -21,9 +21,21 @@ metadata:
   {{- end }}
 spec:
   replicas: {{ ternary .Values.prefill.replicas 1 (hasKey .Values.prefill "replicas") }}
-  {{- if .Values.prefill.strategy }}
-  strategy:
-    {{- toYaml .Values.prefill.strategy | nindent 4 }}
+  serviceName: {{ include "llm-d-modelservice.prefillName" . }}-headless
+  {{- if .Values.prefill.updateStrategy }}
+  updateStrategy:
+    {{- toYaml .Values.prefill.updateStrategy | nindent 4 }}
+  {{- end }}
+  podManagementPolicy: {{ .Values.prefill.podManagementPolicy | default "Parallel" }}
+  {{- if hasKey .Values.prefill "revisionHistoryLimit" }}
+  revisionHistoryLimit: {{ .Values.prefill.revisionHistoryLimit }}
+  {{- end }}
+  {{- if hasKey .Values.prefill "minReadySeconds" }}
+  minReadySeconds: {{ .Values.prefill.minReadySeconds }}
+  {{- end }}
+  {{- if .Values.prefill.volumeClaimTemplates }}
+  volumeClaimTemplates:
+    {{- toYaml .Values.prefill.volumeClaimTemplates | nindent 4 }}
   {{- end }}
   selector:
     matchLabels:

@@ -83,8 +83,18 @@ modelArtifacts:
   # Set to false for pvc+hf:// when Hugging Face cache writes are needed; other URI schemes ignore this setting.
   readOnly: true
 
-# When true, a LeaderWorkerSet is used instead of a Deployment
+# @schema
+# type: boolean
+# @schema
+# -- When true, a LeaderWorkerSet is used instead of a Deployment for both decode and prefill.
 multinode: false
+
+# @schema
+# type: string
+# enum: ["Deployment", "StatefulSet", "LeaderWorkerSet"]
+# @schema
+# -- Global workload kind for decode and prefill pods. Overridden by multinode, requester.enable (decode only), and per-role workloadKind. Supported: Deployment (default), StatefulSet, LeaderWorkerSet.
+workloadKind: Deployment
 
 # Global accelerator configuration
 # Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom
@@ -264,6 +274,54 @@ decode:
     enabled: false
 
   replicas: 1
+
+  # -- Workload kind for decode pods. Overrides global workloadKind.
+  # Precedence: requester.enable > multinode > decode.workloadKind > workloadKind > Deployment.
+  # Supported: Deployment (default), StatefulSet, LeaderWorkerSet
+  # workloadKind: StatefulSet
+
+  # @schema
+  # type: object
+  # additionalProperties: true
+  # @schema
+  # -- Update strategy for StatefulSet (StatefulSet API). Only applicable when
+  # -- workloadKind is StatefulSet. Use decode.strategy for Deployment workloads.
+  # updateStrategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     partition: 0
+  #   note: maxUnavailable is a Deployment field, not supported on StatefulSet
+  #         (alpha MaxUnavailableStatefulSet gate is disabled on this cluster).
+
+  # -- podManagementPolicy for StatefulSet (OrderedReady or Parallel).
+  # -- Only applicable when workloadKind is StatefulSet. Defaults to Parallel.
+  # podManagementPolicy: Parallel
+
+  # -- revisionHistoryLimit for StatefulSet. Only applicable when workloadKind is StatefulSet.
+  # revisionHistoryLimit: 10
+
+  # -- minReadySeconds for StatefulSet. Only applicable when workloadKind is StatefulSet.
+  # minReadySeconds: 0
+
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  # @schema
+  # -- volumeClaimTemplates for StatefulSet. Defines per-pod persistent storage.
+  # -- Only applicable when workloadKind is StatefulSet.
+  # -- When using hf:// modelArtifacts, each pod downloads the model into its own PVC.
+  # -- When using pvc://, reference the existing PVC via volumeClaimTemplates.
+  # -- Example:
+  # --   volumeClaimTemplates:
+  # --     - metadata:
+  # --         name: model-storage
+  # --       spec:
+  # --         accessModes: ["ReadWriteOnce"]
+  # --         resources:
+  # --           requests:
+  # --             storage: 50Gi
+  # volumeClaimTemplates: []
 
   # @schema
   # type: object
@@ -493,6 +551,54 @@ prefill:
     enabled: false
 
   replicas: 0
+
+  # -- Workload kind for prefill pods. Overrides global workloadKind.
+  # Precedence: multinode > prefill.workloadKind > workloadKind > Deployment.
+  # Supported: Deployment (default), StatefulSet, LeaderWorkerSet
+  # workloadKind: StatefulSet
+
+  # @schema
+  # type: object
+  # additionalProperties: true
+  # @schema
+  # -- Update strategy for StatefulSet (StatefulSet API). Only applicable when
+  # -- workloadKind is StatefulSet. Use prefill.strategy for Deployment workloads.
+  # updateStrategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     partition: 0
+  #   note: maxUnavailable is a Deployment field, not supported on StatefulSet
+  #         (alpha MaxUnavailableStatefulSet gate is disabled on this cluster).
+
+  # -- podManagementPolicy for StatefulSet (OrderedReady or Parallel).
+  # -- Only applicable when workloadKind is StatefulSet. Defaults to Parallel.
+  # podManagementPolicy: Parallel
+
+  # -- revisionHistoryLimit for StatefulSet. Only applicable when workloadKind is StatefulSet.
+  # revisionHistoryLimit: 10
+
+  # -- minReadySeconds for StatefulSet. Only applicable when workloadKind is StatefulSet.
+  # minReadySeconds: 0
+
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  # @schema
+  # -- volumeClaimTemplates for StatefulSet. Defines per-pod persistent storage.
+  # -- Only applicable when workloadKind is StatefulSet.
+  # -- When using hf:// modelArtifacts, each pod downloads the model into its own PVC.
+  # -- When using pvc://, reference the existing PVC via volumeClaimTemplates.
+  # -- Example:
+  # --   volumeClaimTemplates:
+  # --     - metadata:
+  # --         name: model-storage
+  # --       spec:
+  # --         accessModes: ["ReadWriteOnce"]
+  # --         resources:
+  # --           requests:
+  # --             storage: 50Gi
+  # volumeClaimTemplates: []
 
   # @schema
   # type: object

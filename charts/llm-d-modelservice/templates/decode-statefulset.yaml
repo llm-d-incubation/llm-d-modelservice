@@ -1,6 +1,6 @@
-{{- if and .Values.decode.create (eq (include "llm-d-modelservice.decodeWorkloadKind" .) "Deployment") }}
+{{- if and .Values.decode.create (eq (include "llm-d-modelservice.decodeWorkloadKind" .) "StatefulSet") }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "llm-d-modelservice.decodeName" . }}
   labels:
@@ -21,9 +21,21 @@ metadata:
   {{- end }}
 spec:
   replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
-  {{- if .Values.decode.strategy }}
-  strategy:
-    {{- toYaml .Values.decode.strategy | nindent 4 }}
+  serviceName: {{ include "llm-d-modelservice.decodeName" . }}-headless
+  {{- if .Values.decode.updateStrategy }}
+  updateStrategy:
+    {{- toYaml .Values.decode.updateStrategy | nindent 4 }}
+  {{- end }}
+  podManagementPolicy: {{ .Values.decode.podManagementPolicy | default "Parallel" }}
+  {{- if hasKey .Values.decode "revisionHistoryLimit" }}
+  revisionHistoryLimit: {{ .Values.decode.revisionHistoryLimit }}
+  {{- end }}
+  {{- if hasKey .Values.decode "minReadySeconds" }}
+  minReadySeconds: {{ .Values.decode.minReadySeconds }}
+  {{- end }}
+  {{- if .Values.decode.volumeClaimTemplates }}
+  volumeClaimTemplates:
+    {{- toYaml .Values.decode.volumeClaimTemplates | nindent 4 }}
   {{- end }}
   selector:
     matchLabels:

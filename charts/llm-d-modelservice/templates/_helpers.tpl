@@ -33,6 +33,40 @@ Truncated to 63 characrters because Kubernetes label values are limited to this
 {{- end }}
 
 {{/*
+Determine the workload kind for decode pods.
+Priority: requester.enable > multinode > decode.workloadKind > workloadKind > default(Deployment).
+*/}}
+{{- define "llm-d-modelservice.decodeWorkloadKind" -}}
+{{- if .Values.requester.enable -}}
+ReplicaSet
+{{- else if .Values.multinode -}}
+LeaderWorkerSet
+{{- else if and (hasKey .Values.decode "workloadKind") .Values.decode.workloadKind -}}
+{{- .Values.decode.workloadKind -}}
+{{- else if .Values.workloadKind -}}
+{{- .Values.workloadKind -}}
+{{- else -}}
+Deployment
+{{- end -}}
+{{- end -}}
+
+{{/*
+Determine the workload kind for prefill pods.
+Priority: multinode > prefill.workloadKind > workloadKind > default(Deployment).
+*/}}
+{{- define "llm-d-modelservice.prefillWorkloadKind" -}}
+{{- if .Values.multinode -}}
+LeaderWorkerSet
+{{- else if and (hasKey .Values.prefill "workloadKind") .Values.prefill.workloadKind -}}
+{{- .Values.prefill.workloadKind -}}
+{{- else if .Values.workloadKind -}}
+{{- .Values.workloadKind -}}
+{{- else -}}
+Deployment
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create common labels for the resources managed by this chart.
 */}}
 {{- define "llm-d-modelservice.labels" -}}
@@ -463,7 +497,16 @@ context is a pdSpec
       {{- $hasModelVolume = true }}
     {{- end -}}
   {{- end -}}
-  {{- if $hasModelVolume }}
+  {{- /* Check if model-storage is managed by StatefulSet volumeClaimTemplates */ -}}
+  {{- $hasModelStorageClaim := false }}
+  {{- if .pdSpec.volumeClaimTemplates }}
+    {{- range .pdSpec.volumeClaimTemplates }}
+      {{- if and .metadata (eq .metadata.name "model-storage") }}
+        {{- $hasModelStorageClaim = true }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if and $hasModelVolume (not $hasModelStorageClaim) }}
   {{ include "llm-d-modelservice.mountModelVolumeVolumes" .Values.modelArtifacts | nindent 4}}
   {{- end -}}
   {{- /* Add resourceClaims for DRA (new and old API) */}}

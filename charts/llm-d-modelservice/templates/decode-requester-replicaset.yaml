@@ -1,4 +1,4 @@
-{{- if and .Values.requester.enable (and .Values.decode.create (not .Values.multinode)) }}
+{{- if and .Values.decode.create (eq (include "llm-d-modelservice.decodeWorkloadKind" .) "ReplicaSet") }}
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
