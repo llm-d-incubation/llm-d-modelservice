@@ -18,7 +18,7 @@ helm repo update
 | [`pvc/`](#3-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
 | [`dra/`](#6-dynamic-resource-allocation) | Dynamic Resource Allocation (DRA) examples | Shows different DRA use cases |
 
-All the examples assume a `Gateway` and GAIE configuration have been deployed.  See the [llm-d guides](https://github.com/llm-d/llm-d/tree/main/guides) for examples.  Further, an `HTTPRoute` must be deployed. Some examples of `HTTPRoute` is provided [below](#httproute-examples).
+All the examples assume a `Gateway` and GAIE configuration have been deployed.  See the [llm-d guides](https://github.com/llm-d/llm-d/tree/main/guides) for examples.  Further, an `HTTPRoute` must be deployed. Some examples of `HTTPRoute` are provided [below](#httproute-examples).
 
 ## Usage Examples
 

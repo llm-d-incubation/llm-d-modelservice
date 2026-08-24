@@ -2037,7 +2037,7 @@
         },
         "prefill": {
             "additionalProperties": true,
-            "description": " additionalProperties: true @schema Prefill pod configuation",
+            "description": " additionalProperties: true @schema Prefill pod configuration",
             "properties": {
                 "acceleratorTypes": {
                     "additionalProperties": false,
@@ -3693,7 +3693,7 @@
                     "properties": {
                         "connector": {
                             "default": "nixlv2",
-                            "description": "Specify a conenctor. For example, `nixl`, `nixlv2`",
+                            "description": "Specify a connector. For example, `nixl`, `nixlv2`",
                             "title": "connector",
                             "type": "string"
                         },
@@ -3721,7 +3721,7 @@
                         },
                         "secure": {
                             "default": false,
-                            "description": "Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.",
+                            "description": "Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is omitted by default for compatibility with legacy sidecar images.",
                             "title": "secure",
                             "type": "boolean"
                         },
@@ -3733,7 +3733,7 @@
                         },
                         "zapEncoder": {
                             "default": "json",
-                            "description": " prefillerUseTLS: true The path to the certificate for secure proxy.  Arg is ommitted by default for compatability with legacy sidecar images. certPath: \"/certs\" Zap logging configuration Boolean: Development Mode defaults(encoder=consoleEncoder,logLevel=Debug,stackTraceLevel=Warn). Production Mode defaults(encoder=jsonEncoder,logLevel=Info,stackTraceLevel=Error) @schema type: boolean default:false @schema zapDevel: false String: Zap log encoding (one of 'json' or 'console') @schema default: json enum: [json,console] @schema",
+                            "description": " prefillerUseTLS: true The path to the certificate for secure proxy.  Arg is omitted by default for compatibility with legacy sidecar images. certPath: \"/certs\" Zap logging configuration Boolean: Development Mode defaults(encoder=consoleEncoder,logLevel=Debug,stackTraceLevel=Warn). Production Mode defaults(encoder=jsonEncoder,logLevel=Info,stackTraceLevel=Error) @schema type: boolean default:false @schema zapDevel: false String: Zap log encoding (one of 'json' or 'console') @schema default: json enum: [json,console] @schema",
                             "enum": [
                                 "json",
                                 "console"

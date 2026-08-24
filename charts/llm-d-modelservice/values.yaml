@@ -198,16 +198,16 @@ routing:
     imagePullPolicy: Always
     # target port on which VLLM should listen
     targetPort: 8200
-    # Specify a conenctor. For example, `nixl`, `nixlv2`
+    # Specify a connector. For example, `nixl`, `nixlv2`
     connector: nixlv2
 
-    # Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.
+    # Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is omitted by default for compatibility with legacy sidecar images.
     secure: false
 
-    # Boolean: whether to use TLS when sending requests to prefillers. Arg is ommitted by default for compatability with legacy sidecar images.
+    # Boolean: whether to use TLS when sending requests to prefillers. Arg is omitted by default for compatibility with legacy sidecar images.
     # prefillerUseTLS: true
 
-    # The path to the certificate for secure proxy.  Arg is ommitted by default for compatability with legacy sidecar images.
+    # The path to the certificate for secure proxy.  Arg is omitted by default for compatibility with legacy sidecar images.
     # certPath: "/certs"
 
     # Zap logging configuration
@@ -486,7 +486,7 @@ decode:
 # @schema
 # additionalProperties: true
 # @schema
-# Prefill pod configuation
+# Prefill pod configuration
 prefill:
   create: true
   autoscaling:

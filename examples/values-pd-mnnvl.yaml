@@ -23,7 +23,7 @@ routing:
   proxy:
     secure: false
 
-# Decode pod configuation
+# Decode pod configuration
 decode:
   create: true
   replicas: 1
@@ -65,7 +65,7 @@ decode:
   - name: llm-d-imex-channel-0
     resourceClaimTemplateName: llm-d-imex-channel-0
 
-# Prefill pod configuation
+# Prefill pod configuration
 prefill:
   create: true
   replicas: 1

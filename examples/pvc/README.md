@@ -37,7 +37,7 @@ alias k=kubectl
 k apply -f examples/pvc/pvc.yaml
 ```
 
-Assuming that a RWX PVC is now available, which allows many pods across nodes to read-write to the volume, create a pod using the following spec which downloads your desire model onto the PVC through an InitContainer. We will need to fetch the path of the model later by exec into the running container. Check out this [download-model.yaml](./download-model.yaml) for such manifest. You may need to edit the Python script which downloads the model with the name of your desired model. Also, some models require a token, which you must supply. Modify the Python script for your usecase.
+Assuming that a RWX PVC is now available, which allows many pods across nodes to read-write to the volume, create a pod using the following spec which downloads your desired model onto the PVC through an InitContainer. We will need to fetch the path of the model later by exec into the running container. Check out this [download-model.yaml](./download-model.yaml) for such manifest. You may need to edit the Python script which downloads the model with the name of your desired model. Also, some models require a token, which you must supply. Modify the Python script for your usecase.
 
 ```
 k apply -f examples/pvc/download-model.yaml
