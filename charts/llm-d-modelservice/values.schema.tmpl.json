@@ -596,6 +596,204 @@
       "required": [],
       "title": "enabled"
     },
+    "encode": {
+      "additionalProperties": true,
+      "description": "Encode workload configuration.",
+      "properties": {
+        "acceleratorTypes": {
+          "additionalProperties": false,
+          "description": "XPU-specific node affinity",
+          "properties": {
+            "labelKey": {
+              "default": "",
+              "title": "labelKey",
+              "type": "string"
+            },
+            "labelValues": {
+              "description": " items:   type: string @schema",
+              "items": {
+                "type": "string"
+              },
+              "required": [],
+              "title": "labelValues"
+            }
+          },
+          "required": [],
+          "title": "acceleratorTypes",
+          "type": "object"
+        },
+        "autoscaling": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "autoscaling",
+          "type": "object"
+        },
+        "containers": {
+          "description": " type: array items:   type: object   additionalProperties: true @schema",
+          "items": {
+            "additionalProperties": true,
+            "required": [],
+            "type": "object"
+          },
+          "title": "containers",
+          "type": "array"
+        },
+        "create": {
+          "default": false,
+          "title": "create",
+          "type": "boolean"
+        },
+        "initContainers": {
+          "description": " type: array items:   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container @schema User-provided init containers. The routing proxy is never added to this list.",
+          "items": {
+            "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container",
+            "required": []
+          },
+          "title": "initContainers",
+          "type": "array"
+        },
+        "monitoring": {
+          "additionalProperties": true,
+          "description": " additionalProperties: true @schema",
+          "properties": {
+            "podmonitor": {
+              "additionalProperties": false,
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "description": " additionalProperties: true @schema",
+                  "required": [],
+                  "title": "annotations"
+                },
+                "enabled": {
+                  "default": false,
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "interval": {
+                  "default": "30s",
+                  "title": "interval",
+                  "type": "string"
+                },
+                "labels": {
+                  "additionalProperties": true,
+                  "description": " @schema additionalProperties: true @schema",
+                  "required": [],
+                  "title": "labels"
+                },
+                "metricRelabelings": {
+                  "items": {
+                    "required": []
+                  },
+                  "title": "metricRelabelings",
+                  "type": "array"
+                },
+                "path": {
+                  "default": "/metrics",
+                  "title": "path",
+                  "type": "string"
+                },
+                "portName": {
+                  "default": "metrics",
+                  "title": "portName",
+                  "type": "string"
+                },
+                "relabelings": {
+                  "items": {
+                    "required": []
+                  },
+                  "title": "relabelings",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "podmonitor",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "monitoring"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "Deployment strategy configuration for encode pods. strategy: {} @schema additionalProperties: true @schema",
+          "required": [],
+          "title": "nodeSelector"
+        },
+        "parallelism": {
+          "additionalProperties": false,
+          "description": "Name of the scheduler to use for scheduling encode pods (overrides global schedulerName) schedulerName: encode-scheduler priorityClassName -- Kubernetes PriorityClass name for encode pods priorityClassName: high-priority Workload parallelism configuration",
+          "properties": {
+            "data": {
+              "default": 1,
+              "title": "data",
+              "type": "integer"
+            },
+            "dataLocal": {
+              "default": 1,
+              "title": "dataLocal",
+              "type": "integer"
+            },
+            "tensor": {
+              "default": 1,
+              "title": "tensor",
+              "type": "integer"
+            },
+            "workers": {
+              "default": 1,
+              "title": "workers",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "parallelism"
+        },
+        "replicas": {
+          "default": 0,
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resourceClaims": {
+          "description": "   # Optional encode-specific accelerator overrides. Defaults to global accelerator settings.   type: nvidia   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional non-accelerator resource claims.",
+          "items": {
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "resourceClaimTemplateName": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "resourceClaimTemplateName"
+            ],
+            "type": "object"
+          },
+          "title": "resourceClaims",
+          "type": "array"
+        },
+        "volumes": {
+          "description": " type: array items:   type: object   additionalProperties: true @schema",
+          "items": {
+            "additionalProperties": true,
+            "required": [],
+            "type": "object"
+          },
+          "title": "volumes",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "encode"
+    },
     "extraObjects": {
       "description": "Extra objects to be deployed alongside the main application",
       "items": {
@@ -628,7 +826,7 @@
         },
         "labels": {
           "additionalProperties": true,
-          "description": " These should match the labels of any associated InferencePool In addition, the label llm-d.ai/role will be added with the value 'prefill' or 'decode' depending on the role of the pod. @schema type: object additionalProperties: true @schema",
+          "description": " These should match the labels of any associated InferencePool In addition, the label llm-d.ai/role will be added with the value 'prefill', 'decode', or 'encode' depending on the role of the pod. @schema type: object additionalProperties: true @schema",
           "properties": {
             "llm-d.ai/inference-serving": {
               "default": "true",
@@ -985,9 +1183,15 @@
           "properties": {
             "connector": {
               "default": "nixlv2",
-              "description": "Specify a conenctor. For example, `nixl`, `nixlv2`",
+              "description": "Deprecated: use kvConnector instead. Retained as a compatibility fallback.",
               "title": "connector",
               "type": "string"
+            },
+            "ecConnector": {
+              "default": "",
+              "description": "ec-connector is omitted.",
+              "required": [],
+              "title": "ecConnector"
             },
             "enabled": {
               "default": true,
@@ -1002,6 +1206,12 @@
             "imagePullPolicy": {
               "default": "Always",
               "title": "imagePullPolicy",
+              "type": "string"
+            },
+            "kvConnector": {
+              "default": "",
+              "description": "KV connector used by the decode routing sidecar. When empty, connector is used.",
+              "title": "kvConnector",
               "type": "string"
             },
             "resources": {

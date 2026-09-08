@@ -56,8 +56,8 @@ modelArtifacts:
   name: random/model
   # Labels that will be added to the pods serving the model.
   # These should match the labels of any associated InferencePool
-  # In addition, the label llm-d.ai/role will be added with the value 'prefill'
-  # or 'decode' depending on the role of the pod.
+  # In addition, the label llm-d.ai/role will be added with the value 'prefill',
+  # 'decode', or 'encode' depending on the role of the pod.
   # @schema
   # type: object
   # additionalProperties: true
@@ -198,8 +198,12 @@ routing:
     imagePullPolicy: Always
     # target port on which VLLM should listen
     targetPort: 8200
-    # Specify a conenctor. For example, `nixl`, `nixlv2`
+    # Deprecated: use kvConnector instead. Retained as a compatibility fallback.
     connector: nixlv2
+    # KV connector used by the decode routing sidecar. When empty, connector is used.
+    kvConnector: ""
+    # EC connector used by the decode routing sidecar. When empty, --ec-connector is omitted.
+    ecConnector: ""
 
     # Boolean: adds the `--secure-proxy` flag to the routingSidecar with your chosen value.  Arg is ommitted by default for compatability with legacy sidecar images.
     secure: false
@@ -703,6 +707,160 @@ prefill:
       # metricRelabelings -- MetricRelabelConfigs to apply to samples before ingestion
       metricRelabelings: []
       # namespaceSelector -- Selector to select which namespaces the Endpoints objects are discovered from
+      # namespaceSelector: {}
+
+# @schema
+# additionalProperties: true
+# @schema
+# -- Encode workload configuration.
+encode:
+  create: false
+  autoscaling:
+    enabled: false
+
+  replicas: 0
+
+  # @schema
+  # type: object
+  # additionalProperties: true
+  # @schema
+  # -- Deployment strategy configuration for encode pods.
+  # strategy: {}
+
+  # @schema
+  # additionalProperties: true
+  # @schema
+  nodeSelector: {}
+
+  # schedulerName -- Name of the scheduler to use for scheduling encode pods (overrides global schedulerName)
+  # schedulerName: encode-scheduler
+
+  # priorityClassName -- Kubernetes PriorityClass name for encode pods
+  # priorityClassName: high-priority
+
+  # Workload parallelism configuration
+  parallelism:
+    tensor: 1
+    data: 1
+    dataLocal: 1
+    workers: 1
+
+  # accelerator:
+  #   # Optional encode-specific accelerator overrides. Defaults to global accelerator settings.
+  #   type: nvidia
+  #   dra: false
+
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  #   required: [name, resourceClaimTemplateName]
+  #   properties:
+  #     name:
+  #       type: string
+  #     resourceClaimTemplateName:
+  #       type: string
+  # @schema
+  # Additional non-accelerator resource claims.
+  resourceClaims: []
+
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  #   additionalProperties: true
+  # @schema
+  containers:
+    - name: "vllm"
+      image: "ghcr.io/llm-d/llm-d-inference-sim:latest"
+      modelCommand: imageDefault
+      mountModelVolume: true
+      # @schema
+      # items:
+      #   type: string
+      # @schema
+      args: []
+      # @schema
+      # items:
+      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
+      # @schema
+      env: []
+      imagePullPolicy: ""
+      command: []
+      # @schema
+      # items:
+      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
+      # @schema
+      ports: []
+      # @schema
+      # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
+      # @schema
+      resources:
+        # @schema
+        # additionalProperties: true
+        # @schema
+        limits: {}
+        # @schema
+        # additionalProperties: true
+        # @schema
+        requests: {}
+      # @schema
+      # type: array
+      # items:
+      #   type: object
+      #   additionalProperties: true
+      # @schema
+      volumeMounts:
+        - name: metrics-volume
+          mountPath: /.config
+
+  # @schema
+  # type: array
+  # items:
+  #   type: object
+  #   additionalProperties: true
+  # @schema
+  volumes:
+    - name: metrics-volume
+      emptyDir: {}
+
+  # @schema
+  # type: array
+  # items:
+  #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container
+  # @schema
+  # User-provided init containers. The routing proxy is never added to this list.
+  initContainers: []
+
+  # XPU-specific node affinity
+  acceleratorTypes:
+    labelKey: ""
+    # @schema
+    # items:
+    #   type: string
+    # @schema
+    labelValues: []
+
+  # @schema
+  # additionalProperties: true
+  # @schema
+  monitoring:
+    podmonitor:
+      enabled: false
+      portName: "metrics"
+      path: "/metrics"
+      interval: "30s"
+      # scrapeTimeout: "10s"
+      # @schema
+      # additionalProperties: true
+      # @schema
+      labels: {}
+      # @schema
+      # additionalProperties: true
+      # @schema
+      annotations: {}
+      relabelings: []
+      metricRelabelings: []
       # namespaceSelector: {}
 
 # @schema

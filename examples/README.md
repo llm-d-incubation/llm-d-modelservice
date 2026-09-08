@@ -14,8 +14,9 @@ helm repo update
 |---------|-------------|----------------------|
 | [`values-cpu.yaml`](#1-cpu-only) | CPU-only inference example | Single node, no GPU required |
 | [`values-pd.yaml`](#2-pd-disaggregation) | Prefill/decode disaggregation example | Multi-GPU, demonstrates P/D splitting |
-| [`values-xpu.yaml`](#4-intel-xpu-examples) | Intel XPU single-node example | Intel Data Center GPU Max |
-| [`pvc/`](#3-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
+| [`values-epd.yaml`](#3-epd-disaggregation) | P/D example extended with an independent encode workload | Multi-GPU, demonstrates E/P/D splitting |
+| [`values-xpu.yaml`](#5-intel-xpu-examples) | Intel XPU single-node example | Intel Data Center GPU Max |
+| [`pvc/`](#4-loading-a-model-from-a-pvc) | Persistent volume examples | Shows different storage options |
 | [`dra/`](#6-dynamic-resource-allocation) | Dynamic Resource Allocation (DRA) examples | Shows different DRA use cases |
 
 All the examples assume a `Gateway` and GAIE configuration have been deployed.  See the [llm-d guides](https://github.com/llm-d/llm-d/tree/main/guides) for examples.  Further, an `HTTPRoute` must be deployed. Some examples of `HTTPRoute` is provided [below](#httproute-examples).
@@ -50,11 +51,21 @@ or install in a cluster
 helm install pd llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-pd.yaml
 ```
 
-### 3. Loading a model from a PVC
+### 3. E/P/D disaggregation
+
+This example extends the P/D values with EC connector parameters and an independent encode workload. Only the decode workload receives the routing sidecar.
+
+Dry-run:
+
+```
+helm template epd llm-d-modelservice/llm-d-modelservice -f https://raw.githubusercontent.com/llm-d-incubation/llm-d-modelservice/refs/heads/main/examples/values-epd.yaml
+```
+
+### 4. Loading a model from a PVC
 
 See [this README](./pvc/README.md).
 
-### 4. Intel XPU Examples
+### 5. Intel XPU Examples
 
 For Intel XPU (Data Center GPU Max) deployments:
 

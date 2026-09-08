@@ -1,0 +1,81 @@
+{{- if and .Values.encode.create .Values.multinode }}
+apiVersion: leaderworkerset.x-k8s.io/v1
+kind: LeaderWorkerSet
+metadata:
+  name: {{ include "llm-d-modelservice.encodeName" . }}
+  labels:
+    {{- include "llm-d-modelservice.labels" . | nindent 4 }}
+    {{- include "llm-d-modelservice.encodelabels" . | nindent 4 }}
+  {{- $warning := "" }}
+  {{- if .Values.encode.containers }}
+  {{- $firstContainer := index .Values.encode.containers 0 }}
+  {{- $warning = include "llm-d-modelservice.acceleratorWarning" (dict "parallelism" .Values.encode.parallelism "resources" $firstContainer.resources "Values" .Values "container" $firstContainer "role" "encode") }}
+  {{- end }}
+  {{- if or .Values.encode.subGroupExclusiveTopology .Values.encode.annotations $warning }}
+  annotations:
+    {{- if .Values.encode.subGroupExclusiveTopology }}
+    leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+    {{- end }}
+    {{- with .Values.encode.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- if $warning }}
+    llm-d.ai/accelerator-warning: {{ $warning | quote }}
+    {{- end }}
+  {{- end }}
+spec:
+  {{- if not .Values.encode.autoscaling.enabled }}
+  replicas: {{ ternary .Values.encode.replicas 1 (hasKey .Values.encode "replicas") }}
+  {{- end }}
+  leaderWorkerTemplate:
+    size: {{ int (include "llm-d-modelservice.numWorkers" .Values.encode.parallelism) }}
+    {{- with .Values.encode.subGroupPolicy }}
+    subGroupPolicy:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    workerTemplate:
+      metadata:
+        labels:
+          {{- include "llm-d-modelservice.encodelabels" . | nindent 10 }}
+        {{- if or .Values.encode.subGroupExclusiveTopology .Values.encode.podAnnotations }}
+        annotations:
+          {{- if .Values.encode.subGroupExclusiveTopology }}
+          leaderworkerset.sigs.k8s.io/subgroup-exclusive-topology: kubernetes.io/hostname
+          {{- end }}
+          {{- with .Values.encode.podAnnotations }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+        {{- end }}
+      spec:
+        {{- if hasKey .Values.encode "hostIPC" }}
+        hostIPC: {{ .Values.encode.hostIPC }}
+        {{- end }}
+        {{- if hasKey .Values.encode "hostPID" }}
+        hostPID: {{ .Values.encode.hostPID }}
+        {{- end }}
+        {{- with .Values.encode.initContainers }}
+        initContainers:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if hasKey .Values.encode "enableServiceLinks" }}
+        enableServiceLinks: {{ .Values.encode.enableServiceLinks }}
+        {{- end }}
+        {{- if hasKey .Values.encode "terminationGracePeriodSeconds" }}
+        terminationGracePeriodSeconds: {{ .Values.encode.terminationGracePeriodSeconds }}
+        {{- end }}
+        {{- (include "llm-d-modelservice.modelPod" (dict "role" "encode" "pdSpec" .Values.encode "Values" .Values "Release" .Release "Chart" .Chart)) | nindent 6 }}
+        {{- with .Values.encode.containers }}
+        containers:
+          {{- range . }}
+        {{- (include "llm-d-modelservice.container" (dict "role" "encode" "container" . "parallelism" $.Values.encode.parallelism "Values" $.Values "Release" $.Release "Chart" $.Chart "pdSpec" $.Values.encode)) | nindent 8 }}
+          {{- end }}
+        {{- end }}
+        {{- with .Values.encode.nodeSelector }}
+        nodeSelector:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.encode.tolerations }}
+        tolerations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}

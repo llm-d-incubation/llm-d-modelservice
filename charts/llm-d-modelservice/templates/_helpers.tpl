@@ -58,9 +58,15 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- $name -}}
 {{- end }}
 
-{{/* Create common shared by prefill and decode deployment/LWS */}}
+{{/* Create common labels shared by model role deployments/LWS */}}
 {{- define "llm-d-modelservice.pdlabels" -}}
 {{ .Values.modelArtifacts.labels | toYaml }}
+{{- end }}
+
+{{/* Create labels for the encode deployment/LWS */}}
+{{- define "llm-d-modelservice.encodelabels" -}}
+{{ include "llm-d-modelservice.pdlabels" . }}
+llm-d.ai/role: encode
 {{- end }}
 
 {{/* Create labels for the prefill deployment/LWS */}}
@@ -94,11 +100,18 @@ affinity:
 {{/* Create the init container for the routing proxy/sidecar for decode pods */}}
 {{- define "llm-d-modelservice.routingProxy" -}}
 {{- if or (not (hasKey .proxy "enabled")) (ne .proxy.enabled false) -}}
+{{- $kvConnector := .proxy.connector | default "nixlv2" -}}
+{{- if .proxy.kvConnector -}}
+{{- $kvConnector = .proxy.kvConnector -}}
+{{- end -}}
 - name: routing-proxy
   args:
     - --port={{ default 8000 .servicePort }}
     - --model-server-port={{ default 8200 .proxy.targetPort }}
-    - --kv-connector={{ .proxy.connector | default "nixlv2" }}
+    - --kv-connector={{ $kvConnector }}
+    {{- if .proxy.ecConnector }}
+    - --ec-connector={{ .proxy.ecConnector }}
+    {{- end }}
     {{- if hasKey .proxy "zapDevel" }}
     - --zap-devel={{ .proxy.zapDevel }}
     {{- end }}
@@ -237,10 +250,10 @@ Required number of GPU per worker -- dpl * tp
 
 {{/*
 Port on which vllm container should listen.
-Context is helm root context plus key "role" ("decode" or "prefill")
+Context is helm root context plus key "role"
 */}}
 {{- define "llm-d-modelservice.vllmPort" -}}
-{{- if or (eq .role "prefill") (eq .Values.routing.proxy.enabled false) }}
+{{- if or (ne .role "decode") (eq .Values.routing.proxy.enabled false) }}
 {{- .Values.routing.servicePort }}
 {{- else }}
 {{- .Values.routing.proxy.targetPort }}
@@ -296,7 +309,7 @@ Filter out any that are
 {{- end }}
 {{- end }}
 
-{{/* P/D deployment container resources */}}
+{{/* Model workload container resources */}}
 {{- define "llm-d-modelservice.resources" -}}
 {{- $limits := dict }}
 {{- if and .resources .resources.limits }}
@@ -358,7 +371,12 @@ resources:
 {{ include "llm-d-modelservice.fullname" . }}-decode
 {{- end }}
 
-{{/* P/D service account name */}}
+{{/* encode name */}}
+{{- define "llm-d-modelservice.encodeName" -}}
+{{ include "llm-d-modelservice.fullname" . }}-encode
+{{- end }}
+
+{{/* Model workload service account name */}}
 {{- define "llm-d-modelservice.pdServiceAccountName" -}}
 {{- if or .Values.serviceAccountOverride -}}
 {{ .Values.serviceAccountOverride }}
@@ -368,7 +386,7 @@ resources:
 {{- end }}
 
 {{/*
-Volumes for PD containers based on model artifact prefix
+Volumes for model workload containers based on model artifact prefix
 Context is .Values.modelArtifacts
 */}}
 {{- define "llm-d-modelservice.mountModelVolumeVolumes" -}}
@@ -396,7 +414,7 @@ Context is .Values.modelArtifacts
 {{- end }}
 
 {{/*
-VolumeMount for a PD container
+VolumeMount for a model workload container
 Supplies model-storage mount if mountModelVolume: true for the container
 */}}
 {{- define "llm-d-modelservice.mountModelVolumeVolumeMounts" -}}
@@ -474,7 +492,7 @@ context is a pdSpec
 Container elements of deployment/lws spec template
 context is a dict with helm root context plus:
    key - "container"; value - container spec
-   key - "role"; value - either "decode" or "prefill"
+   key - "role"; value - "decode", "prefill", or "encode"
    key - "parallelism"; value - $.Values.decode.parallelism
 */}}
 {{- define "llm-d-modelservice.container" -}}
@@ -656,7 +674,7 @@ args:
 Container elements of deployment/lws spec template
 context is a dict with helm root context plus:
    key - "container"; value - container spec
-   key - "role"; value - either "decode" or "prefill"
+   key - "role"; value - "decode", "prefill", or "encode"
    key - "parallelism"; value - $.Values.decode.parallelism
 */}}
 {{- define "llm-d-modelservice.command" -}}
@@ -716,12 +734,12 @@ context is a dict with helm root context plus:
 
 {{/*
 OpenTelemetry tracing environment variables for vLLM containers
-Requires: .Values.tracing, .role ("decode" or "prefill")
+Requires: .Values.tracing, .role
 Returns: YAML list of environment variables if tracing is enabled, empty otherwise
 */}}
 {{- define "llm-d-modelservice.tracingEnv" -}}
 {{- if and .Values.tracing .Values.tracing.enabled }}
-{{- $serviceName := "" }}
+{{- $serviceName := printf "vllm-%s" .role }}
 {{- if eq .role "decode" }}
   {{- $serviceName = .Values.tracing.serviceNames.vllmDecode }}
 {{- else if eq .role "prefill" }}
