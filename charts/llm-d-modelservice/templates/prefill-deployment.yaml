@@ -8,7 +8,7 @@ metadata:
   {{- $warning := "" }}
   {{- if .Values.prefill.containers }}
   {{- $firstContainer := index .Values.prefill.containers 0 }}
-  {{- $warning = include "llm-d-modelservice.acceleratorWarning" (dict "parallelism" .Values.prefill.parallelism "resources" $firstContainer.resources "Values" .Values "container" $firstContainer) }}
+  {{- $warning = include "llm-d-modelservice.acceleratorWarning" (dict "parallelism" .Values.prefill.parallelism "resources" $firstContainer.resources "Values" .Values "container" $firstContainer "role" "prefill") }}
   {{- end }}
   {{- if or .Values.prefill.annotations $warning }}
   annotations:

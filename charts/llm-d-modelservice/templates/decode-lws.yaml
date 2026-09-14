@@ -9,7 +9,7 @@ metadata:
   {{- $warning := "" }}
   {{- if .Values.decode.containers }}
   {{- $firstContainer := index .Values.decode.containers 0 }}
-  {{- $warning = include "llm-d-modelservice.acceleratorWarning" (dict "parallelism" .Values.decode.parallelism "resources" $firstContainer.resources "Values" .Values "container" $firstContainer) }}
+  {{- $warning = include "llm-d-modelservice.acceleratorWarning" (dict "parallelism" .Values.decode.parallelism "resources" $firstContainer.resources "Values" .Values "container" $firstContainer "role" "decode") }}
   {{- end }}
   {{- if or .Values.decode.subGroupExclusiveTopology .Values.decode.annotations $warning }}
   annotations:

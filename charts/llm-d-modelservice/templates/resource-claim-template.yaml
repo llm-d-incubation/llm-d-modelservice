@@ -1,7 +1,8 @@
-{{- /* Iterate over decode and prefill roles to create role-specific templates */}}
+{{- /* Iterate over model roles to create role-specific templates */}}
 {{- $roles := list
   (dict "name" "decode" "config" .Values.decode)
   (dict "name" "prefill" "config" .Values.prefill)
+  (dict "name" "encode" "config" .Values.encode)
 -}}
 {{- $globalDra := .Values.accelerator.dra | default false -}}
 {{- range $role := $roles -}}

@@ -5,15 +5,10 @@ DRA (Dynamic Resource Allocation) Helper Functions
 {{/* Check if DRA is enabled */}}
 {{- define "llm-d-modelservice.draEnabled" -}}
 {{- $draEnabled := false -}}
-{{- if and .role (eq .role "decode") -}}
-  {{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "dra") -}}
-    {{- $draEnabled = .Values.decode.accelerator.dra -}}
-  {{- else -}}
-    {{- $draEnabled = .Values.accelerator.dra | default false -}}
-  {{- end -}}
-{{- else if and .role (eq .role "prefill") -}}
-  {{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "dra") -}}
-    {{- $draEnabled = .Values.prefill.accelerator.dra -}}
+{{- if and .role (hasKey .Values .role) -}}
+  {{- $roleConfig := index .Values .role -}}
+  {{- if and $roleConfig.accelerator (hasKey $roleConfig.accelerator "dra") -}}
+    {{- $draEnabled = $roleConfig.accelerator.dra -}}
   {{- else -}}
     {{- $draEnabled = .Values.accelerator.dra | default false -}}
   {{- end -}}
@@ -29,15 +24,10 @@ false
 
 {{/* Get accelerator type */}}
 {{- define "llm-d-modelservice.acceleratorType" -}}
-{{- if and .role (eq .role "decode") -}}
-  {{- if and .Values.decode.accelerator (hasKey .Values.decode.accelerator "type") -}}
-    {{- .Values.decode.accelerator.type -}}
-  {{- else -}}
-    {{- .Values.accelerator.type | default "nvidia" -}}
-  {{- end -}}
-{{- else if and .role (eq .role "prefill") -}}
-  {{- if and .Values.prefill.accelerator (hasKey .Values.prefill.accelerator "type") -}}
-    {{- .Values.prefill.accelerator.type -}}
+{{- if and .role (hasKey .Values .role) -}}
+  {{- $roleConfig := index .Values .role -}}
+  {{- if and $roleConfig.accelerator (hasKey $roleConfig.accelerator "type") -}}
+    {{- $roleConfig.accelerator.type -}}
   {{- else -}}
     {{- .Values.accelerator.type | default "nvidia" -}}
   {{- end -}}
