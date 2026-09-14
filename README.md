@@ -12,7 +12,7 @@ Active scenarios supported:
 - Dynamic Resource Allocation (DRA) for flexible accelerator management
 
 Integration with `llm-d` components:
-- Quickstart guide in `llm-d-infra` depends on ModelService
+- Quickstart guide in [`llm-d/llm-d-infra`](https://github.com/llm-d/llm-d-infra) depends on ModelService
 - Flexible configuration of `llm-d-inference-scheduler` for routing
 - Features `llm-d-router-disagg-sidecar` in P/D disaggregation
 - Utilized in benchmarking experiments in `llm-d-benchmark`
@@ -28,7 +28,7 @@ helm repo add llm-d-modelservice https://llm-d-incubation.github.io/llm-d-models
 helm repo update
 ```
 
-ModelService operates under the assumption that `llm-d-infra` has been installed in a Kubernetes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d` Guides](https://github.com/llm-d/llm-d/blob/main/guides/README.md) for more information.
+ModelService operates under the assumption that [`llm-d/llm-d-infra`](https://github.com/llm-d/llm-d-infra) has been installed in a Kubernetes cluster, which installs the required prerequisites and CRDs. Read the [`llm-d` Guides](https://github.com/llm-d/llm-d/blob/main/guides/README.md) for more information.
 
 ## Routing
 
