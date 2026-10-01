@@ -83,7 +83,7 @@ Examine [output-pvc.yaml](../output-pvc.yaml) to view the Kubernetes resources t
 
 Note that the path after the `<pvc-name>` is the path on the PVC which the downloaded files can be found. If you don't know the path, create a debug pod (see an example manifest [here](./pvc-debugger.yaml)) and exec (`k exec -it pvc-debugger -- bin/bash`) into it to find out. The path should not contain the mountPath of that debug pod. For example, if inside the pod, the path is which model files can be found is `/mnt/huggingface/cache/models/`, then use just `huggingface/cache/models/` as the `<path/to/model>` because `/mnt` is specific to the mountPath of that debug pod.
 
-Make sure that for the container of your interst in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pd.yaml#L87)) for the volume mounts to be created correctly.
+Make sure that for the container of your interest in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pd.yaml#L87)) for the volume mounts to be created correctly.
 
 ### Behavior
 - A PVC volume with the name `model-storage` is created for the deployment (read-only by default)
@@ -118,13 +118,13 @@ helm install pvc-hf-example llm-d-modelservice/llm-d-modelservice \
 --set modelArtifacts.uri="pvc+hf://pvc-name/path/to/hf_hub_cache/facebook/opt-125m"
 ```
 
-Make sure that for the container of your interst in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pd.yaml#L87)) for the volume mounts to be created correctly.
+Make sure that for the container of your interest in `prefill.containers` or `decode.containers`, there's a field called `mountModelVolume: true` ([see example](../values-pd.yaml#L87)) for the volume mounts to be created correctly.
 
 ### Behavior
 - A PVC volume with the name `model-storage` is created for the deployment (read-only by default)
 - A volumeMount with the mountPath: `model-cache` is created for each container where `mountModelVolume: true` (read-only by default; set `modelArtifacts.readOnly: false` to allow writes)
 - `HF_HUB_CACHE` environment variable for that container is set to `model-cache/path/to/hf_hub_cache` where `mountModelVolume: true`
-- `--model` arugment is set to `facebook/opt-125m`
+- `--model` argument is set to `facebook/opt-125m`
 
 > **Note:** Hugging Face Hub needs to write `.lock` files and cache metadata. Set `modelArtifacts.readOnly: false` to allow writes:
 >
