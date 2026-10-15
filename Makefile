@@ -58,3 +58,7 @@ pre-commit-run: tools ## Run pre-commit hooks on all files
 .PHONY: pre-commit-update
 pre-commit-update: tools ## Update pre-commit hooks to latest versions
 	pre-commit autoupdate
+
+.PHONY: test-autoscaling
+test-autoscaling: tools ## Check replica ownership for autoscaled workloads
+	hack/tests/test-autoscaling-replicas.sh
