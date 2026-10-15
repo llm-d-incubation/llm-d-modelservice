@@ -43,7 +43,11 @@ current_version=$(yq e '.version' "${CHART_PATH}")
 
 echo "Current version: $current_version"
 
-IFS='.' read -r major minor patch <<< "$current_version"
+version_prefix=""
+if [[ "$current_version" == v* ]]; then
+  version_prefix="v"
+fi
+IFS='.' read -r major minor patch <<< "${current_version#v}"
 
 if [[ "${BUMP_TYPE}" == "patch" ]]; then
   patch=$((patch + 1))
@@ -56,7 +60,7 @@ elif [[ "${BUMP_TYPE}" == "major" ]]; then
   patch=0
 fi
 
-new_version="$major.$minor.$patch"
+new_version="$version_prefix$major.$minor.$patch"
 
 yq e -i ".version = \"$new_version\"" "$CHART_PATH"
 
