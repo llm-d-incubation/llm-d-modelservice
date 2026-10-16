@@ -3,6 +3,7 @@
 set -euo pipefail
 repo=$(cd "$(dirname "$0")/../.." && pwd)
 test_dir=$(mktemp -d)
+trap 'rm -rf "$test_dir"' EXIT
 mkdir -p "$test_dir/bin" "$test_dir/examples"
 cat > "$test_dir/bin/helm" <<'STUB'
 #!/usr/bin/env bash
