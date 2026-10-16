@@ -1,0 +1,15 @@
+name: Test chart version bumps
+
+on: pull_request
+
+jobs:
+  test-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install yq
+        run: |
+          curl --fail --location --retry 3 https://github.com/mikefarah/yq/releases/download/v4.45.1/yq_linux_amd64 -o "$RUNNER_TEMP/yq"
+          chmod +x "$RUNNER_TEMP/yq"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - run: make test-version
