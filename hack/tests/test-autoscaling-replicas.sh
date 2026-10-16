@@ -24,7 +24,7 @@ for role in decode prefill encode; do
           --show-only "templates/$role-$kind.yaml" \
           --set "$role.create=true" --set "multinode=$multinode" \
           --set "requester.enable=$([[ "$kind" == requester-replicaset ]] && echo true || echo false)" \
-          "${replica_args[@]}" --set "$role.autoscaling.enabled=$enabled")
+          "${replica_args[@]+"${replica_args[@]}"}" --set "$role.autoscaling.enabled=$enabled")
         actual=$(printf '%s\n' "$rendered" | sed -n 's/^  replicas: //p')
         wanted=$expected
         [[ "$enabled" == true ]] && wanted=''
