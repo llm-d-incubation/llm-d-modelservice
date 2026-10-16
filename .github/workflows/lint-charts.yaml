@@ -16,7 +16,7 @@ jobs:
       - name: Check for chart changes
         id: check
         run: |
-          if git diff --name-only origin/${{ github.event.repository.default_branch }}...HEAD | grep -q '^charts/'; then
+          if git diff --name-only origin/${{ github.event.repository.default_branch }}...HEAD | grep -Eq '^(charts/|hack/tests/test-autoscaling-replicas\.sh$|Makefile$|\.github/workflows/lint-charts\.yaml$)'; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -48,6 +48,9 @@ jobs:
         env:
           TARGET_BRANCH: ${{ github.event.repository.default_branch }}
         run: make lint
+
+      - name: Check autoscaling replica ownership
+        run: make test-autoscaling
 
       - name: Run make verify
         run: make verify
