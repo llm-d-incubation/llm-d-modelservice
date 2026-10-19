@@ -50,8 +50,10 @@ spec:
           ports:
           - name: probes
             containerPort: {{ .Values.requester.port.probes }}
+            protocol: TCP
           - name: spi
             containerPort: {{ .Values.requester.port.spi }}
+            protocol: TCP
           readinessProbe:
             httpGet:
               path: /ready
