@@ -3,7 +3,7 @@
 # Description: Generate example output files for llm-d-modelservice
 
 
-set -e
+set -eo pipefail
 
 # Common function to generate output files
 generate_output() {
