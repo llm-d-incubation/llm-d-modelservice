@@ -20,7 +20,9 @@ metadata:
     {{- end }}
   {{- end }}
 spec:
+  {{- if not .Values.prefill.autoscaling.enabled }}
   replicas: {{ ternary .Values.prefill.replicas 1 (hasKey .Values.prefill "replicas") }}
+  {{- end }}
   {{- if .Values.prefill.strategy }}
   strategy:
     {{- toYaml .Values.prefill.strategy | nindent 4 }}
