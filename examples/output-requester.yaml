@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: requester-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.5.0
+    helm.sh/chart: llm-d-modelservice-v0.5.1
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -45,6 +45,7 @@ spec:
               imagePullPolicy: Always
               ports:
                 - containerPort: 8000
+                  protocol: TCP
               resources: {}
               restartPolicy: Always
               securityContext:
@@ -122,8 +123,10 @@ spec:
           ports:
           - name: probes
             containerPort: 8080
+            protocol: TCP
           - name: spi
             containerPort: 8081
+            protocol: TCP
           readinessProbe:
             httpGet:
               path: /ready
@@ -142,7 +145,7 @@ kind: Deployment
 metadata:
   name: requester-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.5.0
+    helm.sh/chart: llm-d-modelservice-v0.5.1
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
