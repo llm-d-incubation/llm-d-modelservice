@@ -20,7 +20,9 @@ metadata:
     {{- end }}
   {{- end }}
 spec:
+  {{- if not .Values.decode.autoscaling.enabled }}
   replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
+  {{- end }}
   {{- if .Values.decode.strategy }}
   strategy:
     {{- toYaml .Values.decode.strategy | nindent 4 }}

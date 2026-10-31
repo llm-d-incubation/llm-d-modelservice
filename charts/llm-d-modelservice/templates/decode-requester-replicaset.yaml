@@ -4,7 +4,9 @@ kind: ReplicaSet
 metadata:
   name: {{ include "llm-d-modelservice.decodeName" . }}
 spec:
+  {{- if not .Values.decode.autoscaling.enabled }}
   replicas: {{ ternary .Values.decode.replicas 1 (hasKey .Values.decode "replicas") }}
+  {{- end }}
   selector:
     matchLabels:
       app: dp-app
