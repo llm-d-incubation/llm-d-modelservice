@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 usage() {
   cat <<EOF
@@ -21,7 +22,7 @@ EOF
   exit 1
 }
 
-BUMP_TYPE="$1"
+BUMP_TYPE="${1:-}"
 
 if [[ -z "${BUMP_TYPE}" ]]; then
   echo -e "Error: no \$bump_type passed as \$1.\n"
@@ -43,7 +44,17 @@ current_version=$(yq e '.version' "${CHART_PATH}")
 
 echo "Current version: $current_version"
 
-IFS='.' read -r major minor patch <<< "$current_version"
+# This script bumps stable versions only. Reject unsupported input before writing.
+if [[ ! "${current_version#v}" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+  echo "Unsupported chart version: $current_version. Expected major.minor.patch with an optional v prefix." >&2
+  exit 1
+fi
+
+version_prefix=""
+if [[ "$current_version" == v* ]]; then
+  version_prefix="v"
+fi
+IFS='.' read -r major minor patch <<< "${current_version#v}"
 
 if [[ "${BUMP_TYPE}" == "patch" ]]; then
   patch=$((patch + 1))
@@ -56,7 +67,7 @@ elif [[ "${BUMP_TYPE}" == "major" ]]; then
   patch=0
 fi
 
-new_version="$major.$minor.$patch"
+new_version="$version_prefix$major.$minor.$patch"
 
 yq e -i ".version = \"$new_version\"" "$CHART_PATH"
 

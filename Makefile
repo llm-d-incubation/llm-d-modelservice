@@ -58,3 +58,7 @@ pre-commit-run: tools ## Run pre-commit hooks on all files
 .PHONY: pre-commit-update
 pre-commit-update: tools ## Update pre-commit hooks to latest versions
 	pre-commit autoupdate
+
+.PHONY: test-version
+test-version: ## Check chart version bumps with yq v4
+	hack/tests/test-increment-chart-version.sh
