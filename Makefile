@@ -58,3 +58,7 @@ pre-commit-run: tools ## Run pre-commit hooks on all files
 .PHONY: pre-commit-update
 pre-commit-update: tools ## Update pre-commit hooks to latest versions
 	pre-commit autoupdate
+
+.PHONY: test-generate
+test-generate: ## Check that example generation propagates Helm errors
+	hack/tests/test-generate-example-output.sh
