@@ -16,7 +16,7 @@ jobs:
   prow-execute:
     runs-on: ubuntu-latest
     steps:
-      - uses: jpmcb/prow-github-actions@v2.0.0
+      - uses: jpmcb/prow-github-actions@v3.0.1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           prow-commands: "/assign
