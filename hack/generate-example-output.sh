@@ -54,3 +54,6 @@ generate_output "pvc-hf" "examples/values-pd.yaml" "examples/output-pvc-hf.yaml"
 
 # Generate output-rebellions-atom.yaml (Rebellions ATOM deployment)
 generate_output "rebellions-atom" "examples/values-rebellions-atom.yaml" "examples/output-rebellions-atom.yaml"
+
+# Generate output-oci.yaml (model in an OCI image, mounted as an image volume)
+generate_output "oci" "examples/values-pd.yaml" "examples/output-oci.yaml" '--set modelArtifacts.uri=oci://quay.io/redhat-ai-services/modelcar-catalog:qwen3-4b::/models --set modelArtifacts.imagePullPolicy=IfNotPresent'

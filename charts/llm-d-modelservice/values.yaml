@@ -70,7 +70,7 @@ modelArtifacts:
   # model URI. One of:
   #   hf://model/name - model as defined on Hugging Face
   #   pvc://pvc_name/path/to/model - model on existing persistant storage volume
-  #   oci:// not yet supported
+  #   oci://image/reference[::/path/to/model] - model inside an OCI image, mounted as an image volume
   uri: "hf://{{ .Values.modelArtifacts.name }}"
   # size of volume to create to hold the model
   size: 5Mi
@@ -84,6 +84,8 @@ modelArtifacts:
   # Whether PVC-backed model mounts (pvc:// and pvc+hf://) should be read-only.
   # Set to false for pvc+hf:// when Hugging Face cache writes are needed; other URI schemes ignore this setting.
   readOnly: true
+  # Pull policy of the oci:// model image volume. Empty means Always.
+  imagePullPolicy: ""
 
 # When true, a LeaderWorkerSet is used instead of a Deployment
 multinode: false
