@@ -409,7 +409,7 @@ Context is .Values.modelArtifacts
 {{- else if eq $protocol "oci" }}
 - name: model-storage
   image:
-    reference: {{ $path }}
+    reference: {{ first (regexSplit "::" $path 2) }}
     pullPolicy: {{ default "Always" .imagePullPolicy }}
 {{- end }}
 {{- end }}
@@ -589,8 +589,15 @@ context is a dict with helm root context plus:
   {{- end }}
   - {{ $namespace }}/{{ $modelID }}
 {{- else if eq $protocol "oci" }}
-{{- /* TBD */}}
-{{- fail "arguments for oci:// not implemented" }}
+{{- /* $other is the image reference, optionally followed by ::/path/to/model inside the image */}}
+{{- $modelPath := "" }}
+{{- if contains "::" $other }}
+{{- $modelPath = last (regexSplit "::" $other 2) | trimPrefix "/" }}
+{{- end }}
+  {{- if .modelArg }}
+  - --model
+  {{- end }}
+  - {{ trimSuffix "/" (printf "%s/%s" .Values.modelArtifacts.mountPath $modelPath) }}
 {{- end }}
 {{- end }} {{- /* define "llm-d-modelservice.argsByProtocol" */}}
 

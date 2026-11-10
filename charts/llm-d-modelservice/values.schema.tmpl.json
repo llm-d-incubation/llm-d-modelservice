@@ -824,6 +824,12 @@
           "title": "authSecretName",
           "type": "string"
         },
+        "imagePullPolicy": {
+          "default": "",
+          "description": "Pull policy of the oci:// model image volume. Empty means Always.",
+          "title": "imagePullPolicy",
+          "type": "string"
+        },
         "labels": {
           "additionalProperties": true,
           "description": " These should match the labels of any associated InferencePool In addition, the label llm-d.ai/role will be added with the value 'prefill', 'decode', or 'encode' depending on the role of the pod. @schema type: object additionalProperties: true @schema",
@@ -864,7 +870,7 @@
         },
         "uri": {
           "default": "hf://{{ .Values.modelArtifacts.name }}",
-          "description": "   hf://model/name - model as defined on Hugging Face   pvc://pvc_name/path/to/model - model on existing persistant storage volume   oci:// not yet supported",
+          "description": "   hf://model/name - model as defined on Hugging Face   pvc://pvc_name/path/to/model - model on existing persistant storage volume   oci://image/reference[::/path/to/model] - model inside an OCI image, mounted as an image volume",
           "required": [],
           "title": "uri"
         }
