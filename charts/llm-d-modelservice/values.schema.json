@@ -4,7 +4,7 @@
     "properties": {
         "accelerator": {
             "additionalProperties": false,
-            "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom",
+            "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron",
             "properties": {
                 "dra": {
                     "default": false,
@@ -353,6 +353,11 @@
                         "intel-xe": {
                             "default": "gpu.intel.com/xe",
                             "title": "intel-xe",
+                            "type": "string"
+                        },
+                        "neuron": {
+                            "default": "aws.amazon.com/neuron",
+                            "title": "neuron",
                             "type": "string"
                         },
                         "nvidia": {
@@ -1489,8 +1494,46 @@
                                                 "description": "localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must be set if type is \"Localhost\". Must NOT be set for any other type.",
                                                 "type": "string"
                                             },
+                                            "oci": {
+                                                "description": "SecurityProfileOCI references a security profile stored as an artifact in an OCI registry, with an optional base profile.",
+                                                "properties": {
+                                                    "baseProfile": {
+                                                        "description": "SecurityProfileOCIBase specifies the base profile of an OCI security profile.",
+                                                        "properties": {
+                                                            "localhostProfile": {
+                                                                "description": "localhostProfile indicates a base profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a non-empty descending path, relative to the kubelet's configured seccomp profile location, of at most 4096 characters. Must be set if type is \"Localhost\". Must NOT be set for any other type.",
+                                                                "type": "string"
+                                                            },
+                                                            "type": {
+                                                                "description": "type indicates which kind of base profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used.",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "type"
+                                                        ],
+                                                        "type": "object",
+                                                        "x-kubernetes-unions": [
+                                                            {
+                                                                "discriminator": "type",
+                                                                "fields-to-discriminateBy": {
+                                                                    "localhostProfile": "LocalhostProfile"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ref": {
+                                                        "description": "ref is the OCI reference of the profile. It must be a digest-pinned reference in canonical form, registry/repository@<algorithm>:<digest>, with the registry spelled out (for example docker.io/library/profile, not profile or docker.io/profile). Tags are rejected. The digest algorithm must be sha256, sha384, or sha512. The maximum length is 1024 characters. Pull secrets are assembled in the same way as for the container image by looking up node credentials, service account image pull secrets, and pod spec image pull secrets.",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "ref"
+                                                ],
+                                                "type": "object"
+                                            },
                                             "type": {
-                                                "description": "type indicates which kind of seccomp profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied.",
+                                                "description": "type indicates which kind of seccomp profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied. OCI - a profile pulled from an OCI registry should be used, merged with a base profile (see oci.baseProfile). Privileged containers cannot use it, whether it is set on the container or inherited from the pod. This is an alpha value and requires enabling the SecurityProfileOCI feature gate.",
                                                 "type": "string"
                                             }
                                         },
@@ -1502,7 +1545,8 @@
                                             {
                                                 "discriminator": "type",
                                                 "fields-to-discriminateBy": {
-                                                    "localhostProfile": "LocalhostProfile"
+                                                    "localhostProfile": "LocalhostProfile",
+                                                    "oci": "OCI"
                                                 }
                                             }
                                         ]
@@ -1911,7 +1955,7 @@
                     "type": "integer"
                 },
                 "resourceClaims": {
-                    "description": "   # Optional: Override global accelerator configuration for decode pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for decode pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom   type: nvidia    # Override DRA (Dynamic Resource Allocation) mode for decode pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+                    "description": "   # Optional: Override global accelerator configuration for decode pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for decode pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron   type: nvidia    # Override DRA (Dynamic Resource Allocation) mode for decode pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
                     "items": {
                         "properties": {
                             "name": {
@@ -3054,8 +3098,46 @@
                                                 "description": "localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must be set if type is \"Localhost\". Must NOT be set for any other type.",
                                                 "type": "string"
                                             },
+                                            "oci": {
+                                                "description": "SecurityProfileOCI references a security profile stored as an artifact in an OCI registry, with an optional base profile.",
+                                                "properties": {
+                                                    "baseProfile": {
+                                                        "description": "SecurityProfileOCIBase specifies the base profile of an OCI security profile.",
+                                                        "properties": {
+                                                            "localhostProfile": {
+                                                                "description": "localhostProfile indicates a base profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a non-empty descending path, relative to the kubelet's configured seccomp profile location, of at most 4096 characters. Must be set if type is \"Localhost\". Must NOT be set for any other type.",
+                                                                "type": "string"
+                                                            },
+                                                            "type": {
+                                                                "description": "type indicates which kind of base profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used.",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "type"
+                                                        ],
+                                                        "type": "object",
+                                                        "x-kubernetes-unions": [
+                                                            {
+                                                                "discriminator": "type",
+                                                                "fields-to-discriminateBy": {
+                                                                    "localhostProfile": "LocalhostProfile"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ref": {
+                                                        "description": "ref is the OCI reference of the profile. It must be a digest-pinned reference in canonical form, registry/repository@<algorithm>:<digest>, with the registry spelled out (for example docker.io/library/profile, not profile or docker.io/profile). Tags are rejected. The digest algorithm must be sha256, sha384, or sha512. The maximum length is 1024 characters. Pull secrets are assembled in the same way as for the container image by looking up node credentials, service account image pull secrets, and pod spec image pull secrets.",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "ref"
+                                                ],
+                                                "type": "object"
+                                            },
                                             "type": {
-                                                "description": "type indicates which kind of seccomp profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied.",
+                                                "description": "type indicates which kind of seccomp profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied. OCI - a profile pulled from an OCI registry should be used, merged with a base profile (see oci.baseProfile). Privileged containers cannot use it, whether it is set on the container or inherited from the pod. This is an alpha value and requires enabling the SecurityProfileOCI feature gate.",
                                                 "type": "string"
                                             }
                                         },
@@ -3067,7 +3149,8 @@
                                             {
                                                 "discriminator": "type",
                                                 "fields-to-discriminateBy": {
-                                                    "localhostProfile": "LocalhostProfile"
+                                                    "localhostProfile": "LocalhostProfile",
+                                                    "oci": "OCI"
                                                 }
                                             }
                                         ]
@@ -4690,8 +4773,46 @@
                                                 "description": "localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must be set if type is \"Localhost\". Must NOT be set for any other type.",
                                                 "type": "string"
                                             },
+                                            "oci": {
+                                                "description": "SecurityProfileOCI references a security profile stored as an artifact in an OCI registry, with an optional base profile.",
+                                                "properties": {
+                                                    "baseProfile": {
+                                                        "description": "SecurityProfileOCIBase specifies the base profile of an OCI security profile.",
+                                                        "properties": {
+                                                            "localhostProfile": {
+                                                                "description": "localhostProfile indicates a base profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a non-empty descending path, relative to the kubelet's configured seccomp profile location, of at most 4096 characters. Must be set if type is \"Localhost\". Must NOT be set for any other type.",
+                                                                "type": "string"
+                                                            },
+                                                            "type": {
+                                                                "description": "type indicates which kind of base profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used.",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "type"
+                                                        ],
+                                                        "type": "object",
+                                                        "x-kubernetes-unions": [
+                                                            {
+                                                                "discriminator": "type",
+                                                                "fields-to-discriminateBy": {
+                                                                    "localhostProfile": "LocalhostProfile"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ref": {
+                                                        "description": "ref is the OCI reference of the profile. It must be a digest-pinned reference in canonical form, registry/repository@<algorithm>:<digest>, with the registry spelled out (for example docker.io/library/profile, not profile or docker.io/profile). Tags are rejected. The digest algorithm must be sha256, sha384, or sha512. The maximum length is 1024 characters. Pull secrets are assembled in the same way as for the container image by looking up node credentials, service account image pull secrets, and pod spec image pull secrets.",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "ref"
+                                                ],
+                                                "type": "object"
+                                            },
                                             "type": {
-                                                "description": "type indicates which kind of seccomp profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied.",
+                                                "description": "type indicates which kind of seccomp profile will be applied. Valid options are:\n\nLocalhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied. OCI - a profile pulled from an OCI registry should be used, merged with a base profile (see oci.baseProfile). Privileged containers cannot use it, whether it is set on the container or inherited from the pod. This is an alpha value and requires enabling the SecurityProfileOCI feature gate.",
                                                 "type": "string"
                                             }
                                         },
@@ -4703,7 +4824,8 @@
                                             {
                                                 "discriminator": "type",
                                                 "fields-to-discriminateBy": {
-                                                    "localhostProfile": "LocalhostProfile"
+                                                    "localhostProfile": "LocalhostProfile",
+                                                    "oci": "OCI"
                                                 }
                                             }
                                         ]
@@ -5112,7 +5234,7 @@
                     "type": "integer"
                 },
                 "resourceClaims": {
-                    "description": "   # Optional: Override global accelerator configuration for prefill pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for prefill pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom   type: intel-gaudi    # Override DRA (Dynamic Resource Allocation) mode for prefill pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+                    "description": "   # Optional: Override global accelerator configuration for prefill pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for prefill pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron   type: intel-gaudi    # Override DRA (Dynamic Resource Allocation) mode for prefill pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
                     "items": {
                         "properties": {
                             "name": {

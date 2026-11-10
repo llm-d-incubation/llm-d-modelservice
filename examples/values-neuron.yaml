@@ -1,0 +1,80 @@
+# AWS Neuron (Trainium / Inferentia) configuration
+# This configuration is for a single-node decode deployment without prefill.
+# Models are downloaded directly from Hugging Face Hub.
+#
+# Prerequisites:
+# - Trainium or Inferentia nodes (for example trn2 or inf2 instances)
+# - Neuron device plugin installed on the cluster, which advertises aws.amazon.com/neuron
+#   Documentation: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/deploy/eks/index.html
+
+modelArtifacts:
+  name: Qwen/Qwen3-0.6B
+  uri: "hf://Qwen/Qwen3-0.6B"
+  size: 10Gi
+  authSecretName: "llm-d-hf-token"
+  labels:
+    llm-d.ai/inference-serving: "true"
+    llm-d.ai/model: qwen3-0-6B
+
+accelerator:
+  type: "neuron"
+
+# Routing configuration
+routing:
+  proxy:
+    enabled: false
+
+# Decode pod configuration for AWS Neuron
+decode:
+  create: true
+  replicas: 1
+  containers:
+  - name: "vllm"
+    # AWS Deep Learning Container with vLLM and the Neuron plugin
+    image: "public.ecr.aws/neuron/pytorch-inference-vllm-neuronx:0.29.0.1.2.0-neuronx-py314-sdk2.33.0-ubuntu26.04"
+
+    # Use vllmServe mode - chart will generate the vllm serve command
+    modelCommand: "vllmServe"
+
+    ports:
+      - containerPort: 8000
+        protocol: TCP
+
+    resources:
+      limits:
+        # aws.amazon.com/neuron: '1' # added automatically from 'parallelism' (tensor * dataLocal)
+        memory: 32Gi
+        cpu: "8"
+      requests:
+        cpu: "4"
+        memory: 16Gi
+
+    mountModelVolume: true
+
+# NOTE: Tensor Parallelism on Neuron
+# aws.amazon.com/neuron counts Neuron devices (chips), while vLLM's
+# --tensor-parallel-size counts NeuronCores, and a device holds several cores
+# (for example 4 logical cores on a Trainium2 device with the default
+# NEURON_LOGICAL_NC_CONFIG=2). With tensor parallelism > 1, the number of
+# devices does NOT equal parallelism.tensor: set it in resources.limits.
+# Example for tensor parallelism = 8 on Trainium2 (requires 2 devices):
+#
+#   decode:
+#     parallelism:
+#       tensor: 8
+#       data: 1
+#       dataLocal: 1
+#     containers:
+#     - name: "vllm"
+#       resources:
+#         limits:
+#           aws.amazon.com/neuron: "2"  # Must be set manually: 8 cores / 4 cores per device
+#           memory: 128Gi
+#           cpu: "32"
+
+# Disable prefill for simple Neuron example
+prefill:
+  create: false
+
+# When true, use LeaderWorkerSet for multi-node Neuron setups
+multinode: false
