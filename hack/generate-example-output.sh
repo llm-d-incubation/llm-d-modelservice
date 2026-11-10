@@ -57,3 +57,6 @@ generate_output "rebellions-atom" "examples/values-rebellions-atom.yaml" "exampl
 
 # Generate output-neuron.yaml (AWS Neuron deployment)
 generate_output "neuron" "examples/values-neuron.yaml" "examples/output-neuron.yaml"
+
+# Generate output-oci.yaml (model in an OCI image, mounted as an image volume)
+generate_output "oci" "examples/values-pd.yaml" "examples/output-oci.yaml" '--set modelArtifacts.uri=oci://quay.io/redhat-ai-services/modelcar-catalog:qwen3-4b::/models --set modelArtifacts.imagePullPolicy=IfNotPresent'
