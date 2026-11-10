@@ -4,7 +4,7 @@
     "properties": {
         "accelerator": {
             "additionalProperties": false,
-            "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom",
+            "description": " Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron",
             "properties": {
                 "dra": {
                     "default": false,
@@ -353,6 +353,11 @@
                         "intel-xe": {
                             "default": "gpu.intel.com/xe",
                             "title": "intel-xe",
+                            "type": "string"
+                        },
+                        "neuron": {
+                            "default": "aws.amazon.com/neuron",
+                            "title": "neuron",
                             "type": "string"
                         },
                         "nvidia": {
@@ -1950,7 +1955,7 @@
                     "type": "integer"
                 },
                 "resourceClaims": {
-                    "description": "   # Optional: Override global accelerator configuration for decode pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for decode pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom   type: nvidia    # Override DRA (Dynamic Resource Allocation) mode for decode pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+                    "description": "   # Optional: Override global accelerator configuration for decode pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for decode pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron   type: nvidia    # Override DRA (Dynamic Resource Allocation) mode for decode pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
                     "items": {
                         "properties": {
                             "name": {
@@ -5229,7 +5234,7 @@
                     "type": "integer"
                 },
                 "resourceClaims": {
-                    "description": "   # Optional: Override global accelerator configuration for prefill pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for prefill pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom   type: intel-gaudi    # Override DRA (Dynamic Resource Allocation) mode for prefill pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
+                    "description": "   # Optional: Override global accelerator configuration for prefill pods   # When not specified, falls back to global accelerator settings    # Override accelerator type for prefill pods   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron   type: intel-gaudi    # Override DRA (Dynamic Resource Allocation) mode for prefill pods   # When not specified, falls back to accelerator.dra   dra: false @schema type: array items:   type: object   required: [name, resourceClaimTemplateName]   properties:     name:       type: string     resourceClaimTemplateName:       type: string @schema Additional resource claims for non-accelerator resources (e.g., IMEX channels) These will be merged with accelerator claims when accelerator.dra is enabled",
                     "items": {
                         "properties": {
                             "name": {
