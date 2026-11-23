@@ -89,7 +89,7 @@ modelArtifacts:
 multinode: false
 
 # Global accelerator configuration
-# Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom
+# Supported types: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron
 accelerator:
   # Type of accelerator to use
   type: nvidia
@@ -108,6 +108,7 @@ accelerator:
     amd: "amd.com/gpu"
     google: "google.com/tpu"
     rebellions-atom: "rebellions.ai/ATOM"
+    neuron: "aws.amazon.com/neuron"
   # Environment variables specific to accelerator types
   env:
     intel-i915:
@@ -314,7 +315,7 @@ decode:
   #   # When not specified, falls back to global accelerator settings
   #
   #   # Override accelerator type for decode pods
-  #   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom
+  #   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron
   #   type: nvidia
   #
   #   # Override DRA (Dynamic Resource Allocation) mode for decode pods
@@ -543,7 +544,7 @@ prefill:
   #   # When not specified, falls back to global accelerator settings
   #
   #   # Override accelerator type for prefill pods
-  #   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom
+  #   # Supported: nvidia, intel-i915, intel-xe, intel-gaudi, amd, google, cpu, rebellions-atom, neuron
   #   type: intel-gaudi
   #
   #   # Override DRA (Dynamic Resource Allocation) mode for prefill pods

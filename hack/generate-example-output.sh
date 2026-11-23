@@ -54,3 +54,6 @@ generate_output "pvc-hf" "examples/values-pd.yaml" "examples/output-pvc-hf.yaml"
 
 # Generate output-rebellions-atom.yaml (Rebellions ATOM deployment)
 generate_output "rebellions-atom" "examples/values-rebellions-atom.yaml" "examples/output-rebellions-atom.yaml"
+
+# Generate output-neuron.yaml (AWS Neuron deployment)
+generate_output "neuron" "examples/values-neuron.yaml" "examples/output-neuron.yaml"
