@@ -362,21 +362,21 @@ decode:
       args: []
       # @schema
       # items:
-      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
+      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
       # @schema
       env: []
       imagePullPolicy: ""
       # list of ports exposed by the container
       # @schema
       # items:
-      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
+      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
       # @schema
       ports: []
       #   - containerPort: 8200  # matches routing.proxy.targetPort, set for metrics scraping with  monitoring.podmonitor.enabled true
       #     name: metrics
       #     protocol: TCP
       # @schema
-      # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
+      # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
       # @schema
       resources:
         # @schema
@@ -411,7 +411,7 @@ decode:
   # @schema
   # type: array
   # items:
-  #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container
+  #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.Container
   # @schema
   # Additional init containers to run before the main containers
   # These will be added alongside the routing proxy init container (if enabled)
@@ -586,7 +586,7 @@ prefill:
       args: []
       # @schema
       # items:
-      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
+      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
       # @schema
       env: []
       imagePullPolicy: ""
@@ -594,14 +594,14 @@ prefill:
       # list of ports exposed by the container
       # @schema
       # items:
-      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
+      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
       # @schema
       ports: []
       #   - containerPort: 8000  # matches routing.servicePort, set for metrics scraping with  monitoring.podmonitor.enabled true
       #     name: metrics
       #     protocol: TCP
       # @schema
-      # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
+      # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
       # @schema
       resources:
         # @schema
@@ -634,7 +634,7 @@ prefill:
   # @schema
   # type: array
   # items:
-  #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container
+  #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.Container
   # @schema
   # Additional init containers to run before the main containers
   initContainers: []
@@ -784,18 +784,18 @@ encode:
       args: []
       # @schema
       # items:
-      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
+      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar
       # @schema
       env: []
       imagePullPolicy: ""
       command: []
       # @schema
       # items:
-      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
+      #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort
       # @schema
       ports: []
       # @schema
-      # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
+      # $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements
       # @schema
       resources:
         # @schema
@@ -829,7 +829,7 @@ encode:
   # @schema
   # type: array
   # items:
-  #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container
+  #   $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.37.2/_definitions.json#/definitions/io.k8s.api.core.v1.Container
   # @schema
   # User-provided init containers. The routing proxy is never added to this list.
   initContainers: []
