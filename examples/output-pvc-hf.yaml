@@ -6,7 +6,7 @@ kind: ServiceAccount
 metadata:
   name: pvc-hf-llm-d-modelservice
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.5.5
+    helm.sh/chart: llm-d-modelservice-v0.5.6
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 ---
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: pvc-hf-llm-d-modelservice-decode
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.5.5
+    helm.sh/chart: llm-d-modelservice-v0.5.6
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -101,7 +101,7 @@ spec:
             value: "1"
           
           - name: HF_HUB_CACHE
-            value: /model-cache/path/to/hf_hub_cache
+            value: /mnt/model-cache/path/to/hf_hub_cache
           
           ports:
           - containerPort: 8200
@@ -120,7 +120,7 @@ spec:
           
           volumeMounts:
             - name: model-storage
-              mountPath: /model-cache
+              mountPath: /mnt/model-cache
               readOnly: true
 ---
 # Source: llm-d-modelservice/templates/prefill-deployment.yaml
@@ -129,7 +129,7 @@ kind: Deployment
 metadata:
   name: pvc-hf-llm-d-modelservice-prefill
   labels:
-    helm.sh/chart: llm-d-modelservice-v0.5.5
+    helm.sh/chart: llm-d-modelservice-v0.5.6
     app.kubernetes.io/version: "v0.4.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -195,7 +195,7 @@ spec:
             value: "1"
           
           - name: HF_HUB_CACHE
-            value: /model-cache/path/to/hf_hub_cache
+            value: /mnt/model-cache/path/to/hf_hub_cache
           
           ports:
           - containerPort: 8000
@@ -214,5 +214,5 @@ spec:
           
           volumeMounts:
             - name: model-storage
-              mountPath: /model-cache
+              mountPath: /mnt/model-cache
               readOnly: true

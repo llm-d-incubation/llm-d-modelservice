@@ -49,8 +49,9 @@ generate_output "requester" "examples/values-requester.yaml" "examples/output-re
 # Generate output-pvc.yaml (PVC model deployment)
 generate_output "pvc" "examples/values-pd.yaml" "examples/output-pvc.yaml" '--set modelArtifacts.uri=pvc://pvc-name/path/to/model'
 
-# Generate output-pvc-hf.yaml (PVC HuggingFace model deployment)
-generate_output "pvc-hf" "examples/values-pd.yaml" "examples/output-pvc-hf.yaml" '--set modelArtifacts.uri=pvc+hf://pvc-name/path/to/hf_hub_cache/facebook/opt-125m'
+# Generate output-pvc-hf.yaml (PVC Hugging Face model deployment at a custom mount path)
+generate_output "pvc-hf" "examples/values-pd.yaml" "examples/output-pvc-hf.yaml" \
+	'--set modelArtifacts.uri=pvc+hf://pvc-name/path/to/hf_hub_cache/facebook/opt-125m --set modelArtifacts.mountPath=/mnt/model-cache'
 
 # Generate output-rebellions-atom.yaml (Rebellions ATOM deployment)
 generate_output "rebellions-atom" "examples/values-rebellions-atom.yaml" "examples/output-rebellions-atom.yaml"
